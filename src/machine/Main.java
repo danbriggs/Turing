@@ -13,6 +13,8 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 		List<Machine> machineList = sk.getMachineList();
+		for (int i=0; i<machineList.size(); i++)
+			System.out.println(machineList.get(i));
 		Tests tests = new Tests(machineList);
 		MyPanel myPanel = new MyPanel(tests, machineList);
 		myPanel.show(args);

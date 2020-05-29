@@ -41,17 +41,22 @@ public class Tests {
 	}
 	
 	public void run(Machine m, int top1, int top2) {
+		//Warning: does not automatically reset m to state A
+		//Make sure to call m.reset() before invoking this function
+		//if you're interested in a clean run from a blank tape.
 		String name = "Run";
 		System.out.println("\n"+name+" beginning.");
+		System.out.println(m);
 		try {
 			Tape t = new Tape(new int[top2*2+1],top2);
 			int i;
 			for (i=0; i<top1; i++) m.act(t);
 			for (i=top1; i<top2; i++) {
-				m.act(t);
 				System.out.print((char)(m.getState()+65)+" ");
 				t.printTrim();
+				m.act(t);
 			}
+			System.out.print((char)(m.getState()+65)+" ");
 		} catch (Exception e) {
 			System.out.println("ERROR: run() failed: "+e.getMessage());
 			return;

@@ -176,7 +176,11 @@ public class MyPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jcomp12.setText("");
-				tests.run(machineList.get(Integer.parseInt(machineNoField.getText())),Integer.parseInt(startStepField.getText()),Integer.parseInt(endStepField.getText()));
+				Machine m = machineList.get(Integer.parseInt(machineNoField.getText()));
+				int lo = Integer.parseInt(startStepField.getText());
+				int hi = Integer.parseInt(endStepField.getText());
+				m.reset();
+				tests.run(m, lo, hi);
 			}
 		});
 	}
