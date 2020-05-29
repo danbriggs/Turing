@@ -1,0 +1,145 @@
+package machine;
+
+public class StretchTape implements TapeLike{
+//Class for being identical to a Tape, but with an awareness of the min & max indices ("stretch") accessed.
+//Tape needs to not have to update values like this, in order to run as fast as possible;
+//StretchTape needs to keep track of them, in order not to have to check every bit in order to be able to report them.
+	private int[] _tape;
+	private int _index;
+	private int _min; //new
+	private int _max; //new
+	private boolean _justPushed; //new; about whether the tape just pushed itself beyond its bounds on the previous step
+	public StretchTape() {
+		this(500);
+	}
+	public StretchTape(int index) {
+		_tape = new int[2*index+1];
+		_index = index;
+		_min = index; //new
+		_max = index; //new
+		
+	}
+	public StretchTape(int[] tape) throws Exception {
+		this(tape,0);
+	}
+	public StretchTape(Integer[] tape) throws Exception {
+		this(tape,0);
+	}
+	public StretchTape(int[] tape, int index) throws Exception {
+		if (index < -1 || index>tape.length) throw new Exception("Index "+index+" out of range for stretch-tape of length "+tape.length);
+		this.setTape(tape);
+		this.setIndex(index);
+		int min;
+		for (min=0; min<tape.length; min++)
+			if (tape[min]!=0 || min==index) {
+				_min=min;
+				break;
+			}
+		int max;
+		for (max=tape.length-1; max>=0; max--)
+			if (tape[max]!=0 || max==index) {
+				_max=max;
+				break;
+			}
+	}
+	public StretchTape(Integer[] tape, int index) throws Exception {
+		if (index < -1 || index>tape.length) throw new Exception("Index "+index+" out of range for stretch-tape of length "+tape.length);
+		this.setTape(tape);
+		this.setIndex(index);
+		int min;
+		for (min=0; min<tape.length; min++)
+			if (tape[min]!=0 || min==index) {
+				_min=min;
+				break;
+			}
+		int max;
+		for (max=tape.length-1; max>=0; max--)
+			if (tape[max]!=0 || max==index) {
+				_max=max;
+				break;
+			}
+	}
+	public StretchTape(String s) throws Exception {
+		int lengthOfTape = s.length();
+		if (!(lengthOfTape>0)) throw new Exception("In stringToTape(): string length must be greater than zero");
+		if (s.charAt(0)=='0'||s.charAt(lengthOfTape-1)=='0') throw new Exception("A StretchTape initialized from a string should not have leading or trailing zeros.");
+		_min=0;
+		_max=s.charAt(lengthOfTape-1);
+		boolean headFound = false;
+		for (int i=0; i<lengthOfTape; i++) {
+			if (s.charAt(i)=='o'||s.charAt(i)=='i') {
+				if (headFound) throw new Exception("In stringToTape(): Multiple tape heads found at indices "+_index+" and "+i+" in string s="+s);
+				_index = i;
+				headFound = true;
+			}
+		}
+		if (!headFound) throw new Exception("No tape head found in string s="+s);
+		_tape = new int[lengthOfTape];
+		for (int i=0; i<lengthOfTape; i++) {
+			char c=s.charAt(i);
+			if (c=='0'||c=='o') _tape[i]=0;
+			else if (c=='1'||c=='i') _tape[i]=1;
+			else throw new Exception("Unrecognized character "+c+" at position "+i+" in string "+s);
+		}
+	}
+	public int[] getTape() {return _tape;}
+	public int getIndex() {return _index;}
+	public int getMin() {return _min;}
+	public int getMax() {return _max;}
+	public int getRange() {return _max-_min;}
+	private void setTape(int[] tape) {this._tape=tape;}
+	private void setTape(Integer[] tape) {
+		_tape = new int[tape.length];
+		for (int i=0;i<tape.length;i++) _tape[i]=tape[i];
+	}
+	public void setIndex(int index) throws Exception {
+		if (index<_min) throw new Exception("In StretchTape.setIndex(): index "+index+" < _min "+_min);
+		if (index>_max) throw new Exception("In StretchTape.setIndex(): index "+index+" > _max "+_max);
+		_index=index;
+	}
+	public String toString() {
+		String s="";
+		StringBuilder sb = new StringBuilder(_tape.length);
+		if (_index==-1) sb.append('<');
+		for (int i=_min; i<=_max; i++) {
+			if (i==_index) sb.append(toLetter(_tape[i]));
+			else sb.append(_tape[i]);
+		}
+		if (_index==_tape.length) sb.append('>'); 
+		s=sb.toString();
+		return s;
+	}
+	public void printTape() {System.out.println(toString());}
+	/*public String getTrimAsString() {
+		String s=toString();
+		int i=0;
+		while (_tape[i]==0&&i<_index) i++;
+		int j=_tape.length-1;
+		while (_tape[j]==0&&j>_index) j--;
+		return s.substring(i,j+1);
+	}*/
+	//public void printTrim() {System.out.println(getTrimAsString());}
+	public char toLetter(int symbol) {
+		if (symbol==0) return 'o';
+		if (symbol==1) return 'i';
+		return 'E';
+	}
+	public int getSymbol() {return _tape[_index];}
+	public void replace(int symbol) {_tape[_index]=symbol;}
+	public boolean getJustPushed() {return _justPushed;}
+	public void go(int direction) throws Exception {
+		if (direction<0) {
+			_index--;
+			if (_index<_min) {_min--; _justPushed = true;}
+			else _justPushed = false;
+			return;
+		}
+		if (direction>0) {
+			_index++;
+			if (_index>_max) {_max++; _justPushed = true;}
+			else _justPushed = false;
+			return;
+		}
+		throw new Exception("In StretchTape.go(): Direction must be -1 or 1 but is "+direction);
+	}
+}

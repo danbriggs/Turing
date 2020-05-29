@@ -1,0 +1,22 @@
+package machine;
+
+import java.util.List;
+
+public class Main {
+		
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		SkeletPageParser sk = new SkeletPageParser();
+		try{
+			sk.readPage();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		List<Machine> machineList = sk.getMachineList();
+		Tests tests = new Tests(machineList);
+		MyPanel myPanel = new MyPanel(tests, machineList);
+		myPanel.show(args);
+		boolean ok = tests.runTests();
+		System.out.println("All tests passed: "+ok);
+	}
+}
