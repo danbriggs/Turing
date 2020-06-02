@@ -40,20 +40,36 @@ public class Tests {
 		return ok;
 	}
 	
-	public void run(Machine m, int top1, int top2) {
+	public void run(Machine m, int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers) {
 		//Warning: does not automatically reset m to state A
 		//Make sure to call m.reset() before invoking this function
 		//if you're interested in a clean run from a blank tape.
+		//If analytic is false, displays all steps from top1 to top2.
+		//If analytic is true, displays initial & final steps,
+		//as well as steps whenever the tape head is at the left/right edge, respectively,
+		//according to the value of leftEdge/rightEdge.
 		String name = "Run";
 		System.out.println("\n"+name+" beginning.");
 		System.out.println(m);
+		//System.out.println(leftEdge);
+		//System.out.println(rightEdge);
 		try {
-			Tape t = new Tape(new int[top2*2+1],top2);
+			TapeLike t;
+			int idx = Math.min(top2,100000);
+			if (analytic)
+				t = new StretchTape(new int[idx*2+1],idx);
+			else
+				t = new Tape(new int[idx*2+1],idx);
 			int i;
 			for (i=0; i<top1; i++) m.act(t);
 			for (i=top1; i<top2; i++) {
-				System.out.print((char)(m.getState()+65)+" ");
-				t.printTrim();
+				boolean shouldPrint = !analytic || i==top1 || leftEdge&&t.onLeft() || rightEdge&&t.onRight();
+				if (shouldPrint) {
+					if (stepNumbers)
+						System.out.print(i+" ");
+					System.out.print((char)(m.getState()+65)+" ");
+					t.printTrim();
+				}
 				m.act(t);
 			}
 			System.out.print((char)(m.getState()+65)+" ");
@@ -435,8 +451,8 @@ public class Tests {
 		for (int i=0; i<43; i++) {
 			Machine m=_machineList.get(i);
 			m.reset();
-			StretchTape t = new StretchTape(numSteps/250);//risky
-			
+			StretchTape t = new StretchTape(numSteps/1000);//risky
+			//old: /250, risky
 			List<Integer> starts = new ArrayList<Integer>();
 			List<Integer> stops = new ArrayList<Integer>();
 			int j=0;

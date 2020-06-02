@@ -4,6 +4,7 @@ public class StretchTape implements TapeLike{
 //Class for being identical to a Tape, but with an awareness of the min & max indices ("stretch") accessed.
 //Tape needs to not have to update values like this, in order to run as fast as possible;
 //StretchTape needs to keep track of them, in order not to have to check every bit in order to be able to report them.
+	private static int pushBlock = 10000;
 	private int[] _tape;
 	private int _index;
 	private int _min; //new
@@ -28,7 +29,6 @@ public class StretchTape implements TapeLike{
 	public StretchTape(int[] tape, int index) throws Exception {
 		if (index < -1 || index>tape.length) throw new Exception("Index "+index+" out of range for stretch-tape of length "+tape.length);
 		this.setTape(tape);
-		this.setIndex(index);
 		int min;
 		for (min=0; min<tape.length; min++)
 			if (tape[min]!=0 || min==index) {
@@ -41,6 +41,7 @@ public class StretchTape implements TapeLike{
 				_max=max;
 				break;
 			}
+		this.setIndex(index);
 	}
 	public StretchTape(Integer[] tape, int index) throws Exception {
 		if (index < -1 || index>tape.length) throw new Exception("Index "+index+" out of range for stretch-tape of length "+tape.length);
@@ -87,6 +88,8 @@ public class StretchTape implements TapeLike{
 	public int getMin() {return _min;}
 	public int getMax() {return _max;}
 	public int getRange() {return _max-_min;}
+	public boolean onLeft() {return _index==_min;}
+	public boolean onRight() {return _index==_max;}
 	private void setTape(int[] tape) {this._tape=tape;}
 	private void setTape(Integer[] tape) {
 		_tape = new int[tape.length];
@@ -110,6 +113,7 @@ public class StretchTape implements TapeLike{
 		return s;
 	}
 	public void printTape() {System.out.println(toString());}
+	public void printTrim() {System.out.println(toString());}
 	/*public String getTrimAsString() {
 		String s=toString();
 		int i=0;
@@ -132,14 +136,33 @@ public class StretchTape implements TapeLike{
 			_index--;
 			if (_index<_min) {_min--; _justPushed = true;}
 			else _justPushed = false;
+			if (_index<=0) pushLeft();
 			return;
 		}
 		if (direction>0) {
 			_index++;
 			if (_index>_max) {_max++; _justPushed = true;}
 			else _justPushed = false;
+			if (_index>=_tape.length) pushRight();
 			return;
 		}
 		throw new Exception("In StretchTape.go(): Direction must be -1 or 1 but is "+direction);
+	}
+	
+	private void pushLeft() {
+		int[] tape2 = new int[_tape.length+pushBlock];
+		for (int i=pushBlock; i<_tape.length; i++)
+			tape2[i]=_tape[i-pushBlock];
+		_tape=tape2;
+		_index+=pushBlock;
+		_min+=pushBlock;
+		_max+=pushBlock;
+	}
+	
+	private void pushRight() {
+		int[] tape2 = new int[_tape.length+pushBlock];
+		for (int i=0; i<_tape.length; i++)
+			tape2[i]=_tape[i];
+		_tape=tape2;
 	}
 }

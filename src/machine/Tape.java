@@ -45,6 +45,18 @@ public class Tape implements TapeLike{
 	}
 	public int[] getTape() {return _tape;}
 	public int getIndex() {return _index;}
+	public boolean onLeft() {
+		for (int i=_index-1; i>=0; i--) {
+			if (_tape[i]!=0) return false;
+		}
+		return true;
+	}
+	public boolean onRight() {
+		for (int i=_index+1; i<_tape.length; i++) {
+			if (_tape[i]!=0) return false;
+		}
+		return true;
+	}
 	public void setTape(int[] tape) {this._tape=tape;}
 	public void setTape(Integer[] tape) {
 		_tape = new int[tape.length];

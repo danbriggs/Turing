@@ -10,6 +10,13 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class MyPanel extends JPanel {
+	JMenuBar menuBar;
+	JMenu menu, menu2, submenu;
+	JMenuItem[] menuItems;
+	JRadioButtonMenuItem fastRun, analyticRun;
+	JCheckBoxMenuItem leftEdge, rightEdge, stepNumbers;
+	boolean analytic;
+	
 	private JButton normalActionTest;
 	private JButton yieldsTest;
 	private JButton termTest;
@@ -35,7 +42,89 @@ public class MyPanel extends JPanel {
 	private JScrollPane jcomp13;
 
 	public MyPanel(Tests tests, List<Machine> machineList) {
+		analytic = false;
 		//construct components
+
+		//Create the menu bar.
+		menuBar = new JMenuBar();
+
+		//Build the first menu.
+		menu = new JMenu("Run");
+		menu.setMnemonic(KeyEvent.VK_A);
+		menu.getAccessibleContext().setAccessibleDescription(
+		        "The only menu in this program that has menu items");
+		menuBar.add(menu);
+
+		//a group of JMenuItems
+		menuItems = new JMenuItem[5];
+		menuItems[0] = new JMenuItem("A text-only menu item",
+		                         KeyEvent.VK_T);
+		menuItems[0].setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_1, ActionEvent.ALT_MASK));
+		menuItems[0].getAccessibleContext().setAccessibleDescription(
+		        "This doesn't really do anything");
+		menu.add(menuItems[0]);
+
+		menuItems[1] = new JMenuItem("Both text and icon",
+		                         new ImageIcon("src/images/middle.gif"));
+		menuItems[1].setMnemonic(KeyEvent.VK_B);
+		menu.add(menuItems[1]);
+
+		menuItems[2] = new JMenuItem(new ImageIcon("src/images/middle.gif"));
+		menuItems[2].setMnemonic(KeyEvent.VK_D);
+		menu.add(menuItems[2]);
+
+		//a group of radio button menu items
+		menu.addSeparator();
+		ButtonGroup group = new ButtonGroup();
+		fastRun = new JRadioButtonMenuItem("Fast run");
+		//fastRun.setActionCommand("fast");
+		fastRun.setSelected(true);
+		fastRun.setMnemonic(KeyEvent.VK_R);
+		group.add(fastRun);
+		menu.add(fastRun);
+
+		analyticRun = new JRadioButtonMenuItem("Analytic run");
+		//analyticRun.setActionCommand("analytic");
+		analyticRun.setMnemonic(KeyEvent.VK_O);
+		group.add(analyticRun);
+		menu.add(analyticRun);
+
+		//a group of check box menu items
+		menu.addSeparator();
+		leftEdge = new JCheckBoxMenuItem("Left edge");
+		leftEdge.setMnemonic(KeyEvent.VK_C);
+		menu.add(leftEdge);
+
+		rightEdge = new JCheckBoxMenuItem("Right edge");
+		rightEdge.setMnemonic(KeyEvent.VK_H);
+		menu.add(rightEdge);
+		
+		stepNumbers = new JCheckBoxMenuItem("Show step numbers");
+		stepNumbers.setMnemonic(KeyEvent.VK_I);
+		menu.add(stepNumbers);
+
+		//a submenu
+		menu.addSeparator();
+		submenu = new JMenu("A submenu");
+		submenu.setMnemonic(KeyEvent.VK_S);
+
+		menuItems[3] = new JMenuItem("An item in the submenu");
+		menuItems[3].setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_2, ActionEvent.ALT_MASK));
+		submenu.add(menuItems[3]);
+
+		menuItems[4] = new JMenuItem("Another item");
+		submenu.add(menuItems[4]);
+		menu.add(submenu);
+
+		//Build second menu in the menu bar.
+		menu2 = new JMenu("Another Menu");
+		menu2.setMnemonic(KeyEvent.VK_N);
+		menu2.getAccessibleContext().setAccessibleDescription(
+		        "This menu does nothing");
+		menuBar.add(menu2);
+
 		normalActionTest = new JButton ("Normal Action Test");
 		yieldsTest = new JButton ("Yields Test");
 		termTest = new JButton ("Term Test");
@@ -69,8 +158,17 @@ public class MyPanel extends JPanel {
 		PrintStream printStream = new PrintStream(new CustomOutputStream(jcomp12));
 		System.setOut(printStream);
 		System.setErr(printStream);
+
+		//adjust size and set layout
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int screenWidth = (int)(screenSize.width*.9);
+		int screenHeight = (int)(screenSize.height*.9);
 		
-		Font defaultFont = new Font("Arial", Font.PLAIN, 24);
+		//setPreferredSize (new Dimension (1500, 1000));
+		setPreferredSize (new Dimension (screenWidth, screenHeight));
+		setLayout (null);		
+		
+		Font defaultFont = new Font("Arial", Font.PLAIN, (int)(.023*screenSize.height));
 		normalActionTest.setFont(defaultFont);
 		yieldsTest.setFont(defaultFont);
 		termTest.setFont(defaultFont);
@@ -90,16 +188,8 @@ public class MyPanel extends JPanel {
 		//set components properties
 		jcomp12.setEnabled (true);
 
-		//adjust size and set layout
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int screenWidth = (int)(screenSize.width*.9);
-		int screenHeight = (int)(screenSize.height*.9);
-		
-		//setPreferredSize (new Dimension (1500, 1000));
-		setPreferredSize (new Dimension (screenWidth, screenHeight));
-		setLayout (null);
-
 		//add components
+		add (menuBar);
 		add (normalActionTest);
 		add (yieldsTest);
 		add (termTest);
@@ -125,9 +215,10 @@ public class MyPanel extends JPanel {
 		add(run);
 		
 		//think 1512 x 945
+		//or 1366*.9 x 768 *.9
 		int x1 = (int)(.0462*screenWidth);
 		int y1 = (int)(.074*screenHeight);
-		int dx = (int)(.1984*screenWidth);
+		int dx = (int)(.17*screenWidth);
 		int dy = (int)(.0952*screenHeight);
 		int w = (int)(dx*.867);
 		int h=(int)(0.0794*screenHeight);
@@ -160,6 +251,8 @@ public class MyPanel extends JPanel {
 		endStepField.setBounds(x1+4*dx,y1+5*smallh,smallw,smallh);
 		run.setBounds(x1+4*dx,y1+7*smallh,smallw,(int)(1.5*h));
 		
+		fastRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {analytic = false;}});
+		analyticRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {analytic = true;}});
 		normalActionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.normalActionTest(4586, 4815);}});
 		yieldsTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.yieldsTest();}});
 		termTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.termTest();}});
@@ -180,7 +273,7 @@ public class MyPanel extends JPanel {
 				int lo = Integer.parseInt(startStepField.getText());
 				int hi = Integer.parseInt(endStepField.getText());
 				m.reset();
-				tests.run(m, lo, hi);
+				tests.run(m, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected());
 			}
 		});
 	}
@@ -189,6 +282,7 @@ public class MyPanel extends JPanel {
 	public void show (String[] args) {
 		JFrame frame = new JFrame ("MyPanel");
 		frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+		frame.setJMenuBar(menuBar);
 		frame.getContentPane().add (this);
 		frame.pack();
 		frame.setVisible (true);
