@@ -3,8 +3,11 @@ package machine;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.PrintStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 //import javax.swing.event.*;
 
@@ -56,7 +59,7 @@ public class MyPanel extends JPanel {
 		menuBar.add(menu);
 
 		//a group of JMenuItems
-		menuItems = new JMenuItem[6];
+		menuItems = new JMenuItem[7];
 		menuItems[0] = new JMenuItem("Run all tests",
 		                         KeyEvent.VK_T);
 		menuItems[0].setAccelerator(KeyStroke.getKeyStroke(
@@ -64,13 +67,17 @@ public class MyPanel extends JPanel {
 		menuItems[0].getAccessibleContext().setAccessibleDescription(
 		        "Equivalent to clicking all twelve buttons below");
 		menu.add(menuItems[0]);
-
+		
+		BufferedImage vPic = null;
+		try {vPic = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("images/middle.gif"));
+		} catch (IOException e2) {e2.printStackTrace();}
+				
 		menuItems[1] = new JMenuItem("Both text and icon",
-		                         new ImageIcon("src/images/middle.gif"));
+		                         new ImageIcon(vPic));
 		menuItems[1].setMnemonic(KeyEvent.VK_B);
 		menu.add(menuItems[1]);
 
-		menuItems[2] = new JMenuItem(new ImageIcon("src/images/middle.gif"));
+		menuItems[2] = new JMenuItem(new ImageIcon(vPic));
 		menuItems[2].setMnemonic(KeyEvent.VK_D);
 		menu.add(menuItems[2]);
 
@@ -119,15 +126,19 @@ public class MyPanel extends JPanel {
 		menu.add(submenu);
 
 		//Build second menu in the menu bar.
-		menu2 = new JMenu("Help");
+		menu2 = new JMenu("Documentation");
 		menu2.setMnemonic(KeyEvent.VK_N);
 		//menu2.getAccessibleContext().setAccessibleDescription(
 		//        "This menu does nothing");
 		
-		menuItems[5] = new JMenuItem("Documentation");
+		menuItems[5] = new JMenuItem("Flowchart");
 		menuItems[5].setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1,ActionEvent.ALT_MASK));
-		
 		menu2.add(menuItems[5]);
+
+		menuItems[6] = new JMenuItem("Tests");
+		menuItems[6].setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3,ActionEvent.ALT_MASK));
+		menu2.add(menuItems[6]);
+		
 		menuBar.add(menu2);
 
 		normalActionTest = new JButton ("Normal Action Test");
@@ -264,6 +275,18 @@ public class MyPanel extends JPanel {
 			int start = Integer.parseInt(startStepField.getText());
 			int stop = Integer.parseInt(endStepField.getText());
 			System.out.println("All tests passed: "+tests.runTests(num, start, stop));}});
+		menuItems[5].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			JFrame frame = new JFrame("FrameDemo");
+			//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			JLabel wIcon=null;
+			try {
+				BufferedImage wPic = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("images/flowchart.png"));
+				wIcon = new JLabel(new ImageIcon(wPic));
+			} catch (IOException e1) {e1.printStackTrace();}
+			frame.getContentPane().add(wIcon, BorderLayout.CENTER);
+			frame.pack();
+			frame.setVisible(true);
+			}});
 		fastRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			analytic = false;}});
 		analyticRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
@@ -303,9 +326,6 @@ public class MyPanel extends JPanel {
 				tests.run(m, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected());
 			}
 		});
-		menuItems[5].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
-			System.out.println("Here!");
-		}});
 	}
 
 
