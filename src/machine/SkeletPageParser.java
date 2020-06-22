@@ -17,6 +17,7 @@ public class SkeletPageParser {
 	public SkeletPageParser() {
 		_filename = "HNRs.txt";
 		_machineList = new ArrayList<Machine>();
+		_machineList.add(new Machine());
 	}
 	public void readPage() throws IOException {
 		/*InputStream is = FileIOTest.class.getResourceAsStream("/text.txt");

@@ -20,7 +20,7 @@ public class Tests {
 		catch (Exception e) {System.out.println("ERROR: Failed to initialize Machine HNR1: "+e.getMessage());}
 	}
 	
-	public boolean runTests() {
+	public boolean runTests(int num, int start, int stop) {
 		boolean ok = true;
 		ok &= normalActionTest(4586,4815);
 		ok &= yieldsTest();
@@ -103,12 +103,23 @@ public class Tests {
 		return true;
 	}
 	
-	public boolean yieldsTest(){
+	public boolean yieldsTest() {
+		try {
+			return yieldsTest(new Machine(Tools.HNR1));
+		} catch (Exception e) {
+			System.out.println("ERROR: yieldsTest() failed: "+e.getMessage());
+			return false;
+		}
+	}
+	public boolean yieldsTest(int i) {
+		return yieldsTest(_machineList.get(i));
+	}
+	public boolean yieldsTest(Machine m){
 		String name = "Yields Test";
 		System.out.println("\n"+name+" beginning.");
 		try {
-			Machine m1 = new Machine(Tools.HNR1);
-			Machine m2 = new Machine(Tools.HNR1);
+			Machine m1 = new Machine(m);
+			Machine m2 = new Machine(m);
 			Configuration c1 = new Configuration(new int[100],50);
 			Configuration c2 = new Configuration(new int[100],50);
 			Configuration c3 = new Configuration(new int[100],50);
@@ -416,8 +427,8 @@ public class Tests {
 		int numDataPts = 20;
 		int startingPoint = 1000000;
 		int increment = 100000;
-		int[][] results = new int[43][numDataPts];
-		for (int i=0; i<43; i++) {
+		int[][] results = new int[_machineList.size()][numDataPts];
+		for (int i=1; i<_machineList.size(); i++) {
 			Machine m=_machineList.get(i);
 			m.reset();
 			StretchTape t = new StretchTape(startingPoint+numDataPts*increment);
@@ -448,7 +459,7 @@ public class Tests {
 		int startingPoint = 1000000;
 		int numSteps = 10000000;
 		int maxNumDataPts = 30;
-		for (int i=0; i<43; i++) {
+		for (int i=1; i<_machineList.size(); i++) {
 			Machine m=_machineList.get(i);
 			m.reset();
 			StretchTape t = new StretchTape(numSteps/1000);//risky

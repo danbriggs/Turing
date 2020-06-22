@@ -18,7 +18,7 @@ public class Main {
 		Tests tests = new Tests(machineList);
 		MyPanel myPanel = new MyPanel(tests, machineList);
 		myPanel.show(args);
-		boolean ok = tests.runTests();
-		System.out.println("All tests passed: "+ok);
+		//boolean ok = tests.runTests();
+		//System.out.println("All tests passed: "+ok);
 	}
 }

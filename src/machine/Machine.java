@@ -4,6 +4,12 @@ public class Machine {
 	private Transition[] _transitions;
 	private int _state;
 	private int _id;//for keeping track of Skelet's IDs
+	public Machine() {
+		//For creating a null machine. Little purpose.
+		_transitions = null;
+		_state = 0;
+		_id = 0;
+	}
 	public Machine(Transition[] transitions, int id) throws Exception {
 		this(transitions);
 		_id=id;
@@ -27,6 +33,11 @@ public class Machine {
 		}
 		_transitions = transitions;
 		_state = 0;
+	}
+	public Machine (Machine m) {
+		_transitions = m.getTransitions();
+		_state = m.getState();
+		_id = m.getID();
 	}
 	public void act(TapeLike tape) throws Exception {
 		if (_state==-1) throw new Exception("Cannot act with machine in halt state");
@@ -67,6 +78,7 @@ public class Machine {
 		return false;
 	}
 	public String toString() {
+		if (_transitions==null) return "null machine";
 		StringBuffer sb = new StringBuffer();
 		for (int i=0; i<_transitions.length; i++) sb.append(Tools.asLetter(i)+": "+_transitions[i].toString()+'\n');
 		return sb.toString();

@@ -56,13 +56,13 @@ public class MyPanel extends JPanel {
 		menuBar.add(menu);
 
 		//a group of JMenuItems
-		menuItems = new JMenuItem[5];
-		menuItems[0] = new JMenuItem("A text-only menu item",
+		menuItems = new JMenuItem[6];
+		menuItems[0] = new JMenuItem("Run all tests",
 		                         KeyEvent.VK_T);
 		menuItems[0].setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_1, ActionEvent.ALT_MASK));
 		menuItems[0].getAccessibleContext().setAccessibleDescription(
-		        "This doesn't really do anything");
+		        "Equivalent to clicking all twelve buttons below");
 		menu.add(menuItems[0]);
 
 		menuItems[1] = new JMenuItem("Both text and icon",
@@ -119,10 +119,15 @@ public class MyPanel extends JPanel {
 		menu.add(submenu);
 
 		//Build second menu in the menu bar.
-		menu2 = new JMenu("Another Menu");
+		menu2 = new JMenu("Help");
 		menu2.setMnemonic(KeyEvent.VK_N);
-		menu2.getAccessibleContext().setAccessibleDescription(
-		        "This menu does nothing");
+		//menu2.getAccessibleContext().setAccessibleDescription(
+		//        "This menu does nothing");
+		
+		menuItems[5] = new JMenuItem("Documentation");
+		menuItems[5].setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1,ActionEvent.ALT_MASK));
+		
+		menu2.add(menuItems[5]);
 		menuBar.add(menu2);
 
 		normalActionTest = new JButton ("Normal Action Test");
@@ -142,8 +147,9 @@ public class MyPanel extends JPanel {
 		jcomp12 = new JTextArea (5, 5);
 		jcomp13 = new JScrollPane(jcomp12);
 		
-        machineNoLabel = new JLabel ("Machine #(0-42)");
+        machineNoLabel = new JLabel ("Machine #(1-43; 0 for all)");
         machineNoField = new JTextField (5);
+        machineNoField.setText("1");
         startStepLabel = new JLabel ("Start Step");
         startStepField = new JTextField (5);
         endStepLabel = new JLabel ("End Step");
@@ -168,7 +174,7 @@ public class MyPanel extends JPanel {
 		setPreferredSize (new Dimension (screenWidth, screenHeight));
 		setLayout (null);		
 		
-		Font defaultFont = new Font("Arial", Font.PLAIN, (int)(.023*screenSize.height));
+		Font defaultFont = new Font("Arial", Font.PLAIN, (int)(.021*screenSize.height));
 		normalActionTest.setFont(defaultFont);
 		yieldsTest.setFont(defaultFont);
 		termTest.setFont(defaultFont);
@@ -218,11 +224,11 @@ public class MyPanel extends JPanel {
 		//or 1366*.9 x 768 *.9
 		int x1 = (int)(.0462*screenWidth);
 		int y1 = (int)(.074*screenHeight);
-		int dx = (int)(.17*screenWidth);
+		int dx = (int)(.19*screenWidth);
 		int dy = (int)(.0952*screenHeight);
 		int w = (int)(dx*.867);
 		int h=(int)(0.0794*screenHeight);
-		int smallw=(int)(0.0926*screenWidth);
+		int smallw=(int)(0.1426*screenWidth);
 		int smallh=(int)(0.0212*screenHeight);
 		int scrollPaneWidth = (int)(.903*screenWidth);
 		int scrollPaneHeight =(int)(.63*screenHeight);
@@ -251,20 +257,39 @@ public class MyPanel extends JPanel {
 		endStepField.setBounds(x1+4*dx,y1+5*smallh,smallw,smallh);
 		run.setBounds(x1+4*dx,y1+7*smallh,smallw,(int)(1.5*h));
 		
-		fastRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {analytic = false;}});
-		analyticRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {analytic = true;}});
-		normalActionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.normalActionTest(4586, 4815);}});
-		yieldsTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.yieldsTest();}});
-		termTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.termTest();}});
-		lemmaAsStringTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.lemmaAsStringTest();}});
-		termfigurationTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.termfigurationTest();}});
-		configurationReadTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.configurationReadTest();}});
-		leftToRightInductionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.leftToRightInductionTest();}});
-		rightToLeftInductionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.rightToLeftInductionTest();}});
-		successorTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.successorTest();}});
-		condensedConfigurationTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.condensedConfigurationTest();}});
-		actTest1.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.actTest1();}});
-		actTest2.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {tests.actTest2();}});
+		menuItems[0].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			int num = Integer.parseInt(machineNoField.getText());
+			int start = Integer.parseInt(startStepField.getText());
+			int stop = Integer.parseInt(endStepField.getText());
+			System.out.println("All tests passed: "+tests.runTests(num, start, stop));}});
+		fastRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			analytic = false;}});
+		analyticRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			analytic = true;}});
+		normalActionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.normalActionTest(4586, 4815);}});
+		yieldsTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.yieldsTest();}});
+		termTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.termTest();}});
+		lemmaAsStringTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.lemmaAsStringTest();}});
+		termfigurationTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.termfigurationTest();}});
+		configurationReadTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.configurationReadTest();}});
+		leftToRightInductionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.leftToRightInductionTest();}});
+		rightToLeftInductionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.rightToLeftInductionTest();}});
+		successorTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.successorTest();}});
+		condensedConfigurationTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.condensedConfigurationTest();}});
+		actTest1.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.actTest1();}});
+		actTest2.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.actTest2();}});
 		run.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -276,6 +301,9 @@ public class MyPanel extends JPanel {
 				tests.run(m, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected());
 			}
 		});
+		menuItems[5].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			System.out.println("Here!");
+		}});
 	}
 
 
