@@ -22,7 +22,8 @@ public class Tests {
 	
 	public boolean runTests(int num, int start, int stop) {
 		boolean ok = true;
-		ok &= normalActionTest(4586,4815);
+		_machineList.get(num).reset();
+		ok &= normalActionTest(start,stop);
 		ok &= yieldsTest();
 		ok &= termTest();
 		ok &= termfigurationTest();

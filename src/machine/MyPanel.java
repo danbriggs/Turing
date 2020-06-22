@@ -52,7 +52,7 @@ public class MyPanel extends JPanel {
 		menu = new JMenu("Run");
 		menu.setMnemonic(KeyEvent.VK_A);
 		menu.getAccessibleContext().setAccessibleDescription(
-		        "The only menu in this program that has menu items");
+		        "Menu items for running machines and tests");
 		menuBar.add(menu);
 
 		//a group of JMenuItems
@@ -152,8 +152,10 @@ public class MyPanel extends JPanel {
         machineNoField.setText("1");
         startStepLabel = new JLabel ("Start Step");
         startStepField = new JTextField (5);
+        startStepField.setText("4586");
         endStepLabel = new JLabel ("End Step");
         endStepField = new JTextField (5);
+        endStepField.setText("4815");
         run = new JButton("Run");
 
 		
