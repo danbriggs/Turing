@@ -38,6 +38,7 @@ public class Tests {
 		ok &= stretchTapeTest();
 		ok &= bigStretchTapeTest();
 		ok &= bigStretchTapeTest2();
+		ok &= allProvedTest(num);
 		return ok;
 	}
 	
@@ -498,6 +499,32 @@ public class Tests {
 		}
 		System.out.println(name+" successful.");		
 		return true;
+	}
+	
+	public boolean allProvedTest(int num) {
+		String name = "All proved test";
+		System.out.println("\n"+name+" beginning for num="+num);
+		boolean ok = true;
+		if (num>0&&num<_machineList.size()) {
+			System.out.println("Looking for a loop for machine #"+num+":");
+			Machine m = _machineList.get(num);
+			try {ok &= Acceleration.lookForTwoLoops(m).allProved();}
+			catch (Exception e1) {e1.printStackTrace();return false;}
+		}
+		else if (num==0) {
+			System.out.println("Looking for a loop for all machines.");
+			for (int i=1; i<_machineList.size(); i++) {
+				System.out.println("Machine #"+i+":");
+				Machine m = _machineList.get(i);
+				try {ok &= Acceleration.lookForTwoLoops(m).allProved();}
+				catch (Exception e1) {e1.printStackTrace(); return false;}
+			}
+		}
+		else {
+			System.out.println("Invalid number "+num+" passed to allProvedTest(); should be from 0 to "+(_machineList.size()-1));
+			return false;
+		}
+		return ok;
 	}
 }
 

@@ -1,6 +1,7 @@
 package machine;
 
 public class Transition {
+	/**The number of symbols of this Transition.*/
 	final int NUM_SYMBOLS = 2;
 	final int HALT = -1;
 	private int[] _toWrite;
@@ -31,7 +32,8 @@ public class Transition {
 		this(all[0],all[1],all[2]);
 	}
 	public int getToWrite(int i) {return _toWrite[i];}
-	public int getToGo(int i) {return _toGo[i];}
+	/**Returns -1 or 1 according as this Transition is to the left or right upon encountering bit b.*/
+	public int getToGo(int b) {return _toGo[b];}
 	public int getNextState(int i) {return _nextState[i];}
 	public String toString() {
 		StringBuffer sb=new StringBuffer();

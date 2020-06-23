@@ -57,8 +57,10 @@ public class Machine {
 		c.setState(_state);
 		_state = stateHolder; //sorry
 	}
+	/**Gets the number of states of this Machine.*/
 	public int numStates() {return _transitions.length;}
 	public int getState() {return _state;}
+	/**Returns an array consisting of all the Transitions of this Machine.*/
 	public Transition[] getTransitions() {return _transitions;}
 	public int getID() {return _id;}
 	public boolean yields(Configuration a, Configuration b, int numSteps) throws Exception {

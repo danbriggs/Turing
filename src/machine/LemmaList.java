@@ -30,4 +30,10 @@ public class LemmaList {
 		}
 		return new Integer[] {-1,0};
 	}
+	public boolean allProved() {
+		for (int i=0; i<_lemlist.size(); i++) {
+			if (!_lemlist.get(i).isProved()) return false;
+		}
+		return true;
+	}
 }

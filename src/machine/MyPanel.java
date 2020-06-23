@@ -72,7 +72,7 @@ public class MyPanel extends JPanel {
 		try {vPic = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("images/middle.gif"));
 		} catch (IOException e2) {e2.printStackTrace();}
 				
-		menuItems[1] = new JMenuItem("Both text and icon",
+		menuItems[1] = new JMenuItem("Look for a loop",
 		                         new ImageIcon(vPic));
 		menuItems[1].setMnemonic(KeyEvent.VK_B);
 		menu.add(menuItems[1]);
@@ -275,6 +275,11 @@ public class MyPanel extends JPanel {
 			int start = Integer.parseInt(startStepField.getText());
 			int stop = Integer.parseInt(endStepField.getText());
 			System.out.println("All tests passed: "+tests.runTests(num, start, stop));}});
+		menuItems[1].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			int num = Integer.parseInt(machineNoField.getText());
+			boolean ok = tests.allProvedTest(num);
+			System.out.println("All proved: "+ok);
+			}});
 		menuItems[5].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			JFrame frame = new JFrame("FrameDemo");
 			//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
