@@ -20,6 +20,7 @@ public class Main {
 		Tests tests = new Tests(machineList);
 		MyPanel myPanel = new MyPanel(tests, machineList);
 		myPanel.show(args);
+		System.out.println(Acceleration.lrs("acbdfghybdf"));
 		//boolean ok = tests.runTests();
 		//System.out.println("All tests passed: "+ok);
 	}

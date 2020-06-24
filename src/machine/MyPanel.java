@@ -72,12 +72,12 @@ public class MyPanel extends JPanel {
 		try {vPic = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("images/middle.gif"));
 		} catch (IOException e2) {e2.printStackTrace();}
 				
-		menuItems[1] = new JMenuItem("Look for a loop",
+		menuItems[1] = new JMenuItem("Look for two loops",
 		                         new ImageIcon(vPic));
 		menuItems[1].setMnemonic(KeyEvent.VK_B);
 		menu.add(menuItems[1]);
 
-		menuItems[2] = new JMenuItem(new ImageIcon(vPic));
+		menuItems[2] = new JMenuItem("Longest run",new ImageIcon(vPic));
 		menuItems[2].setMnemonic(KeyEvent.VK_D);
 		menu.add(menuItems[2]);
 
@@ -149,7 +149,7 @@ public class MyPanel extends JPanel {
 		leftToRightInductionTest = new JButton ("<html><center>Left to Right<br>Induction Test</html>");
 		rightToLeftInductionTest = new JButton ("<html><center>Right to Left<br>Induction Test</html>");
 		successorTest = new JButton ("Successor Test");
-		lemmaAsStringTest = new JButton ("<html><center>Lemma as String<br>Test</html>");
+		lemmaAsStringTest = new JButton ("<html><center>Lemma As String</html>");
 		condensedConfigurationTest = new JButton ("<html><center>Condensed<br>Configuration Test</html>");
 		actTest1 = new JButton ("Act Test 1");
 		actTest2 = new JButton ("Act Test 2");
@@ -174,7 +174,7 @@ public class MyPanel extends JPanel {
 
 		//PrintStream standardOut = System.out;
 		//PrintStream standardErr = System.err;
-		PrintStream printStream = new PrintStream(new CustomOutputStream(jcomp12));
+		PrintStream printStream = new PrintStream(new CustomOutputStream(jcomp12, this));
 		System.setOut(printStream);
 		System.setErr(printStream);
 
@@ -241,23 +241,26 @@ public class MyPanel extends JPanel {
 		int dy = (int)(.0952*screenHeight);
 		int w = (int)(dx*.867);
 		int h=(int)(0.0794*screenHeight);
+		int mediumh = (int)(h*.7);
 		int smallw=(int)(0.1426*screenWidth);
 		int smallh=(int)(0.0212*screenHeight);
 		int scrollPaneWidth = (int)(.903*screenWidth);
 		int scrollPaneHeight =(int)(.63*screenHeight);
+		int secondRow = (int)(y1+dy-.3*h);
+		int thirdRow = (int)(y1+2*dy-.3*h);
 		//set component bounds (only needed by Absolute Positioning)
-		normalActionTest.setBounds (x1, y1, w, h);
-		yieldsTest.setBounds (x1+dx, y1, w, h);
-		termTest.setBounds (x1+2*dx, y1, w, h);
-		lemmaAsStringTest.setBounds (x1+3*dx, y1, w, h);
-		termfigurationTest.setBounds (x1, y1+dy, w, h);
-		configurationReadTest.setBounds (x1+dx, y1+dy, w, h);
-		leftToRightInductionTest.setBounds (x1+2*dx, y1+dy, w, h);
-		rightToLeftInductionTest.setBounds (x1+dx, y1+2*dy, w, h);
-		successorTest.setBounds (x1+3*dx, y1+dy, w, h);
-		condensedConfigurationTest.setBounds (x1, y1+2*dy, w, h);
-		actTest1.setBounds (x1+2*dx, y1+2*dy, w, h);
-		actTest2.setBounds (x1+3*dx, y1+2*dy, w, h);
+		normalActionTest.setBounds (x1, y1, w, mediumh);
+		yieldsTest.setBounds (x1+dx, y1, w, mediumh);
+		termTest.setBounds (x1+2*dx, y1, w, mediumh);
+		lemmaAsStringTest.setBounds (x1+3*dx, y1, w, mediumh);
+		termfigurationTest.setBounds (x1, thirdRow, w, mediumh);
+		configurationReadTest.setBounds (x1+dx, secondRow, w, h);
+		leftToRightInductionTest.setBounds (x1+2*dx, secondRow, w, h);
+		rightToLeftInductionTest.setBounds (x1+3*dx, secondRow, w, h);
+		successorTest.setBounds (x1+dx, thirdRow, w, mediumh);
+		condensedConfigurationTest.setBounds (x1, secondRow, w, h);
+		actTest1.setBounds (x1+2*dx, thirdRow, w, mediumh);
+		actTest2.setBounds (x1+3*dx, thirdRow, w, mediumh);
 		//jcomp10.setBounds (x1+4*dx, y1, w, h);
 		//jcomp11.setBounds (x1+4*dx, y1+dy, w, h);
 		
@@ -280,6 +283,12 @@ public class MyPanel extends JPanel {
 			boolean ok = tests.allProvedTest(num);
 			System.out.println("All proved: "+ok);
 			}});
+		menuItems[2].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			int num = Integer.parseInt(machineNoField.getText());
+			int start = Integer.parseInt(startStepField.getText());
+			int stop = Integer.parseInt(endStepField.getText());
+			tests.longestRunTest(num, start, stop);
+			}});
 		menuItems[5].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			JFrame frame = new JFrame("FrameDemo");
 			//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -297,9 +306,15 @@ public class MyPanel extends JPanel {
 		analyticRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			analytic = true;}});
 		normalActionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
-			tests.normalActionTest(4586, 4815);}});
+			int num = Integer.parseInt(machineNoField.getText());
+			int start = Integer.parseInt(startStepField.getText());
+			int stop = Integer.parseInt(endStepField.getText());
+			tests.normalActionTest(num, start, stop);}});
 		yieldsTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
-			tests.yieldsTest();}});
+			int num = Integer.parseInt(machineNoField.getText());
+			int start = Integer.parseInt(startStepField.getText());
+			int stop = Integer.parseInt(endStepField.getText());
+			tests.yieldsTest(num, start, stop);}});
 		termTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			tests.termTest();}});
 		lemmaAsStringTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
@@ -324,11 +339,10 @@ public class MyPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jcomp12.setText("");
-				Machine m = machineList.get(Integer.parseInt(machineNoField.getText()));
+				int num = Integer.parseInt(machineNoField.getText());
 				int lo = Integer.parseInt(startStepField.getText());
 				int hi = Integer.parseInt(endStepField.getText());
-				m.reset();
-				tests.run(m, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected());
+				tests.run(num, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected());
 			}
 		});
 	}

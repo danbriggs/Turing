@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import graph.Cycle;
-import graph.Graph;
 import graph.DirectedCycle;
 import graph.Digraph;
 import graph.StdOut;
@@ -186,4 +184,79 @@ public class Acceleration {
         Lemma lem = new Lemma(m, a, b, numSteps);
         return lem;
 	}
+	
+	/**Returns an array of length 2 consisting of
+	* • the start step of the longest run of m in direction dir_desired
+	*   on a blank tape that starts at at least lower_bound steps
+	*   and finishes by upper_bound steps (either by ending or by upper_bound being reached), and
+	* • how long that run is.
+	* Use dir_desired=-1 for longest left run, dir_desired=1 for longest right run, dir_desired=0 for longest unidirectional run.*/
+	public static int[] longestRun(Machine m, int lower_bound, int upper_bound, int dir_desired) {
+		m.reset();
+		try {
+			if (lower_bound < 0 || upper_bound < lower_bound)
+				throw new Exception("Invalid bounds "+lower_bound+", "+upper_bound+" for longestRun");
+			int index = upper_bound;
+			int direction = 0;
+			int oldDirection = 0;
+			int runLength = 0;
+			int maxRunLength = 0;
+			int runStart = 0;
+			int maxRunStart = 0;
+			int oldIndex;
+			Tape t = new Tape(new int[2*upper_bound+1], index);
+			int i;
+			for (i=0; i<lower_bound; i++)
+				m.act(t);
+			index = t.getIndex();
+			for (i=lower_bound; i<upper_bound; i++) {
+				oldIndex = index;
+				if (i>lower_bound) oldDirection = direction;
+				m.act(t);
+				index = t.getIndex();
+				direction = index - oldIndex;
+				if (direction != 1 && direction != -1) throw new Exception("Tape jumped by " + direction);
+				if (i==lower_bound || oldDirection == direction) {
+					runLength++;
+					if (runLength > maxRunLength) {
+						if (direction==dir_desired || dir_desired==0) {
+							maxRunLength = runLength;
+							maxRunStart = runStart;
+						}
+					}
+				}
+				else {
+					runStart = i;
+					runLength = 0;
+				}
+			}
+			return new int[] {maxRunStart, maxRunLength};
+		} catch (Exception e) {e.printStackTrace(); return new int[] {0,0};}
+	}
+	
+    public static String lcp(String s, String t){  
+        int n = Math.min(s.length(),t.length());  
+        for(int i = 0; i < n; i++){  
+            if(s.charAt(i) != t.charAt(i)){  
+                return s.substring(0,i);  
+            }  
+        }  
+        return s.substring(0,n);  
+    }  
+      
+    public static String lrs(String str) {
+        String lrs="";  
+        int n = str.length();  
+        for(int i = 0; i < n; i++){  
+            for(int j = i+1; j < n; j++){  
+                //Checks for the largest common factors in every substring  
+                String x = lcp(str.substring(i,n),str.substring(j,n));  
+                //If the current prefix is greater than previous one   
+                //then it takes the current one as longest repeating sequence  
+                if(x.length() > lrs.length()) lrs=x;    
+            }  
+        }  
+        return lrs;  
+    }  
+
 }

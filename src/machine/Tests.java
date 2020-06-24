@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tests {
+	static final char UNIT_SEPARATOR = 31;
 	private Machine _m;
 	private List<Machine> _machineList;
 	private Lemma _lemma1;
@@ -14,6 +15,10 @@ public class Tests {
 	public Tests(List<Machine> machineList) {
 		this();
 		_machineList = machineList;
+		_lemma1 = null;
+		_lemma2 = null;
+		_lemma3 = null;
+		_lemma4 = null;
 	}
 	public Tests() {
 		try {_m = new Machine(Tools.HNR1);} 
@@ -22,27 +27,62 @@ public class Tests {
 	
 	public boolean runTests(int num, int start, int stop) {
 		boolean ok = true;
-		_machineList.get(num).reset();
-		ok &= normalActionTest(start,stop);
-		ok &= yieldsTest();
+		ok &= configurationReadTest();
+		ok &= condensedConfigurationTest();
 		ok &= termTest();
 		ok &= termfigurationTest();
-		ok &= configurationReadTest();
+		ok &= successorTest();
 		ok &= leftToRightInductionTest();
 		ok &= rightToLeftInductionTest();
-		ok &= successorTest();
 		ok &= lemmaAsStringTest();
-		ok &= condensedConfigurationTest();
 		ok &= actTest1();
 		ok &= actTest2();
-		ok &= stretchTapeTest();
-		ok &= bigStretchTapeTest();
-		ok &= bigStretchTapeTest2();
-		ok &= allProvedTest(num);
+		System.out.println("So far, all tests passed: "+ok);
+		if (num>0 && num<_machineList.size())
+			ok &= machineSpecificTestBattery(num,start,stop);
+		else if (num==0)
+			for (int i=1; i<_machineList.size(); i++)
+				ok &= machineSpecificTestBattery(i,start,stop);
+		else {
+			System.out.println("Error in number field: is "+num+" but must be from 0 to "+(_machineList.size()-1));
+			return false;
+		}
 		return ok;
 	}
 	
-	public void run(Machine m, int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers) {
+	private boolean machineSpecificTestBattery(int num, int start, int stop) {
+		boolean ok = true;
+		ok &= normalActionTest(num, start,stop);
+		ok &= yieldsTest(num, start, stop);
+		ok &= stretchTapeTest(num);
+		ok &= bigStretchTapeTest(num);
+		ok &= bigStretchTapeTest2(num);
+		ok &= allProvedTest(num);
+		ok &= longestRunTest(num, start, stop);
+		return ok;
+	}
+	
+	public void run(int num,   int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers) {
+		if (num>0 && num<_machineList.size()) {
+			Machine m = _machineList.get(num);
+			m.reset();
+			run(m,top1,top2,analytic,leftEdge,rightEdge,stepNumbers);
+		}
+		else if (num==0) {
+			Thread t = new Thread(new Runnable() {
+				public void run() {
+		        	  for (int i=1; i<_machineList.size(); i++) {
+		  				Machine m = _machineList.get(i);
+		  				m.reset();
+		  				Tests.run(m,top1,top2,analytic,leftEdge,rightEdge,stepNumbers);
+		  				System.out.println(UNIT_SEPARATOR);
+		        	  }
+		        }
+			});
+			t.start();
+		}
+	}
+	private static void run(Machine m, int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers) {
 		//Warning: does not automatically reset m to state A
 		//Make sure to call m.reset() before invoking this function
 		//if you're interested in a clean run from a blank tape.
@@ -84,17 +124,19 @@ public class Tests {
 		
 	}
 	
-	public boolean normalActionTest(int top1, int top2){
+	public boolean normalActionTest(int num, int top1, int top2){
 		String name = "Normal Action Test";
 		System.out.println("\n"+name+" beginning.");
 		try {
+			Machine m = _machineList.get(num);
+			m.reset();
 			Tape t = new Tape(new int[top2*2+1],top2);
 			int i;
-			_m.reset();
-			for (i=0; i<top1; i++) _m.act(t);
+			m.reset();
+			for (i=0; i<top1; i++) m.act(t);
 			for (i=top1; i<top2; i++) {
-				_m.act(t);
-				System.out.print((char)(_m.getState()+65)+" ");
+				m.act(t);
+				System.out.print((char)(m.getState()+65)+" ");
 				t.printTrim();
 			}
 		} catch (Exception e) {
@@ -107,40 +149,67 @@ public class Tests {
 	
 	public boolean yieldsTest() {
 		try {
-			return yieldsTest(new Machine(Tools.HNR1));
+			return yieldsTest(new Machine(Tools.HNR1), 40, 50);
 		} catch (Exception e) {
 			System.out.println("ERROR: yieldsTest() failed: "+e.getMessage());
 			return false;
 		}
 	}
-	public boolean yieldsTest(int i) {
-		return yieldsTest(_machineList.get(i));
+	public boolean yieldsTest(int i, int first, int second) {
+		boolean ok=true;
+		if (i>0) {
+			System.out.print("For Machine#"+i+", ");
+			ok = yieldsTest(_machineList.get(i), first, second);
+		}
+		else if (i==0) {
+			for (int j=1; j<_machineList.size(); j++) {
+				ok &= yieldsTest(j,first,second);
+			}
+		}
+		else {
+			System.out.println("Invalid machine # for yields test: "+i);
+			ok = false;
+		}
+		return ok;
 	}
-	public boolean yieldsTest(Machine m){
+	public boolean yieldsTest(Machine m, int first, int second){
+		boolean ok;
+		if ((second-first)%2==0) second++;
+		//Difference in parity ensures
+		//that m can't yield the same configuration after second steps
+		//that it yields after first steps.
 		String name = "Yields Test";
-		System.out.println("\n"+name+" beginning.");
+		System.out.println(name+" beginning.");
 		try {
 			Machine m1 = new Machine(m);
+			m1.reset();
 			Machine m2 = new Machine(m);
-			Configuration c1 = new Configuration(new int[100],50);
-			Configuration c2 = new Configuration(new int[100],50);
-			Configuration c3 = new Configuration(new int[100],50);
-			for (int j=0; j<40; j++) {
+			m2.reset();
+			int tapelen=second*2+1;
+			Configuration c1 = new Configuration(new int[tapelen],second);
+			Configuration c2 = new Configuration(new int[tapelen],second);
+			Configuration c3 = new Configuration(new int[tapelen],second);
+			for (int j=0; j<first; j++) {
 				m1.act(c1);
 				c1.setState(m1.getState());
 				m2.act(c2);
 				c2.setState(m2.getState());
 			}
-			System.out.println("c1 equals c2: "+c1.equals(c2));
-			System.out.println("c3 yields c2 in 40 steps: "+_m.yields(c3, c2, 40));
-			System.out.println("c3 yields c2 in 50 steps: "+_m.yields(c3, c2, 50));
-			System.out.println("c3 yields c2 in 40 steps: "+_m.yields(c3, c2, 40));
+			boolean ok1 = c1.equals(c2);
+			System.out.println("c1 equals c2: "+ ok1);
+			boolean ok2 = m.yields(c3, c2, first);
+			System.out.println("c3 yields c2 in "+first+" steps: "+ ok2);
+			boolean nok3 = m.yields(c3, c2, second);
+			System.out.println("c3 yields c2 in "+second+" steps: "+ nok3);
+			boolean ok4 = m.yields(c3, c2, first);
+			System.out.println("c3 yields c2 in "+first+" steps: "+ ok4);
+			ok = ok1&&ok2&&!nok3&&ok4;
 		} catch(Exception e) {
 			System.out.println("ERROR: yieldsTest() failed: "+e.getMessage());
 			return false;
 		}
 		System.out.println(name+" successful.");
-		return true;
+		return ok;
 	}
 	
 	public boolean termTest() {
@@ -262,6 +331,10 @@ public class Tests {
 	public boolean lemmaAsStringTest() {
 		String name = "Lemma as String Test";
 		System.out.println("\n"+name+" beginning.");
+		if (_lemma1==null || _lemma2==null) {
+			System.out.println("Must run leftToRightInductionTest() and rightToLeftInductionTest() first to initialize Lemmas");
+			return false;
+		}
 		System.out.println(_lemma1);
 		System.out.println(_lemma2);
 		System.out.println(name+" successful.");
@@ -316,6 +389,10 @@ public class Tests {
 	public boolean actTest1() {
 		String name = "Act Test 1";
 		System.out.println("\n"+name+" beginning.");
+		if (_lemma1==null || _lemma2==null) {
+			System.out.println("Must run leftToRightInductionTest() and rightToLeftInductionTest() first to initialize Lemmas");
+			return false;
+		}
 		final int[] OII= {0,1,1};
 		List<Term> termlist = new ArrayList<Term>();
 		termlist.add(new Term(OII,12));
@@ -405,11 +482,12 @@ public class Tests {
 		return true;
 	}
 	
-	public boolean stretchTapeTest() {
+	public boolean stretchTapeTest(int num) {
 		String name = "Stretch Tape Test";
 		System.out.println("\n"+name+" beginning.");
 		StretchTape t1 = new StretchTape();
-		Machine m = _machineList.get(1);
+		Machine m = _machineList.get(num);
+		m.reset();
 		for (int i=0; i<50; i++)
 			try {
 				m.act(t1);
@@ -422,80 +500,76 @@ public class Tests {
 		return true;
 	}
 	
-	public boolean bigStretchTapeTest() {
-		//Sets each machine in motion, then looks at how much the stretch increases beyond a certain point.
+	/**Sets the machine in motion, then looks at how much the stretch increases beyond a certain point.*/
+	public boolean bigStretchTapeTest(int num) {
 		String name = "Big Stretch Tape Test";
 		System.out.println("\n"+name+" beginning.");
 		int numDataPts = 20;
 		int startingPoint = 1000000;
 		int increment = 100000;
-		int[][] results = new int[_machineList.size()][numDataPts];
-		for (int i=1; i<_machineList.size(); i++) {
-			Machine m=_machineList.get(i);
-			m.reset();
-			StretchTape t = new StretchTape(startingPoint+numDataPts*increment);
-			try {
-				int j;
-				for (j=0; j<startingPoint; j++) m.act(t);
-				int k;
-				for (k=0; k<numDataPts; k++) {
-					results[i][k]=t.getRange();
-					for (j=startingPoint+increment*k; j<startingPoint+increment*(k+1); j++) m.act(t);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("ERROR: "+name+" failed: "+e.getMessage());
-				return false;
+		int[] results = new int[numDataPts];
+		Machine m=_machineList.get(num);
+		m.reset();
+		StretchTape t = new StretchTape(startingPoint+numDataPts*increment);
+		try {
+			int j;
+			for (j=0; j<startingPoint; j++) m.act(t);
+			int k;
+			for (k=0; k<numDataPts; k++) {
+				results[k]=t.getRange();
+				for (j=startingPoint+increment*k; j<startingPoint+increment*(k+1); j++) m.act(t);
 			}
-			System.out.println("Machine #"+i+": "+Tools.toString(results[i]));
-			System.out.println("Differences: "+Tools.toString(Tools.differences(results[i])));
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("ERROR: "+name+" failed: "+e.getMessage());
+			return false;
 		}
+		System.out.println("Machine #"+num+": "+Tools.toString(results));
+		System.out.println("Differences: "+Tools.toString(Tools.differences(results)));
 		System.out.println(name+" successful.");
 		return true;
 	}
 	
-	public boolean bigStretchTapeTest2() {
+	public boolean bigStretchTapeTest2(int num) {
 		//Tests for the functionality of tracking the periods when the machines are increasing the ranges of the StretchTapes.
 		String name = "Big Stretch Tape Test 2";
 		System.out.println("\n"+name+" beginning.");
 		int startingPoint = 1000000;
 		int numSteps = 10000000;
 		int maxNumDataPts = 30;
-		for (int i=1; i<_machineList.size(); i++) {
-			Machine m=_machineList.get(i);
-			m.reset();
-			StretchTape t = new StretchTape(numSteps/1000);//risky
-			//old: /250, risky
-			List<Integer> starts = new ArrayList<Integer>();
-			List<Integer> stops = new ArrayList<Integer>();
-			int j=0;
-			try {
-				//We disregard what happens on the first few steps.
-				for (j=0; j<startingPoint; j++) m.act(t);
-				//Continue until either numsteps or maxNumDataPts is reached.
-				boolean isPushing = t.getJustPushed();
-				for (; j<numSteps; j++) {
-					m.act(t);
-					if (!isPushing && t.getJustPushed()) {
-						starts.add(j);
-						isPushing=true;
-					}
-					else if (isPushing && !t.getJustPushed()) {
-						stops.add(j);
-						isPushing = false;
-					}
-					if (starts.size()>=maxNumDataPts) break;
+		Machine m=_machineList.get(num);
+		m.reset();
+		StretchTape t = new StretchTape(numSteps/1000);//risky
+		//old: /250, risky
+		List<Integer> starts = new ArrayList<Integer>();
+		List<Integer> stops = new ArrayList<Integer>();
+		int j=0;
+		try {
+			//We disregard what happens on the first few steps.
+			for (j=0; j<startingPoint; j++) m.act(t);
+			//Continue until either numsteps or maxNumDataPts is reached.
+			boolean isPushing = t.getJustPushed();
+			for (; j<numSteps; j++) {
+				m.act(t);
+				if (!isPushing && t.getJustPushed()) {
+					starts.add(j);
+					isPushing=true;
 				}
-				System.out.println("Machine #"+i+":");
-				//System.out.println("Starts: "+starts);
-				//System.out.println("Stops: "+stops);
-				//System.out.println("Differences: "+Tools.differences(stops,starts));
-				System.out.println("Differences: "+Tools.differences(starts));
+				else if (isPushing && !t.getJustPushed()) {
+					stops.add(j);
+					isPushing = false;
+				}
+				if (starts.size()>=maxNumDataPts) break;
 			}
-			catch (Exception e) {
-				System.out.println("ERROR: "+name+" failed: "+e.getMessage());
-				return false;
-			}
+			System.out.println("Machine #"+num+":");
+			//System.out.println("Starts: "+starts);
+			//System.out.println("Stops: "+stops);
+			//System.out.println("Differences: "+Tools.differences(stops,starts));
+			System.out.println("Differences: "+Tools.differences(starts));
+		}
+		catch (Exception e) {
+			System.out.println("ERROR: "+name+" failed: "+e.getMessage());
+			return false;
 		}
 		System.out.println(name+" successful.");		
 		return true;
@@ -525,6 +599,41 @@ public class Tests {
 			return false;
 		}
 		return ok;
+	}
+	
+	public boolean longestRunTest(int num, int start, int stop) {
+		String name = "Longest run test";
+		System.out.println("\n"+name+" beginning for num="+num);
+		boolean ok = true;
+		int[] ret;
+		if (num>0&&num<_machineList.size()) {
+			System.out.println("Looking for the longest run from "+start+" to "+stop+" for machine #"+num+":");
+			Machine m = _machineList.get(num);
+			ret = Acceleration.longestRun(m, start, stop, -1);
+			System.out.println("The longest left run started at "+ret[0]+" and was of length "+ret[1]);
+			ret = Acceleration.longestRun(m, start, stop, 1);
+			System.out.println("The longest right run started at "+ret[0]+" and was of length "+ret[1]);
+			ret = Acceleration.longestRun(m, start, stop, 0);
+			System.out.println("The longest run started at "+ret[0]+" and was of length "+ret[1]);
+		}
+		else if (num==0) {
+			System.out.println("Looking for the longest run from "+start+" to "+stop+" for all machines.");
+			for (int i=1; i<_machineList.size(); i++) {
+				System.out.println("Machine #"+i+":");
+				Machine m = _machineList.get(i);
+				ret = Acceleration.longestRun(m, start, stop, -1);
+				System.out.println("The longest left run started at "+ret[0]+" and was of length "+ret[1]);
+				ret = Acceleration.longestRun(m, start, stop, 1);
+				System.out.println("The longest right run started at "+ret[0]+" and was of length "+ret[1]);
+				ret = Acceleration.longestRun(m, start, stop, 0);
+				System.out.println("The longest run started at "+ret[0]+" and was of length "+ret[1]);
+			}
+		}
+		else {
+			System.out.println("Invalid number "+num+" passed to allProvedTest(); should be from 0 to "+(_machineList.size()-1));
+			return false;
+		}
+		return ok;		
 	}
 }
 

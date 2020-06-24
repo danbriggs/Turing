@@ -1,9 +1,10 @@
 package machine;
 
+/**Class for being identical to a Tape, but with an awareness of the min & max indices ("stretch") accessed.
+Tape needs to not have to update values like this, in order to run as fast as possible;
+StretchTape needs to keep track of them, in order not to have to check every bit in order to be able to report them.
+Warning: getIndex() will jump after the edge of the allocated region is reached.*/
 public class StretchTape implements TapeLike{
-//Class for being identical to a Tape, but with an awareness of the min & max indices ("stretch") accessed.
-//Tape needs to not have to update values like this, in order to run as fast as possible;
-//StretchTape needs to keep track of them, in order not to have to check every bit in order to be able to report them.
 	private static int pushBlock = 10000;
 	private int[] _tape;
 	private int _index;
