@@ -26,6 +26,10 @@ public class Tests {
 	}
 	
 	public boolean runTests(int num, int start, int stop) {
+		if (num<0 || num>=_machineList.size()) {
+			System.out.println("Error in number field: is "+num+" but must be from 0 to "+(_machineList.size()-1));
+			return false;
+		}
 		boolean ok = true;
 		ok &= configurationReadTest();
 		ok &= condensedConfigurationTest();
@@ -37,28 +41,13 @@ public class Tests {
 		ok &= lemmaAsStringTest();
 		ok &= actTest1();
 		ok &= actTest2();
-		System.out.println("So far, all tests passed: "+ok);
-		if (num>0 && num<_machineList.size())
-			ok &= machineSpecificTestBattery(num,start,stop);
-		else if (num==0)
-			for (int i=1; i<_machineList.size(); i++)
-				ok &= machineSpecificTestBattery(i,start,stop);
-		else {
-			System.out.println("Error in number field: is "+num+" but must be from 0 to "+(_machineList.size()-1));
-			return false;
-		}
-		return ok;
-	}
-	
-	private boolean machineSpecificTestBattery(int num, int start, int stop) {
-		boolean ok = true;
-		ok &= normalActionTest(num, start,stop);
-		ok &= yieldsTest(num, start, stop);
 		ok &= stretchTapeTest(num);
 		ok &= bigStretchTapeTest(num);
 		ok &= bigStretchTapeTest2(num);
 		ok &= allProvedTest(num);
 		ok &= longestRunTest(num, start, stop);
+		ok &= yieldsTest(num, start, stop);
+		
 		return ok;
 	}
 	
@@ -124,7 +113,7 @@ public class Tests {
 		
 	}
 	
-	public boolean normalActionTest(int num, int top1, int top2){
+	/*public boolean normalActionTest(int num, int top1, int top2){
 		String name = "Normal Action Test";
 		System.out.println("\n"+name+" beginning.");
 		try {
@@ -145,7 +134,7 @@ public class Tests {
 		}
 		System.out.println(name+" successful.");
 		return true;
-	}
+	}*/
 	
 	public boolean yieldsTest() {
 		try {
@@ -337,8 +326,18 @@ public class Tests {
 		}
 		System.out.println(_lemma1);
 		System.out.println(_lemma2);
-		System.out.println(name+" successful.");
-		return true;
+		String strLemma1 = _lemma1.toString();
+		String strLemma2 = _lemma2.toString();
+		int lenLemma1 = strLemma1.length();
+		int lenLemma2 = strLemma2.length();
+		String endLemma1 = strLemma1.substring(lenLemma1-7);
+		String endLemma2 = strLemma2.substring(lenLemma2-7);
+		System.out.println("The preceding lemmas end with "+ endLemma1 +" and " + endLemma2);
+		if (endLemma1.equals("Proved.") && endLemma2.equals("Proved.")) {
+			System.out.println(name+" successful.");
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean condensedConfigurationTest() {
@@ -483,6 +482,12 @@ public class Tests {
 	}
 	
 	public boolean stretchTapeTest(int num) {
+		if (num==0) {
+			boolean ok = true;
+			for (int i=1; i<_machineList.size(); i++)
+				ok &= stretchTapeTest(i);
+			return ok;
+		}
 		String name = "Stretch Tape Test";
 		System.out.println("\n"+name+" beginning.");
 		StretchTape t1 = new StretchTape();
@@ -500,10 +505,22 @@ public class Tests {
 		return true;
 	}
 	
-	/**Sets the machine in motion, then looks at how much the stretch increases beyond a certain point.*/
 	public boolean bigStretchTapeTest(int num) {
 		String name = "Big Stretch Tape Test";
 		System.out.println("\n"+name+" beginning.");
+
+		boolean ok = true;
+		if (num==0) {
+			for (int i=1; i<_machineList.size(); i++)
+				ok &= bigStretchTapeTestHelper(i);
+		}
+		else ok = bigStretchTapeTestHelper(num);
+		System.out.println(name+" successful.");
+		return ok;
+	}
+	
+	/**Sets the machine in motion, then looks at how much the stretch increases beyond a certain point.*/
+	private boolean bigStretchTapeTestHelper(int num) {
 		int numDataPts = 20;
 		int startingPoint = 1000000;
 		int increment = 100000;
@@ -521,25 +538,39 @@ public class Tests {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("ERROR: "+name+" failed: "+e.getMessage());
+			System.out.println("ERROR: Big Stretch Tape Test failed: "+e.getMessage());
 			return false;
 		}
 		System.out.println("Machine #"+num+": "+Tools.toString(results));
 		System.out.println("Differences: "+Tools.toString(Tools.differences(results)));
-		System.out.println(name+" successful.");
 		return true;
 	}
 	
+	/**Tests for the functionality of tracking the periods when the machines are increasing the ranges of the StretchTapes.*/
 	public boolean bigStretchTapeTest2(int num) {
-		//Tests for the functionality of tracking the periods when the machines are increasing the ranges of the StretchTapes.
 		String name = "Big Stretch Tape Test 2";
 		System.out.println("\n"+name+" beginning.");
+		boolean ok = true;
+		if (num==0) {
+			for (int i=1; i<_machineList.size(); i++)
+				ok &= bigStretchTapeTest2Helper(i);
+		}
+		else {
+			ok = bigStretchTapeTest2Helper(num);
+		}
+		if (ok) System.out.println(name+" successful.");		
+		return ok;
+	}
+	
+	private boolean bigStretchTapeTest2Helper(int num) {
 		int startingPoint = 1000000;
 		int numSteps = 10000000;
 		int maxNumDataPts = 30;
 		Machine m=_machineList.get(num);
 		m.reset();
-		StretchTape t = new StretchTape(numSteps/1000);//risky
+		int tapeLen = numSteps/1650;
+		if (num==5||num==18) tapeLen*=3;
+		StretchTape t = new StretchTape(tapeLen);//risky
 		//old: /250, risky
 		List<Integer> starts = new ArrayList<Integer>();
 		List<Integer> stops = new ArrayList<Integer>();
@@ -561,24 +592,28 @@ public class Tests {
 				}
 				if (starts.size()>=maxNumDataPts) break;
 			}
-			System.out.println("Machine #"+num+":");
+			System.out.print("HNR#"+num+": ");
 			//System.out.println("Starts: "+starts);
 			//System.out.println("Stops: "+stops);
 			//System.out.println("Differences: "+Tools.differences(stops,starts));
-			System.out.println("Differences: "+Tools.differences(starts));
+			System.out.println(Tools.differences(starts));
+			if (t.getBorked()) System.out.println(""
+					+ "...but it is borked because it had to push left beyond index 0. "
+					+ "Try allocating more tape at the outset.");
+			
 		}
 		catch (Exception e) {
-			System.out.println("ERROR: "+name+" failed: "+e.getMessage());
+			System.out.println("ERROR: Big Stretch Tape Test 2 failed: "+e.getMessage());
 			return false;
 		}
-		System.out.println(name+" successful.");		
 		return true;
 	}
 	
 	public boolean allProvedTest(int num) {
+		boolean ok = true;
 		String name = "All proved test";
 		System.out.println("\n"+name+" beginning for num="+num);
-		boolean ok = true;
+		
 		if (num>0&&num<_machineList.size()) {
 			System.out.println("Looking for a loop for machine #"+num+":");
 			Machine m = _machineList.get(num);
@@ -598,6 +633,7 @@ public class Tests {
 			System.out.println("Invalid number "+num+" passed to allProvedTest(); should be from 0 to "+(_machineList.size()-1));
 			return false;
 		}
+		if (ok) System.out.println(name+" successful.");
 		return ok;
 	}
 	
@@ -633,6 +669,7 @@ public class Tests {
 			System.out.println("Invalid number "+num+" passed to allProvedTest(); should be from 0 to "+(_machineList.size()-1));
 			return false;
 		}
+		if (ok) System.out.println(name+" successful.");
 		return ok;		
 	}
 }

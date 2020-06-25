@@ -9,13 +9,13 @@ import javax.swing.JTextArea;
 public class CustomOutputStream extends OutputStream {
 	static final char UNIT_SEPARATOR = 31;
     private JTextArea textArea;
-    private JPanel panel;
-    private int numTicks;
+    //private JPanel panel;
+    //private int numTicks;
     
     public CustomOutputStream(JTextArea textArea, JPanel panel) {
         this.textArea = textArea;
-        this.panel = panel;
-        this.numTicks = 0;
+        //this.panel = panel;
+        //this.numTicks = 0;
     }
      
     @Override
@@ -30,6 +30,6 @@ public class CustomOutputStream extends OutputStream {
     		textArea.append(String.valueOf(c));
     		textArea.setCaretPosition(textArea.getDocument().getLength());
     	}
-    	this.numTicks++;
+    	//this.numTicks++;
     }
 }

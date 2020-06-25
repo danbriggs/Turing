@@ -10,7 +10,6 @@ public class Configuration extends Tape {
 	}
 	public Configuration(int[] tape, int index, int state) throws Exception {
 		if (index < -1 || index>tape.length) throw new Exception("Index "+index+" out of range for configuration of length "+tape.length);
-		if (index == -1 || index==tape.length) System.out.println("Warning: index "+index+" makes configuration of length "+tape.length+" dead"); 
 		setTape(tape);
 		setIndex(index);
 		setState(state);

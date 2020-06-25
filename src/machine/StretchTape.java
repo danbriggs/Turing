@@ -11,6 +11,7 @@ public class StretchTape implements TapeLike{
 	private int _min; //new
 	private int _max; //new
 	private boolean _justPushed; //new; about whether the tape just pushed itself beyond its bounds on the previous step
+	private boolean _borked;
 	public StretchTape() {
 		this(500);
 	}
@@ -19,7 +20,7 @@ public class StretchTape implements TapeLike{
 		_index = index;
 		_min = index; //new
 		_max = index; //new
-		
+		_borked = false;
 	}
 	public StretchTape(int[] tape) throws Exception {
 		this(tape,0);
@@ -42,12 +43,13 @@ public class StretchTape implements TapeLike{
 				_max=max;
 				break;
 			}
-		this.setIndex(index);
+		_index = index;
+		_borked = false;
 	}
 	public StretchTape(Integer[] tape, int index) throws Exception {
 		if (index < -1 || index>tape.length) throw new Exception("Index "+index+" out of range for stretch-tape of length "+tape.length);
 		this.setTape(tape);
-		this.setIndex(index);
+		_index = index;
 		int min;
 		for (min=0; min<tape.length; min++)
 			if (tape[min]!=0 || min==index) {
@@ -60,6 +62,7 @@ public class StretchTape implements TapeLike{
 				_max=max;
 				break;
 			}
+		_borked = false;
 	}
 	public StretchTape(String s) throws Exception {
 		int lengthOfTape = s.length();
@@ -83,6 +86,7 @@ public class StretchTape implements TapeLike{
 			else if (c=='1'||c=='i') _tape[i]=1;
 			else throw new Exception("Unrecognized character "+c+" at position "+i+" in string "+s);
 		}
+		_borked = false;
 	}
 	public int[] getTape() {return _tape;}
 	public int getIndex() {return _index;}
@@ -91,15 +95,17 @@ public class StretchTape implements TapeLike{
 	public int getRange() {return _max-_min;}
 	public boolean onLeft() {return _index==_min;}
 	public boolean onRight() {return _index==_max;}
-	private void setTape(int[] tape) {this._tape=tape;}
+	private void setTape(int[] tape) {this._tape=tape; _borked = true;}
 	private void setTape(Integer[] tape) {
 		_tape = new int[tape.length];
 		for (int i=0;i<tape.length;i++) _tape[i]=tape[i];
+		_borked = true;
 	}
 	public void setIndex(int index) throws Exception {
 		if (index<_min) throw new Exception("In StretchTape.setIndex(): index "+index+" < _min "+_min);
 		if (index>_max) throw new Exception("In StretchTape.setIndex(): index "+index+" > _max "+_max);
 		_index=index;
+		_borked = true;
 	}
 	public String toString() {
 		String s="";
@@ -132,6 +138,7 @@ public class StretchTape implements TapeLike{
 	public int getSymbol() {return _tape[_index];}
 	public void replace(int symbol) {_tape[_index]=symbol;}
 	public boolean getJustPushed() {return _justPushed;}
+	public boolean getBorked() {return _borked;}
 	public void go(int direction) throws Exception {
 		if (direction<0) {
 			_index--;
@@ -152,12 +159,13 @@ public class StretchTape implements TapeLike{
 	
 	private void pushLeft() {
 		int[] tape2 = new int[_tape.length+pushBlock];
-		for (int i=pushBlock; i<_tape.length; i++)
+		for (int i=pushBlock; i<tape2.length; i++)
 			tape2[i]=_tape[i-pushBlock];
 		_tape=tape2;
 		_index+=pushBlock;
 		_min+=pushBlock;
 		_max+=pushBlock;
+		_borked=true;
 	}
 	
 	private void pushRight() {

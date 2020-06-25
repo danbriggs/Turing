@@ -20,7 +20,8 @@ public class MyPanel extends JPanel {
 	JCheckBoxMenuItem leftEdge, rightEdge, stepNumbers;
 	boolean analytic;
 	
-	private JButton normalActionTest;
+	//private JButton normalActionTest;
+	private JButton longestRunTest;
 	private JButton yieldsTest;
 	private JButton termTest;
 	private JButton termfigurationTest;
@@ -32,6 +33,10 @@ public class MyPanel extends JPanel {
 	private JButton condensedConfigurationTest;
 	private JButton actTest1;
 	private JButton actTest2;
+	private JButton stretchTapeTest;
+	private JButton bigStretchTapeTest1;
+	private JButton bigStretchTapeTest2;
+	private JButton allProvedTest;
 	//private JCheckBox jcomp10;
 	//private JCheckBox jcomp11;
     private JLabel machineNoLabel;
@@ -141,7 +146,8 @@ public class MyPanel extends JPanel {
 		
 		menuBar.add(menu2);
 
-		normalActionTest = new JButton ("Normal Action Test");
+		//normalActionTest = new JButton ("Normal Action Test");
+		longestRunTest = new JButton ("Longest Run Test");
 		yieldsTest = new JButton ("Yields Test");
 		termTest = new JButton ("Term Test");
 		termfigurationTest = new JButton ("Termfiguration Test");
@@ -153,8 +159,11 @@ public class MyPanel extends JPanel {
 		condensedConfigurationTest = new JButton ("<html><center>Condensed<br>Configuration Test</html>");
 		actTest1 = new JButton ("Act Test 1");
 		actTest2 = new JButton ("Act Test 2");
-		//jcomp10 = new JCheckBox ("newCheckBox");
-		//jcomp11 = new JCheckBox ("newCheckBox");
+		stretchTapeTest = new JButton ("<html><center>Stretch Tape Test</html>");
+		bigStretchTapeTest1 = new JButton ("<html><center>Big Stretch Test 1</html>");
+		bigStretchTapeTest2 = new JButton ("<html><center>Big Stretch Test 2</html>");
+		allProvedTest = new JButton ("<html><center>All Proved Test</html>");
+
 		jcomp12 = new JTextArea (5, 5);
 		jcomp13 = new JScrollPane(jcomp12);
 		
@@ -170,7 +179,7 @@ public class MyPanel extends JPanel {
         run = new JButton("Run");
 
 		
-		normalActionTest.setToolTipText ("hi");
+		longestRunTest.setToolTipText ("hi");
 
 		//PrintStream standardOut = System.out;
 		//PrintStream standardErr = System.err;
@@ -188,7 +197,7 @@ public class MyPanel extends JPanel {
 		setLayout (null);		
 		
 		Font defaultFont = new Font("Arial", Font.PLAIN, (int)(.021*screenSize.height));
-		normalActionTest.setFont(defaultFont);
+		longestRunTest.setFont(defaultFont);
 		yieldsTest.setFont(defaultFont);
 		termTest.setFont(defaultFont);
 		termfigurationTest.setFont(defaultFont);
@@ -200,6 +209,11 @@ public class MyPanel extends JPanel {
 		condensedConfigurationTest.setFont(defaultFont);
 		actTest1.setFont(defaultFont);
 		actTest2.setFont(defaultFont);
+		stretchTapeTest.setFont(defaultFont);
+		bigStretchTapeTest1.setFont(defaultFont);
+		bigStretchTapeTest2.setFont(defaultFont);
+		allProvedTest.setFont(defaultFont);
+
 		run.setFont(defaultFont);
 		
 		jcomp12.setFont(new Font("Courier New",Font.PLAIN,12));
@@ -209,7 +223,7 @@ public class MyPanel extends JPanel {
 
 		//add components
 		add (menuBar);
-		add (normalActionTest);
+		add (longestRunTest);
 		add (yieldsTest);
 		add (termTest);
 		add (termfigurationTest);
@@ -221,9 +235,10 @@ public class MyPanel extends JPanel {
 		add (condensedConfigurationTest);
 		add (actTest1);
 		add (actTest2);
-		//add (jcomp10);
-		//add (jcomp11);
-		//add (jcomp12);
+		add (stretchTapeTest);
+		add (bigStretchTapeTest1);
+		add (bigStretchTapeTest2);
+		add (allProvedTest);
 		add (jcomp13);
 		add(machineNoLabel);
 		add(machineNoField);
@@ -248,8 +263,9 @@ public class MyPanel extends JPanel {
 		int scrollPaneHeight =(int)(.63*screenHeight);
 		int secondRow = (int)(y1+dy-.3*h);
 		int thirdRow = (int)(y1+2*dy-.3*h);
+		int fourthRow = (int)(y1+3*dy-.6*h);
 		//set component bounds (only needed by Absolute Positioning)
-		normalActionTest.setBounds (x1, y1, w, mediumh);
+		longestRunTest.setBounds (x1, y1, w, mediumh);
 		yieldsTest.setBounds (x1+dx, y1, w, mediumh);
 		termTest.setBounds (x1+2*dx, y1, w, mediumh);
 		lemmaAsStringTest.setBounds (x1+3*dx, y1, w, mediumh);
@@ -261,17 +277,20 @@ public class MyPanel extends JPanel {
 		condensedConfigurationTest.setBounds (x1, secondRow, w, h);
 		actTest1.setBounds (x1+2*dx, thirdRow, w, mediumh);
 		actTest2.setBounds (x1+3*dx, thirdRow, w, mediumh);
-		//jcomp10.setBounds (x1+4*dx, y1, w, h);
-		//jcomp11.setBounds (x1+4*dx, y1+dy, w, h);
+		stretchTapeTest.setBounds(x1+dx, fourthRow, w, mediumh);
+		bigStretchTapeTest1.setBounds(x1+2*dx, fourthRow, w, mediumh);
+		bigStretchTapeTest2.setBounds(x1+3*dx, fourthRow, w, mediumh);
+		allProvedTest.setBounds(x1, fourthRow, w, mediumh);
 		
-		jcomp13.setBounds (x1, y1+3*dy, scrollPaneWidth, scrollPaneHeight);
+		jcomp13.setBounds (x1, (int)(y1+4*dy-.9*h), scrollPaneWidth, scrollPaneHeight);
 		machineNoLabel.setBounds(x1+4*dx,y1,smallw,smallh);
 		machineNoField.setBounds(x1+4*dx,y1+smallh,smallw,smallh);
 		startStepLabel.setBounds(x1+4*dx,y1+2*smallh,smallw,smallh);
 		startStepField.setBounds(x1+4*dx,y1+3*smallh,smallw,smallh);
 		endStepLabel.setBounds(x1+4*dx,y1+4*smallh,smallw,smallh);
 		endStepField.setBounds(x1+4*dx,y1+5*smallh,smallw,smallh);
-		run.setBounds(x1+4*dx,y1+7*smallh,smallw,(int)(1.5*h));
+		int runY = y1+7*smallh;
+		run.setBounds(x1+4*dx,runY,smallw,fourthRow+mediumh-runY);
 		
 		menuItems[0].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
@@ -305,11 +324,11 @@ public class MyPanel extends JPanel {
 			analytic = false;}});
 		analyticRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			analytic = true;}});
-		normalActionTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+		longestRunTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
 			int start = Integer.parseInt(startStepField.getText());
 			int stop = Integer.parseInt(endStepField.getText());
-			tests.normalActionTest(num, start, stop);}});
+			tests.longestRunTest(num, start, stop);}});
 		yieldsTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
 			int start = Integer.parseInt(startStepField.getText());
@@ -335,6 +354,18 @@ public class MyPanel extends JPanel {
 			tests.actTest1();}});
 		actTest2.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			tests.actTest2();}});
+		stretchTapeTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			int num = Integer.parseInt(machineNoField.getText());
+			tests.stretchTapeTest(num);}});
+		bigStretchTapeTest1.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			int num = Integer.parseInt(machineNoField.getText());
+			tests.bigStretchTapeTest(num);}});
+		bigStretchTapeTest2.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			int num = Integer.parseInt(machineNoField.getText());
+			tests.bigStretchTapeTest2(num);}});
+		allProvedTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			int num = Integer.parseInt(machineNoField.getText());
+			tests.allProvedTest(num);}});
 		run.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
