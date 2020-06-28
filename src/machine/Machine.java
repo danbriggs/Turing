@@ -52,8 +52,8 @@ public class Machine {
 	public void reset() {_state=0;}
 	public void actOnConfig(Configuration c) throws Exception {
 		if (!c.isAlive()) {
-			if (c.getState()==-1) throw new Exception("Error: configuration is in halt state");
-			else throw new Exception ("Error: index "+c.getIndex()+" makes configuration of length "+c.getTape().length+" dead");
+			if (c.getState()==-1) throw new Exception("Configuration is in halt state");
+			else throw new ConfigurationBoundsException ("Index "+c.getIndex()+" makes configuration of length "+c.getTape().length+" dead");
 		}
 		int stateHolder = _state;
 		_state = c.getState();

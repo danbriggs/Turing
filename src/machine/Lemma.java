@@ -92,9 +92,9 @@ public class Lemma {
 		//At the moment, I'll be addressing only those cases where either
 		//(1) the tape head starts at the left and leaves off the right side, or
 		//(2) the tape head starts at the right and leaves off the left side.
-		int lca = a.getExponent()[1];
-		int lcb = b.getExponent()[1];
-		int lcn = numSteps[1];		
+		int lca = a.getExponent()[1]; //linear coefficient of a's exponent
+		int lcb = b.getExponent()[1]; //linear coefficient of b's exponent
+		int lcn = numSteps[1]; //linear coefficient of numSteps' exponent
 		if (Tools.equal(a.getIndex(),new int[] {0})) {
 			if (!Tools.equal(b.getIndex(), Tools.multiply(b.getBase().length,b.getExponent())))
 				throw new Exception("Since a is on the left, I can only test for b leaving from right side. Sorry");
@@ -107,11 +107,22 @@ public class Lemma {
 			//results in b's base repeated lcb times with tape head off the right end and in that same beginning state.
 			Configuration cr = new Configuration(Tools.iterate(a.getBase(),lca), 0, b.getState());
 			Configuration br = new Configuration(Tools.iterate(b.getBase(),lcb),a.getBase().length*lca, b.getState());
-			if (m.yields(cr, br, lcn)) {
-				//The induction has passed!
-				_proved = true;
-				return true;
+			try {
+				if (m.yields(cr, br, lcn)) {
+					//The induction has passed!
+					_proved = true;
+					return true;
+				}
 			}
+			catch (ConfigurationBoundsException e) {
+				throw e;
+				//TODO: code for cl, bl
+			}
+			//Now, what do we do if the machine had to retrace steps not in the swath of the given iteration?
+			//(First, note that a lemma of this form can only be true if n=minFora makes a's exponent strictly *positive*.)
+			//In this case, yields() will have thrown a "configuration dead" exception since m was trying to act outside cr's bounds.
+			//Hopefully, writing code for both the left-split and the right-split technique
+			//will have addressed this here and in the "else if" clause...
 		}
 		else if (Tools.equal(b.getIndex(),new int[] {-1})) {
 			if (!Tools.equal(a.getIndex(),a.lastBit()))

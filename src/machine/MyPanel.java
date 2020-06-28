@@ -259,11 +259,12 @@ public class MyPanel extends JPanel {
 		int mediumh = (int)(h*.7);
 		int smallw=(int)(0.1426*screenWidth);
 		int smallh=(int)(0.0212*screenHeight);
-		int scrollPaneWidth = (int)(.903*screenWidth);
-		int scrollPaneHeight =(int)(.63*screenHeight);
 		int secondRow = (int)(y1+dy-.3*h);
 		int thirdRow = (int)(y1+2*dy-.3*h);
 		int fourthRow = (int)(y1+3*dy-.6*h);
+		int fifthRow = (int)(y1+4*dy-.9*h);
+		int scrollPaneWidth = (int)(.903*screenWidth);
+		int scrollPaneHeight = screenHeight - fifthRow;
 		//set component bounds (only needed by Absolute Positioning)
 		longestRunTest.setBounds (x1, y1, w, mediumh);
 		yieldsTest.setBounds (x1+dx, y1, w, mediumh);
@@ -282,7 +283,7 @@ public class MyPanel extends JPanel {
 		bigStretchTapeTest2.setBounds(x1+3*dx, fourthRow, w, mediumh);
 		allProvedTest.setBounds(x1, fourthRow, w, mediumh);
 		
-		jcomp13.setBounds (x1, (int)(y1+4*dy-.9*h), scrollPaneWidth, scrollPaneHeight);
+		jcomp13.setBounds (x1, fifthRow, scrollPaneWidth, scrollPaneHeight);
 		machineNoLabel.setBounds(x1+4*dx,y1,smallw,smallh);
 		machineNoField.setBounds(x1+4*dx,y1+smallh,smallw,smallh);
 		startStepLabel.setBounds(x1+4*dx,y1+2*smallh,smallw,smallh);

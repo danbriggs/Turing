@@ -327,6 +327,7 @@ public class Acceleration {
 		}
 		catch(Exception e) {System.out.println("Error in bestPattern: "+e.getMessage()); return null;}
 	}
+	
 	/**Attempts to formulate and prove a Lemma about the action of m based on the patternArray passed in.
 	 * See the return value of bestPattern() for the format and contents that patternArray should have.*/
 	public static Lemma guessLemma(Machine m, int[][] patternArray) {
@@ -356,8 +357,10 @@ public class Acceleration {
 		System.out.println(startStep+" "+Tools.asLetter(m.getState())+" "+t1);
 		int minIndex = t1.getIndex();
 		int maxIndex = t1.getIndex();
-		TapeLike t2 = new StretchTape(t1);
+		StretchTape t2 = new StretchTape(t1); //t2 for using now, t1 for using later in the code
+		StretchTape t3 = new StretchTape(t1); //t3 for using much later in the code
 		Machine mm = new Machine(m); //For remembering what state m was in
+		Machine m3 = new Machine(m); //Idem.
 		int[] numVisits = new int[t2.getTape().length];
 		//We'll keep track of how many times a given bit was visited.
 		//This could clearly be done with less memory, but I don't want to generate indexing errors.
@@ -382,28 +385,12 @@ public class Acceleration {
 		//That's how we write the Lemma.
 		int targetIndex = minIndex;
 		if (displacement < 0) targetIndex = maxIndex;
-		int beginState = -2; //so that errors can be thrown if beginState is never set
-		Termfiguration a = null;
-		Termfiguration b = null;
 		boolean foundIndex = false;
 		boolean foundSingletons = false;
 		//Whether it found two tape head positions that only occur once each, spaced termLength away from each other
 		for (int i=startStep; i<endStep; i++) {
 			if (t1.getIndex()==targetIndex) foundIndex = true;
 			if (foundIndex && numVisits[t1.getIndex()]==1 && numVisits[t1.getIndex()+termLength]==1){
-				targetIndex = t1.getIndex();
-				beginState = mm.getState();
-				int[] bitSeq = null;
-				if (displacement > 0) bitSeq = Arrays.copyOfRange(t1.getTape(), targetIndex, targetIndex+termLength);
-				if (displacement < 0) bitSeq = Arrays.copyOfRange(t1.getTape(), targetIndex+termLength+1, targetIndex+1);
-				//Remember termLength is signed, with same sign as displacement
-				int[] beginLeftIndexArr = {0, 0};
-				int[] beginRightIndexArr =  {-1, Math.abs(termLength)};
-				int[] beginIndexArr = beginLeftIndexArr;
-				if (displacement < 0) beginIndexArr = beginRightIndexArr;
-				a = new Termfiguration(bitSeq, new int[] {0,1}, beginIndexArr, beginState);
-				System.out.println("Begin Termfiguration as string:");
-				System.out.println(a);
 				foundSingletons = true;
 				break;
 			}
@@ -413,10 +400,41 @@ public class Acceleration {
 		if (!foundIndex) {System.out.println("Could not find index in guessLemma()"); return null;}
 		if (!foundSingletons) {
 			System.out.println("Could not find two positions with a displacement of "+termLength+" visited only once in the swath");
-			return null;}
+			//In this case, we will try using every position over the course of skip steps as the starting point for the Lemma.
+			//We can use m3 and t3, since they are still in the original state.
+			//TODO: make this method waste less memory copying tapes
+			StretchTape t4 = new StretchTape(t3); //We'll use t3 for saving, t4 for using
+			Machine m4 = new Machine(m3); //same
+			for (int i=0; i<bestSkip; i++) {
+				Lemma trialLem = guessLemmaHelper(m4,t4,termLength,bestSkip);
+				if (trialLem!=null) return trialLem;
+				try {m3.act(t3);}
+				catch (Exception e) {System.out.println("Error 4 in guessLemma()."); return null;}
+				t4 = new StretchTape(t3);
+				m4 = new Machine(m3);
+			}
+			return null;
+		}
+		return guessLemmaHelper(mm, t1, termLength, bestSkip);
+	}
+	
+	public static Lemma guessLemmaHelper(Machine mm, TapeLike t1, int termLength, int bestSkip) {
+		int targetIndex = t1.getIndex();
+		int beginState = mm.getState();
+		int[] bitSeq = null;
+		if (termLength > 0) bitSeq = Arrays.copyOfRange(t1.getTape(), targetIndex, targetIndex+termLength);
+		if (termLength < 0) bitSeq = Arrays.copyOfRange(t1.getTape(), targetIndex+termLength+1, targetIndex+1);
+		//Remember termLength is signed, with same sign as displacement
+		int[] beginLeftIndexArr = {0, 0};
+		int[] beginRightIndexArr =  {-1, Math.abs(termLength)};
+		int[] beginIndexArr = beginLeftIndexArr;
+		if (termLength < 0) beginIndexArr = beginRightIndexArr;
+		Termfiguration a = new Termfiguration(bitSeq, new int[] {0,1}, beginIndexArr, beginState);
+		System.out.println("Begin Termfiguration as string:");
+		System.out.println(a);
 		for (int i = 0; i < bestSkip; i++) {
 			try {mm.act(t1);}
-			catch (Exception e) {System.out.println("Error 4 in guessLemma()."); return null;}
+			catch (Exception e) {System.out.println("Error in guessLemmaHelper()."); return null;}
 		}
 		//Now we should verify that the tape head did indeed move by the signed termLength in that number of steps.
 		if (targetIndex+termLength!=t1.getIndex()) {
@@ -426,19 +444,20 @@ public class Acceleration {
 		}
 		int endState = mm.getState();
 		int[] bitSeq2 = null;
-		if (displacement > 0) bitSeq2 = Arrays.copyOfRange(t1.getTape(), targetIndex, targetIndex+termLength);
-		if (displacement < 0) bitSeq2 = Arrays.copyOfRange(t1.getTape(), targetIndex+termLength+1, targetIndex+1);
+		if (termLength > 0) bitSeq2 = Arrays.copyOfRange(t1.getTape(), targetIndex, targetIndex+termLength);
+		if (termLength < 0) bitSeq2 = Arrays.copyOfRange(t1.getTape(), targetIndex+termLength+1, targetIndex+1);
 		//Remember termLength is signed, with same sign as displacement
 		int[] endForwardIndexArr = {0, termLength};
 		int[] endBackwardIndexArr =  {-1, 0};
 		int[] endIndexArr = endForwardIndexArr;
-		if (displacement < 0) endIndexArr = endBackwardIndexArr;
-		b = new Termfiguration(bitSeq2, new int[] {0,1}, endIndexArr, endState);
+		if (termLength < 0) endIndexArr = endBackwardIndexArr;
+		Termfiguration b = new Termfiguration(bitSeq2, new int[] {0,1}, endIndexArr, endState);
 		System.out.println("End Termfiguration as string:");
 		System.out.println(b);
 		Lemma lem = null;
-		try {lem = new Lemma(m, a, b, new int[] {0, bestSkip});}
+		try {lem = new Lemma(mm, a, b, new int[] {0, bestSkip});}
 		catch (Exception e) {System.out.println("In guessLemma(), error initializing Lemma: "+e.getMessage());}
-		return lem;
+		if (lem.isProved()) return lem;
+		return null;
 	}
 }
