@@ -169,13 +169,13 @@ public class MyPanel extends JPanel {
 		
         machineNoLabel = new JLabel ("Machine #(1-43; 0 for all)");
         machineNoField = new JTextField (5);
-        machineNoField.setText("1");
+        machineNoField.setText("25");
         startStepLabel = new JLabel ("Start Step");
         startStepField = new JTextField (5);
-        startStepField.setText("4586");
+        startStepField.setText("0");
         endStepLabel = new JLabel ("End Step");
         endStepField = new JTextField (5);
-        endStepField.setText("4815");
+        endStepField.setText("100000");
         run = new JButton("Run");
 
 		

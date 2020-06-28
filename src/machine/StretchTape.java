@@ -22,6 +22,14 @@ public class StretchTape implements TapeLike{
 		_max = index; //new
 		_borked = false;
 	}
+	public StretchTape(StretchTape t) {
+		_tape = t.getTape().clone();
+		_index = t.getIndex();
+		_min = t.getMin();
+		_max = t.getMax();
+		_justPushed = t.getJustPushed();
+		_borked = t.getBorked();
+	}
 	public StretchTape(int[] tape) throws Exception {
 		this(tape,0);
 	}

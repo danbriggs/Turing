@@ -41,7 +41,11 @@ public class Lemma {
 			return; //TODO: for consts
 		}
 		if (numSteps.length==2) {
-			linearInduction(m, a, b, numSteps);
+			try {linearInduction(m, a, b, numSteps);}
+			catch (Exception e) {
+				System.out.println("Linear induction exception: "+e.getMessage());
+				System.out.println("Perhaps the lemma is not true?");
+			}
 		}
 	}
 	private boolean linearInduction(Machine m, Termfiguration a, Termfiguration b, int[] numSteps) throws Exception {

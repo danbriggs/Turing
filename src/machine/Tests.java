@@ -641,36 +641,36 @@ public class Tests {
 		String name = "Longest run test";
 		System.out.println("\n"+name+" beginning for num="+num);
 		boolean ok = true;
-		int[] ret;
-		if (num>0&&num<_machineList.size()) {
-			System.out.println("Looking for the longest run from "+start+" to "+stop+" for machine #"+num+":");
-			Machine m = _machineList.get(num);
-			ret = Acceleration.longestRun(m, start, stop, -1);
-			System.out.println("The longest left run started at "+ret[0]+" and was of length "+ret[1]);
-			ret = Acceleration.longestRun(m, start, stop, 1);
-			System.out.println("The longest right run started at "+ret[0]+" and was of length "+ret[1]);
-			ret = Acceleration.longestRun(m, start, stop, 0);
-			System.out.println("The longest run started at "+ret[0]+" and was of length "+ret[1]);
-		}
-		else if (num==0) {
-			System.out.println("Looking for the longest run from "+start+" to "+stop+" for all machines.");
-			for (int i=1; i<_machineList.size(); i++) {
-				System.out.println("Machine #"+i+":");
-				Machine m = _machineList.get(i);
-				ret = Acceleration.longestRun(m, start, stop, -1);
-				System.out.println("The longest left run started at "+ret[0]+" and was of length "+ret[1]);
-				ret = Acceleration.longestRun(m, start, stop, 1);
-				System.out.println("The longest right run started at "+ret[0]+" and was of length "+ret[1]);
-				ret = Acceleration.longestRun(m, start, stop, 0);
-				System.out.println("The longest run started at "+ret[0]+" and was of length "+ret[1]);
-			}
-		}
+		if (num==0) for (int i=1; i<_machineList.size(); i++) ok &= longestRunTestHelper (i, start, stop);
+		else if (num>0&&num<_machineList.size()) ok = longestRunTestHelper (num, start, stop);
 		else {
 			System.out.println("Invalid number "+num+" passed to allProvedTest(); should be from 0 to "+(_machineList.size()-1));
-			return false;
+			ok = false;
 		}
 		if (ok) System.out.println(name+" successful.");
-		return ok;		
+		else System.out.println(name+" failed.");
+		return ok;
+	}
+	
+	public boolean longestRunTestHelper(int num, int start, int stop) {
+		System.out.println("Looking for the longest run from "+start+" to "+stop+" for machine #"+num+":");
+		Machine m = _machineList.get(num);
+		int[] ret;
+		ret = Acceleration.longestRun(m, start, stop, -1);
+		System.out.println("The longest left run started at "+ret[0]+" and was of length "+ret[1]);
+		Acceleration.runPattern(m,ret[0],ret[0]+ret[1]);
+		ret = Acceleration.longestRun(m, start, stop, 1);
+		System.out.println("The longest right run started at "+ret[0]+" and was of length "+ret[1]);
+		Acceleration.runPattern(m,ret[0],ret[0]+ret[1]);
+		ret = Acceleration.longestRun(m, start, stop, 0);
+		System.out.println("The longest run started at "+ret[0]+" and was of length "+ret[1]);
+		int[][] patternArray = Acceleration.bestPattern(m, start, stop, 30);
+		if (patternArray == null) return false;
+		Lemma lem = Acceleration.guessLemma(m, patternArray);
+		if (lem == null) return false;
+		if (lem.isProved()) System.out.println("The Lemma was proved!");
+		else System.out.println("The Lemma was not proved.");
+		return true;
 	}
 }
 

@@ -158,12 +158,23 @@ public class Tools {
 		return '?';
 	}
 	public static String matrixToString(int[][] mat) {
+		return matrixToString(mat, false);
+	}
+	public static String matrixToString(int[][] mat, boolean inverted) {
 		String s="";
+		if (inverted)
+			for (int j=0; j<mat[0].length; j++) {
+				for (int i=0; i<mat.length; i++) {
+					s+=mat[i][j]+"\t";
+				}
+				s+='\n';
+			}			
+		else
 		for (int i=0; i<mat.length; i++) {
 			for (int j=0; j<mat[i].length; j++) {
-				s+=mat[i][j]+" ";
+				s+=mat[i][j]+"\t";
 			}
-			s+='\t';
+			s+='\n';
 		}
 		return s;
 	}

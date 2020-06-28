@@ -13,6 +13,14 @@ public class Tape implements TapeLike{
 	public Tape(Integer[] tape) throws Exception {
 		this(tape,0);
 	}
+	public Tape(int runLength) {
+		if (runLength<0) {
+			System.out.println("Cannot create Tape for run of length "+runLength+"<0");
+			return;
+		}
+		this.setTape(new int[2*runLength+1]);
+		this.setIndex(runLength);
+	}
 	public Tape(int[] tape, int index) throws Exception {
 		if (index < -1 || index>tape.length) throw new Exception("Index "+index+" out of range for tape of length "+tape.length);
 		this.setTape(tape);

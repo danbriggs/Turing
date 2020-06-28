@@ -89,6 +89,7 @@ public class Machine {
 		for (int i=0; i<_transitions.length; i++) sb.append(Tools.asLetter(i)+": "+_transitions[i].toString()+'\n');
 		return sb.toString();
 	}
+	/**Machines do *not* have to be in the same state to be equal.*/
 	public boolean equals(Machine m) {
 		int n = numStates();
 		if (m.numStates()!=n) return false;

@@ -1,6 +1,7 @@
 package machine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -234,5 +235,210 @@ public class Acceleration {
 		} catch (Exception e) {e.printStackTrace(); return new int[] {0,0};}
 	}
 	
+	/**Meant to be called on a Machine m that goes in one direction from step lower_bound to step upper_bound.
+	 * Finds the lowest positive number n <= 10 such that m has a run of length
+	 * a multiple of n that is at least half of (upper_bound - lower_bound)
+	 * in which state & bit repeat perfectly every n steps.
+	 * Returns an array of triples: state, bit, direction.
+	 * Returns null if no such pattern is found. * */
+	public static int[][] runPattern(Machine m, int lower_bound, int upper_bound) {
+		m.reset();
+		int swath = upper_bound-lower_bound;
+		int[] theStates = new int[swath];
+		int[] theBits = new int[swath];
+		int[] theDirections = new int[swath];
+		Tape t = new Tape(upper_bound);
+		try {
+			for (int i=0; i<lower_bound; i++) m.act(t);
+			for (int i=0; i<swath; i++) {
+				theStates[i] = m.getState();
+				theBits[i] = t.getSymbol();
+				theDirections[i] = m.getTransitions()[theStates[i]].getToGo(theBits[i]);
+				int theWay = theDirections[0];
+				if (theDirections[i]!=theWay) {
+					System.out.println("Error in runPattern: Machine not in direction "+theWay
+							+ "at step "+(lower_bound+i)+" in range ["+lower_bound+", "+upper_bound+"]");
+					return null;
+				}
+				m.act(t);
+			}
+			for (int skip = 10; skip >= 1; skip--) {
+				System.out.print("Calculating the number of perfect matches with skip "+skip+": ");
+				int numMatches = 0;
+				for (int i=0; i<swath-skip; i++) {
+					if (theStates[i]==theStates[i+skip]&&theBits[i]==theBits[i+skip]&&theDirections[i]==theDirections[i+skip])
+						numMatches++;
+				}
+				System.out.println("there are "+numMatches+" matches.");
+			}
+		}
+		catch(Exception e) {System.out.println("Error in runPattern: "+e.getMessage()); return null;}
+		return null;
+	}
 
+	/**Finds for each n less than maxPatternLength
+	 * the longest subsequence from lower_bound to upper_bound steps
+	 * in which state & bit repeat perfectly every n steps.
+	 * Returns an array of arrays of length 3
+	 * which have at index n >= 1:
+	 * • max number of repetitions,
+	 * • last step at which the situation is still identical n steps later,
+	 * • tape head displacement.* */
+	public static int[][] bestPattern(Machine m, int lower_bound, int upper_bound, int maxPatternLength) {
+		m.reset();
+		int swath = upper_bound-lower_bound;
+		int[] theStates = new int[swath];
+		int[] theBits = new int[swath];	
+		int[] theTapeHead = new int[swath];
+		Tape t = new Tape(upper_bound);
+		try {
+			for (int i=0; i<lower_bound; i++) m.act(t);
+			for (int i=0; i<swath; i++) {
+				theStates[i] = m.getState();
+				theBits[i] = t.getSymbol();
+				theTapeHead[i] = t.getIndex();
+				m.act(t);
+			}
+			int[][] results = new int[maxPatternLength][3];
+			//will have at each index other than 0
+			//an array consisting of bestNumMatches and at.
+			for (int skip = 1; skip < maxPatternLength; skip++) {
+				System.out.print("Finding the best run of perfect matches with skip "+skip+": ");
+				int numMatches = 0;
+				int bestNumMatches = 0;
+				int at = -1;
+				for (int i=0; i<swath-skip; i++) {
+					if (theStates[i]==theStates[i+skip]&&theBits[i]==theBits[i+skip]) {
+						numMatches++;
+						if (numMatches>bestNumMatches) {
+							bestNumMatches = numMatches;
+							at = lower_bound+i;
+						}
+					}
+					else numMatches = 0;
+				}
+				results[skip][0] = bestNumMatches;
+				results[skip][1] = at;
+				if (at>=bestNumMatches) results[skip][2] = theTapeHead[at]-theTapeHead[at-bestNumMatches];
+				System.out.println("there are "+bestNumMatches+" matches at " + at);
+			}
+			System.out.println(Tools.matrixToString(results, true));
+			return results;
+		}
+		catch(Exception e) {System.out.println("Error in bestPattern: "+e.getMessage()); return null;}
+	}
+	/**Attempts to formulate and prove a Lemma about the action of m based on the patternArray passed in.
+	 * See the return value of bestPattern() for the format and contents that patternArray should have.*/
+	public static Lemma guessLemma(Machine m, int[][] patternArray) {
+		int bestSkip = 0;
+		int bestSwath = 0;
+		for (int i=1; i<patternArray.length; i++) {
+			int currSwath = patternArray[i][0];
+			if (currSwath > bestSwath) {
+				bestSkip = i;
+				bestSwath = currSwath;
+			}
+		}
+		int endStep = patternArray[bestSkip][1];
+		int displacement = patternArray[bestSkip][2];
+		System.out.println("The best skip was "+bestSkip+" with "+bestSwath+" repetitions ending at step "+endStep+" after a displacement of "+displacement+".");
+		float approxTermLength = (float)displacement/bestSwath*bestSkip;
+		int termLength = Math.round(approxTermLength);
+		System.out.println("The signed term length seems to be "+approxTermLength+", so I'm going to guess it's "+termLength+".");
+		StretchTape t1 = new StretchTape(endStep);
+		int startStep = endStep - bestSwath + 1;
+		m.reset();
+		for (int i=0; i<startStep; i++) {
+			try {m.act(t1);}
+			catch (Exception e) {System.out.println("Error 1 in guessLemma()."); return null;}
+		}
+		System.out.println("Tape at start step, then at end step: ");
+		System.out.println(startStep+" "+Tools.asLetter(m.getState())+" "+t1);
+		int minIndex = t1.getIndex();
+		int maxIndex = t1.getIndex();
+		TapeLike t2 = new StretchTape(t1);
+		Machine mm = new Machine(m); //For remembering what state m was in
+		int[] numVisits = new int[t2.getTape().length];
+		//We'll keep track of how many times a given bit was visited.
+		//This could clearly be done with less memory, but I don't want to generate indexing errors.
+		//A given index will be considered useful to start with only if it and its equivalent skip steps ahead are visited exactly once.
+		//Later, I'll incorporate preamble/epilogue bit sequences in order to be able to generate lemmas when this condition cannot be met.
+		for (int i=startStep; i<endStep; i++) {
+			numVisits[t2.getIndex()]++;
+			try {m.act(t2);}
+			catch (Exception e) {System.out.println("Error 2 in guessLemma()."); return null;}
+			int index = t2.getIndex();
+			if (index > maxIndex) maxIndex = index;
+			if (index < minIndex) minIndex = index;
+		}
+		System.out.println(endStep+" "+Tools.asLetter(m.getState())+" "+t2);
+		//Now, we need to be careful to write the Lemma in such a way that
+		//the tape head does not exceed the bounds of the Term
+		//as it goes from one end to the other.
+		//
+		//For leftward displacements, we should compare the last |termLength| bits of t1 and t2, ending at maxIndex;
+		//for rightward displacements, we should compare the first |termLength| bits of t1 and t2, beginning at minIndex.
+		//for both, we use the state of the machine when it got there and the state it was in after skip steps.
+		//That's how we write the Lemma.
+		int targetIndex = minIndex;
+		if (displacement < 0) targetIndex = maxIndex;
+		int beginState = -2; //so that errors can be thrown if beginState is never set
+		Termfiguration a = null;
+		Termfiguration b = null;
+		boolean foundIndex = false;
+		boolean foundSingletons = false;
+		//Whether it found two tape head positions that only occur once each, spaced termLength away from each other
+		for (int i=startStep; i<endStep; i++) {
+			if (t1.getIndex()==targetIndex) foundIndex = true;
+			if (foundIndex && numVisits[t1.getIndex()]==1 && numVisits[t1.getIndex()+termLength]==1){
+				targetIndex = t1.getIndex();
+				beginState = mm.getState();
+				int[] bitSeq = null;
+				if (displacement > 0) bitSeq = Arrays.copyOfRange(t1.getTape(), targetIndex, targetIndex+termLength);
+				if (displacement < 0) bitSeq = Arrays.copyOfRange(t1.getTape(), targetIndex+termLength+1, targetIndex+1);
+				//Remember termLength is signed, with same sign as displacement
+				int[] beginLeftIndexArr = {0, 0};
+				int[] beginRightIndexArr =  {-1, Math.abs(termLength)};
+				int[] beginIndexArr = beginLeftIndexArr;
+				if (displacement < 0) beginIndexArr = beginRightIndexArr;
+				a = new Termfiguration(bitSeq, new int[] {0,1}, beginIndexArr, beginState);
+				System.out.println("Begin Termfiguration as string:");
+				System.out.println(a);
+				foundSingletons = true;
+				break;
+			}
+			try {mm.act(t1);}
+			catch (Exception e) {System.out.println("Error 3 in guessLemma()."); return null;}
+		}
+		if (!foundIndex) {System.out.println("Could not find index in guessLemma()"); return null;}
+		if (!foundSingletons) {
+			System.out.println("Could not find two positions with a displacement of "+termLength+" visited only once in the swath");
+			return null;}
+		for (int i = 0; i < bestSkip; i++) {
+			try {mm.act(t1);}
+			catch (Exception e) {System.out.println("Error 4 in guessLemma()."); return null;}
+		}
+		//Now we should verify that the tape head did indeed move by the signed termLength in that number of steps.
+		if (targetIndex+termLength!=t1.getIndex()) {
+			System.out.println("In guessLemma(), the tape head did not move the expected number of steps:");
+			System.out.println("targetIndex = "+targetIndex+", termLength = "+termLength+", t1.getIndex() = "+t1.getIndex());
+			return null;
+		}
+		int endState = mm.getState();
+		int[] bitSeq2 = null;
+		if (displacement > 0) bitSeq2 = Arrays.copyOfRange(t1.getTape(), targetIndex, targetIndex+termLength);
+		if (displacement < 0) bitSeq2 = Arrays.copyOfRange(t1.getTape(), targetIndex+termLength+1, targetIndex+1);
+		//Remember termLength is signed, with same sign as displacement
+		int[] endForwardIndexArr = {0, termLength};
+		int[] endBackwardIndexArr =  {-1, 0};
+		int[] endIndexArr = endForwardIndexArr;
+		if (displacement < 0) endIndexArr = endBackwardIndexArr;
+		b = new Termfiguration(bitSeq2, new int[] {0,1}, endIndexArr, endState);
+		System.out.println("End Termfiguration as string:");
+		System.out.println(b);
+		Lemma lem = null;
+		try {lem = new Lemma(m, a, b, new int[] {0, bestSkip});}
+		catch (Exception e) {System.out.println("In guessLemma(), error initializing Lemma: "+e.getMessage());}
+		return lem;
+	}
 }
