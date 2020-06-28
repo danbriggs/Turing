@@ -7,16 +7,16 @@ public class Lemma {
 	//-1 for Lemmas concerning a tape head starting at the leftmost bit of a Termfiguration,
 	//+1 for Lemmas concerning a tape head starting at the rightmost bit, and 0 otherwise.
 	private Machine _m;
-	private Termfiguration _a; //source
-	private Termfiguration _b; //target
+	private TermfigurationLike _a; //source
+	private TermfigurationLike _b; //target
 	private int[] _numSteps;
 	
 	public boolean isProved() {return _proved;}
 	public boolean isDisproved() {return _disproved;}
 	public int getHandedness() {return _handedness;}
 	public Machine getMachine() {return _m;}
-	public Termfiguration getSource() {return _a;}
-	public Termfiguration getTarget() {return _b;}
+	public TermfigurationLike getSource() {return _a;}
+	public TermfigurationLike getTarget() {return _b;}
 	public int[] getNumSteps() {return _numSteps;}
 	
 	private Lemma() {
@@ -47,6 +47,10 @@ public class Lemma {
 				System.out.println("Perhaps the lemma is not true?");
 			}
 		}
+	}
+	public Lemma(Machine m, TermfigurationSequence a, TermfigurationSequence b, int[] numSteps) throws Exception {
+		this();
+		
 	}
 	private boolean linearInduction(Machine m, Termfiguration a, Termfiguration b, int[] numSteps) throws Exception {
 		if (a.getExponent().length!=2)

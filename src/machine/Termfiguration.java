@@ -1,6 +1,6 @@
 package machine;
 
-public class Termfiguration {
+public class Termfiguration implements TermfigurationLike {
 	//Represents a term with a fixed sequence of bits as base and polynomial expression in a single variable n as exponent.
 	//This notation represents the base being repeated a given expression number of times.
 	private int[] _base;
@@ -19,6 +19,25 @@ public class Termfiguration {
 		_index = index;
 		_state = state;
 		_ornamented = true;		
+	}
+	public void deOrnament() {
+		if (_ornamented == false) System.out.println("Error: attempt to deornament unornamented Termfiguration");
+		_ornamented = false;
+	}
+	
+	public void enterFromSideWithState(int d, int s) {
+		if (_ornamented == true) System.out.println("Error: attempt to move into ornamented Termfiguration");
+		if (d>0) {
+			_ornamented = true;
+			_index = lastBit();
+			_state = s;
+		}
+		else if (d<0) {
+			_ornamented = true;
+			_index = new int[]{0,0};
+			_state = s;
+		}
+		else System.out.println("Error: attempt to enter into Termfiguration using direction 0.");
 	}
 	public boolean isOrnamented() {return _ornamented;}
 	public int[] getBase() {return _base;}
@@ -71,11 +90,15 @@ public class Termfiguration {
 		if (!_ornamented) return new Termfiguration(_base, exponent);
 		return new Termfiguration(_base,exponent,index,_state);
 	}
+	public int[] length() {
+		return Tools.multiply(getBase().length, getExponent());
+	}
+	
 	public int[] lastBit() {
 		//Returns the index of the last bit
 		//as an array consisting of
 		//the coefficients of a polynomial in n
 		//in rising order of degree.
-		return Tools.add(Tools.multiply(getBase().length,getExponent()),new int[] {-1});
+		return Tools.add(length(),new int[] {-1});
 	}
 }

@@ -107,8 +107,6 @@ public class Tools {
 		//Both are given in rising order of degree.
 		int[] aTrim = trimEnd(a);
 		int[] bTrim = trimEnd(b);
-		if (aTrim==null && bTrim==null) return true;
-		if (aTrim==null || bTrim==null) return false;
 		if (aTrim.length!=bTrim.length) return false;
 		for (int i=0; i<aTrim.length; i++) if (aTrim[i]!=bTrim[i]) return false;
 		return true;
@@ -121,8 +119,8 @@ public class Tools {
 	public static int[] trimEnd(int[] arr) {
 		int lastNonzeroIndex = arr.length-1;
 		while (lastNonzeroIndex>=0 && arr[lastNonzeroIndex]==0) lastNonzeroIndex--;
-		if (lastNonzeroIndex<0) return null;
 		int[] retVal = new int[lastNonzeroIndex+1];
+		//retVal is thus length 0 when arr is any zero array
 		for (int i=0; i<=lastNonzeroIndex; i++) retVal[i]=arr[i];
 		return retVal;
 	}

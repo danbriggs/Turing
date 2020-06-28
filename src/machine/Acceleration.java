@@ -27,13 +27,14 @@ public class Acceleration {
 				int matchIndex = pair[0];
 				int nToUse = pair[1];
 				Lemma lemmaToUse = lemlist.getLemList().get(matchIndex);
-				Termfiguration source = lemmaToUse.getSource();
-				Termfiguration target = lemmaToUse.getTarget();
+				TermfigurationLike source = lemmaToUse.getSource();
+				TermfigurationLike target = lemmaToUse.getTarget();
 				/*System.out.println("We got one! "+matchIndex+"\n"+
 				lemmaToUse+
 				"\nworks with n="+nToUse+
 				"\nto be "+currTerm);*/ //this is debug code
 				cc.replace(termNum, target.toTermAt(nToUse));
+				//TODO: make this work for Lemmas on TermfigurationSequences
 				//System.out.println("source.getIndex(): "+Tools.toPolynomialString(source.getIndex(),'n'));
 				//System.out.println("target.getIndex(): "+Tools.toPolynomialString(target.getIndex(),'n'));
 				int indexAtSource = Tools.evalAt(source.getIndex(),nToUse);
