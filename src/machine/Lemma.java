@@ -14,10 +14,13 @@ public class Lemma {
 	public boolean isProved() {return _proved;}
 	public boolean isDisproved() {return _disproved;}
 	public int getHandedness() {return _handedness;}
-	public Machine getMachine() {return _m;}
-	public TermfigurationLike getSource() {return _a;}
-	public TermfigurationLike getTarget() {return _b;}
-	public int[] getNumSteps() {return _numSteps;}
+	/**Important not to return private Object instance variables through the API
+	 * to ensure that components of the Lemma cannot be modified using methods
+	 * that make them mutable.*/
+	public Machine getMachine() {return new Machine(_m);}
+	public TermfigurationLike getSource() {return _a.deepCopy();}
+	public TermfigurationLike getTarget() {return _b.deepCopy();}
+	public int[] getNumSteps() {return _numSteps.clone();}
 	
 	private Lemma() {
 		_proved = false;
@@ -28,7 +31,10 @@ public class Lemma {
 		//Represents the lemma that the termfiguration a results in the termfiguration b after the polynomial numSteps steps.
 		//Note that numSteps is an array consisting of the coefficients of a polynomial in a single variable n.
 		this();
-		_m=m; _a=a; _b=b; _numSteps=numSteps;
+		_m = new Machine(m);
+		_a = new Termfiguration(a);
+		_b = new Termfiguration(b);
+		_numSteps = numSteps.clone();
 		if (Tools.equal(a.getIndex(),new int[] {0})) _handedness = -1;
 		if (Tools.equal(a.getIndex(),a.lastBit())) _handedness = 1;
 		if (!a.isOrnamented()) throw new Exception("Cannot construct lemma on unornamented Termfiguration a="+a.toString());

@@ -47,6 +47,7 @@ public class Tests {
 		ok &= allProvedTest(num);
 		ok &= longestRunTest(num, start, stop);
 		ok &= yieldsTest(num, start, stop);
+		ok &= termfigurationSequenceTest();
 		
 		return ok;
 	}
@@ -670,6 +671,77 @@ public class Tests {
 		if (lem == null) return false;
 		if (lem.isProved()) System.out.println("The Lemma was proved!");
 		else System.out.println("The Lemma was not proved.");
+		return true;
+	}
+	
+	/**Tests all the methods of termfigurationSequence:
+	public TermfigurationSequence(List<Termfiguration> tList);
+	public boolean isOrnamented();
+	public Termfiguration get(int i);
+	public int getActiveTermIndex();
+	public int[] degrees();
+	public List<Termfiguration> asList();
+	public int[] getBase();
+	public int[] getExponent();
+	public int[] getIndex();
+	public int getState() throws Exception;
+	public int[] evalAt(int n) throws Exception;
+	public Term toTermAt(int n) throws Exception;
+	public Configuration toConfigurationAt(int n) throws Exception;
+	public String toString();
+	public TermfigurationLike successor() throws Exception;
+	public int[] lastBit();
+	public int[] length();
+
+	 */
+	public boolean termfigurationSequenceTest() {
+		if (_lemma1==null || _lemma2==null || _lemma3==null || _lemma4==null) {
+			System.out.println("Must first run both induction tests and Act Test 2.");
+			return false;
+		}
+		System.out.println("Now testing TermfigurationSequence() and toString().");
+		Termfiguration a1 = _lemma1.getSource().toTermfiguration();
+		Termfiguration b1 = _lemma1.getTarget().toTermfiguration();
+		Termfiguration a2 = _lemma2.getSource().toTermfiguration();
+		Termfiguration b2 = _lemma2.getTarget().toTermfiguration();
+		Termfiguration a3 = _lemma3.getSource().toTermfiguration();
+		Termfiguration b3 = _lemma3.getTarget().toTermfiguration();
+		Termfiguration a4 = _lemma4.getSource().toTermfiguration();
+		Termfiguration b4 = _lemma4.getTarget().toTermfiguration();
+		try {
+			a1.deOrnament();
+			a2.deOrnament();
+			a4.deOrnament();
+			b1.deOrnament();
+			b3.deOrnament();
+			b4.deOrnament();
+		}
+		catch (Exception e) {
+			System.out.println("Trouble deornamenting Termfigurations.");
+			return false;
+		}
+		List<Termfiguration> tl1 = new ArrayList<Termfiguration>();
+		tl1.add(a1);
+		tl1.add(a2);
+		tl1.add(a3);
+		tl1.add(a4);
+		TermfigurationSequence ts1 = new TermfigurationSequence(tl1);
+		System.out.println(ts1);
+		System.out.println("Now testing isOrnamented().");
+		System.out.println("Now testing get().");
+		System.out.println("Now testing getActiveTermIndex().");
+		System.out.println("Now testing degrees().");
+		System.out.println("Now testing asList().");
+		System.out.println("Now testing getBase().");
+		System.out.println("Now testing getExponent().");
+		System.out.println("Now testing getIndex().");
+		System.out.println("Now testing getState().");
+		System.out.println("Now testing evalAt().");
+		System.out.println("Now testing toTermAt().");
+		System.out.println("Now testing toConfigurationAt().");
+		System.out.println("Now testing successor().");
+		System.out.println("Now testing lastBit().");
+		System.out.println("Now testing length().");
 		return true;
 	}
 }

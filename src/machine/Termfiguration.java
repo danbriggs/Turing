@@ -1,5 +1,9 @@
 package machine;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Termfiguration implements TermfigurationLike {
 	//Represents a term with a fixed sequence of bits as base and polynomial expression in a single variable n as exponent.
 	//This notation represents the base being repeated a given expression number of times.
@@ -20,8 +24,22 @@ public class Termfiguration implements TermfigurationLike {
 		_state = state;
 		_ornamented = true;		
 	}
-	public void deOrnament() {
-		if (_ornamented == false) System.out.println("Error: attempt to deornament unornamented Termfiguration");
+	
+	/**Important for Lemma protection.
+	 * deepCopy() calls this constructor.*/
+	public Termfiguration(Termfiguration t) {
+		_base = t.getBase().clone();
+		_exponent = t.getExponent().clone();
+		_index = t.getIndex().clone();
+		try {_state = t.getState();}
+		catch (Exception e) {_state = -2;}
+		_ornamented = t.isOrnamented();
+	}
+	public Termfiguration toTermfiguration() {return this;}
+	
+	/**Once this is run, one should not be able to recover the ornamentation.*/
+	public void deOrnament() throws Exception{
+		if (_ornamented == false) throw new Exception("Error: attempt to deornament unornamented Termfiguration");
 		_ornamented = false;
 	}
 	
@@ -69,20 +87,24 @@ public class Termfiguration implements TermfigurationLike {
 	}
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		if (_ornamented) {
-			char c=(char)('A'+_state);
-			sb.append(c);
-			sb.append(" ");
-		}
+		if (_ornamented) sb.append(Tools.asLetter(_state)+" ");
+		sb.append(toStringBuffer());
+		if (_ornamented) sb.append(" "+Tools.toPolynomialString(_index, 'n'));
+		return sb.toString();
+	}
+	
+	/**Does not include state or index.*/
+	public StringBuffer toStringBuffer() {
+		StringBuffer sb = new StringBuffer();
 		sb.append('(');
 		for (int i=0; i<_base.length; i++) sb.append(_base[i]);
 		sb.append(")^(");
 		try {sb.append(Tools.toPolynomialString(_exponent, 'n'));}
 		catch (Exception e) {sb.append("ERROR");}
 		sb.append(")");
-		if (_ornamented) sb.append(" "+Tools.toPolynomialString(_index, 'n'));
-		return sb.toString();
+		return sb;		
 	}
+	
 	public Termfiguration successor() throws Exception {
 		//Returns the Termfiguration obtained by replacing n with n+1.
 		int[] exponent = Tools.shiftBy(_exponent,1);
@@ -100,5 +122,31 @@ public class Termfiguration implements TermfigurationLike {
 		//the coefficients of a polynomial in n
 		//in rising order of degree.
 		return Tools.add(length(),new int[] {-1});
+	}
+	
+	public Termfiguration deepCopy() {
+		return new Termfiguration(this);
+	}
+	
+	/**Arrays.equals for the bitstring,
+	 * Tools.equal for the coefficient arrays,
+	 * where leading zeros shouldn't matter.
+	 * Doesn't do any fancier equality detection.*/
+	public boolean equals(TermfigurationLike t) {
+		if (!(t instanceof Termfiguration)) return false;
+		if (_ornamented!=t.isOrnamented()) return false;
+		if (!Arrays.equals(_base,t.getBase())) return false;
+		if (!Tools.equal(_exponent, t.getExponent())) return false;
+		if (!_ornamented) return true;
+		if (!Tools.equal(_index, t.getIndex())) return false;
+		try {if (_state!=t.getState()) return false;}
+		catch (Exception e) {System.out.println("In Termfiguration.equals: "+e); return false;}
+		return true;
+	}
+	
+	public TermfigurationSequence toTermfigurationSequence() {
+		List<Termfiguration> ts = new ArrayList<Termfiguration>();
+		ts.add(this);
+		return new TermfigurationSequence(ts);
 	}
 }

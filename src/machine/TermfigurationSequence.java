@@ -1,5 +1,6 @@
 package machine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**Class for representing a Termfiguration sequence in a single variable n.
@@ -27,10 +28,29 @@ public class TermfigurationSequence implements TermfigurationLike {
 		if (ornamentedCount == 1) _ornamented = true;
 		else if (ornamentedCount == 0) _ornamented = false;
 	}
+	
+	/**Important for protection: deepCopy() calls this constructor.*/
+	public TermfigurationSequence(TermfigurationSequence ts) {
+		_tList = new ArrayList<Termfiguration>();
+		for (int i=0; i < ts.asList().size(); i++) {
+			_tList.add(ts.get(i).deepCopy());
+		}
+		_ornamented = ts.isOrnamented();
+		if (_ornamented) _activeTermIndex = ts.getActiveTermIndex();
+	}
+	
+	/**To address type issues introduced by introducing the interface TermfigurationLike.*/
+	public Termfiguration toTermfiguration() {return null;}
 	public boolean isOrnamented() {return _ornamented;}
+	/**Once this is run, one should not be able to recover the ornamentation.*/
+	public void deOrnament() throws Exception{
+		if (_ornamented == false) throw new Exception("Error: attempt to deornament unornamented TermfigurationSequence");
+		_ornamented = false;
+	}
+
 	public Termfiguration get(int i) {return _tList.get(i);}
 	public int getActiveTermIndex() {
-		if (!_ornamented) System.out.println("Error: attempt to find active term index of unornamented TermfigurationList");
+		if (!_ornamented) System.out.println("Error: attempt to find active term index of unornamented TermfigurationSequence");
 		return _activeTermIndex;
 	}
 	
@@ -45,6 +65,8 @@ public class TermfigurationSequence implements TermfigurationLike {
 		}
 		return ret;
 	}
+	
+	public List<Termfiguration> asList(){return _tList;}
 	
 	/**Returns the base of the active term
 	 * if this is an ornamented TermfigurationSequence,
@@ -86,36 +108,90 @@ public class TermfigurationSequence implements TermfigurationLike {
 	}
 	
 	public int getState() throws Exception {
-		if (!_ornamented) {
-			System.out.println("Error in getState(): unornamented TermfigurationSequence");
-			return -2;
-		}
+		if (!_ornamented) throw new Exception("Error in getState(): unornamented TermfigurationSequence");
 		Termfiguration activeTerm = _tList.get(_activeTermIndex);
 		return activeTerm.getState();
 	}
 
 	public int[] evalAt(int n) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		int combinedBitSeqLen = 0;
+		int[][] bitSeqs = new int[_tList.size()][];
+		for (int i = 0; i < _tList.size(); i++) {
+			int[] bitSeq = _tList.get(i).evalAt(n);
+			combinedBitSeqLen += bitSeq.length;
+			bitSeqs[i] = bitSeq;
+		}
+		int[] combinedBitSeq = new int[combinedBitSeqLen];
+		int combinedBitSeqIndex = 0;
+		for (int i = 0; i < _tList.size(); i++) {
+			int[] bitSeq = bitSeqs[i];
+			for (int j = 0; j < bitSeq.length; j++)
+				combinedBitSeq[combinedBitSeqIndex + j] = bitSeq[j];
+			combinedBitSeqIndex += bitSeq.length;
+		}
+		return combinedBitSeq;
 	}
 	
 	public Term toTermAt(int n) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (!_ornamented) throw new Exception("Error: attempt to call toTermAt("+n+") for unornamented TermfigurationSequence");
+		return get(_activeTermIndex).toTermAt(n);
 	}
 	
 	public Configuration toConfigurationAt(int n) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (!_ornamented) throw new Exception("In toConfigurationAt("+n+"), cannot convert unornamented TermfigurationSequence to Configuration.");
+		int[] tapeContents = evalAt(n);
+		int index = Tools.evalAt(getIndex(), n);
+		return new Configuration(tapeContents, index, getState());
 	}
 	
 	public TermfigurationLike successor() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<Termfiguration> tPrimeList = new ArrayList<Termfiguration>();
+		for (int i = 0; i < _tList.size(); i++)
+			tPrimeList.add(_tList.get(i).successor());
+		return new TermfigurationSequence(tPrimeList);
 	}
 	
 	public int[] lastBit() {
-		// TODO Auto-generated method stub
-		return null;
+		return Tools.add(length(),new int[] {-1});
+	}
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if (_ornamented) {
+			try {sb.append(Tools.asLetter(getState())+" ");}
+			catch (Exception e) {System.out.println("Error: "+e.getMessage());}
+		}
+		for (int i=0; i<_tList.size(); i++) {
+			sb.append(_tList.get(i).toStringBuffer());
+			sb.append(" ");
+		}
+		if (_ornamented) sb.append(Tools.toPolynomialString(getIndex(), 'n'));
+		return sb.toString();
+	}
+	
+	public int[] length() {
+		int[] ret = new int[0];
+		for (int i = 0; i < _tList.size(); i++) {
+			ret = Tools.add(ret, _tList.get(i).length());
+		}
+		return ret;
+	}
+	
+	public TermfigurationSequence deepCopy() {
+		return new TermfigurationSequence(this);
+	}
+	
+	public boolean equals(TermfigurationLike tl) {
+		TermfigurationSequence ts = tl.toTermfigurationSequence();
+		if (!(ts instanceof TermfigurationSequence)) return false;
+		if (_tList.size() != ts.asList().size()) return false;
+		if (_ornamented != ts.isOrnamented()) return false;
+		for (int i = 0; i < _tList.size(); i++)
+			if (!_tList.get(i).equals(ts.get(i))) return false;
+		return true;
+	}
+	
+	public TermfigurationSequence toTermfigurationSequence() {
+		return this;
 	}
 }

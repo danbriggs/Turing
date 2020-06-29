@@ -64,7 +64,7 @@ public class MyPanel extends JPanel {
 		menuBar.add(menu);
 
 		//a group of JMenuItems
-		menuItems = new JMenuItem[7];
+		menuItems = new JMenuItem[8];
 		menuItems[0] = new JMenuItem("Run all tests",
 		                         KeyEvent.VK_T);
 		menuItems[0].setAccelerator(KeyStroke.getKeyStroke(
@@ -77,15 +77,18 @@ public class MyPanel extends JPanel {
 		try {vPic = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("images/middle.gif"));
 		} catch (IOException e2) {e2.printStackTrace();}
 				
-		menuItems[1] = new JMenuItem("Look for two loops",
-		                         new ImageIcon(vPic));
+		menuItems[1] = new JMenuItem("Look for two loops");
 		menuItems[1].setMnemonic(KeyEvent.VK_B);
 		menu.add(menuItems[1]);
 
 		menuItems[2] = new JMenuItem("Longest run",new ImageIcon(vPic));
 		menuItems[2].setMnemonic(KeyEvent.VK_D);
 		menu.add(menuItems[2]);
-
+		
+		menuItems[7] = new JMenuItem("TermfigurationSequence Test", new ImageIcon(vPic));
+		menuItems[7].setMnemonic(KeyEvent.VK_F);
+		menu.add(menuItems[7]);
+		
 		//a group of radio button menu items
 		menu.addSeparator();
 		ButtonGroup group = new ButtonGroup();
@@ -308,6 +311,9 @@ public class MyPanel extends JPanel {
 			int start = Integer.parseInt(startStepField.getText());
 			int stop = Integer.parseInt(endStepField.getText());
 			tests.longestRunTest(num, start, stop);
+			}});
+		menuItems[7].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.termfigurationSequenceTest();
 			}});
 		menuItems[5].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			JFrame frame = new JFrame("FrameDemo");
