@@ -1,6 +1,7 @@
 package machine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Tools {
@@ -30,6 +31,13 @@ public class Tools {
 			sb.append(' ');
 		}
 		return sb.toString();
+	}
+	public static String toShortString(int[] arr) {
+		StringBuffer sb = new StringBuffer();
+		for (int i=0; i<arr.length; i++) {
+			sb.append(arr[i]);
+		}
+		return sb.toString();		
 	}
 	public static String toPolynomialString(int[] coeffs, char var){
 		if (coeffs==null) return null;
@@ -76,20 +84,26 @@ public class Tools {
 		}
 		return currSum;
 	}
-	public static int comb(int n , int r) throws Exception {
-		if(r<0 || r>n) throw new Exception("Invalid input: comb("+n+","+r+")");
+	public static int comb(int n , int r) {
+		if(r<0 || r>n) {
+			System.out.println("Warning: comb("+n+","+r+")");
+			return 0;
+		}
 		if(r==0 || r==n) return 1;
 		return comb(n-1,r)+comb(n-1,r-1);
 	}
-	public static int pow(int a, int b) throws Exception {
-		if (b<0) throw new Exception("Integer exponentiation not permitted for "+a+"^"+b);
+	public static int pow(int a, int b) {
+		if (b<0) {
+			System.out.println("Warning: Integer exponentiation for "+a+"^"+b+"?");
+			return 0;
+		}
 		int result = 1;
 		for (int i = 1; i <= b; i++) {
 			result *= a;
 		}
 		return result;
 	}
-	public static int[] shiftBy(int[] coeffs, int h) throws Exception {
+	public static int[] shiftBy(int[] coeffs, int h) {
 		//Returns an array consisting of the coefficients
 		//of the polynomial resulting by replacing the variable n
 		//in the polynomial with coefficients coeffs
@@ -196,5 +210,10 @@ public class Tools {
 		int[] b = new int[a.length-1];
 		for (int i=0; i<a.length-1; i++) b[i]=a[i+1]-a[i];
 		return b;
+	}
+	public static int[] concatenate(int[] first, int[] second) {
+		int[] result = Arrays.copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
 	}
 }

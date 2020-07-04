@@ -439,7 +439,7 @@ public class Acceleration {
 		}
 		//Now we should verify that the tape head did indeed move by the signed termLength in that number of steps.
 		if (targetIndex+termLength!=t1.getIndex()) {
-			System.out.println("In guessLemma(), the tape head did not move the expected number of steps:");
+			System.out.println("In guessLemmaHelper(), the tape head did not move the expected number of steps:");
 			System.out.println("targetIndex = "+targetIndex+", termLength = "+termLength+", t1.getIndex() = "+t1.getIndex());
 			return null;
 		}
@@ -457,7 +457,7 @@ public class Acceleration {
 		System.out.println(b);
 		Lemma lem = null;
 		try {lem = new Lemma(mm, a, b, new int[] {0, bestSkip});}
-		catch (Exception e) {System.out.println("In guessLemma(), error initializing Lemma: "+e.getMessage());}
+		catch (Exception e) {System.out.println("In guessLemmaHelper(), error initializing Lemma: "+e.getMessage());}
 		if (lem.isProved()) return lem;
 		return null;
 	}

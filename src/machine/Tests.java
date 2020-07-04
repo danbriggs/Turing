@@ -48,6 +48,7 @@ public class Tests {
 		ok &= longestRunTest(num, start, stop);
 		ok &= yieldsTest(num, start, stop);
 		ok &= termfigurationSequenceTest();
+		ok &= extendedTermfigurationTest();
 		
 		return ok;
 	}
@@ -691,15 +692,12 @@ public class Tests {
 	public String toString();
 	public TermfigurationLike successor() throws Exception;
 	public int[] lastBit();
-	public int[] length();
-
-	 */
+	public int[] length();*/
 	public boolean termfigurationSequenceTest() {
 		if (_lemma1==null || _lemma2==null || _lemma3==null || _lemma4==null) {
 			System.out.println("Must first run both induction tests and Act Test 2.");
 			return false;
 		}
-		System.out.println("Now testing TermfigurationSequence() and toString().");
 		Termfiguration a1 = _lemma1.getSource().toTermfiguration();
 		Termfiguration b1 = _lemma1.getTarget().toTermfiguration();
 		Termfiguration a2 = _lemma2.getSource().toTermfiguration();
@@ -726,23 +724,94 @@ public class Tests {
 		tl1.add(a3);
 		tl1.add(a4);
 		TermfigurationSequence ts1 = new TermfigurationSequence(tl1);
-		System.out.println(ts1);
-		System.out.println("Now testing isOrnamented().");
-		System.out.println("Now testing get().");
-		System.out.println("Now testing getActiveTermIndex().");
-		System.out.println("Now testing degrees().");
-		System.out.println("Now testing asList().");
-		System.out.println("Now testing getBase().");
-		System.out.println("Now testing getExponent().");
-		System.out.println("Now testing getIndex().");
-		System.out.println("Now testing getState().");
-		System.out.println("Now testing evalAt().");
-		System.out.println("Now testing toTermAt().");
-		System.out.println("Now testing toConfigurationAt().");
-		System.out.println("Now testing successor().");
-		System.out.println("Now testing lastBit().");
-		System.out.println("Now testing length().");
+		System.out.println("ts1: "+ts1);
+		System.out.println("ts1.isOrnamented(): "+ts1.isOrnamented());
+		System.out.println("ts1.get(0): "+ts1.get(0));
+		System.out.println("ts1.getActiveTermIndex(): "+ts1.getActiveTermIndex());
+		System.out.println("ts1.degrees(): "+Tools.toString(ts1.degrees()));
+		System.out.println("ts1.asList(): "+ts1.asList());
+		System.out.println("ts1.getBase(): "+Tools.toString(ts1.getBase()));
+		System.out.println("ts1.getExponent(): "+Tools.toPolynomialString(ts1.getExponent(), 'n'));
+		System.out.println("ts1.getIndex(): "+Tools.toPolynomialString(ts1.getIndex(), 'n'));
+		try {
+		System.out.println("ts1.getState(): "+ts1.getState());
+		System.out.println("ts1.evalAt(10): "+Tools.toString(ts1.evalAt(10)));
+		System.out.println("ts1.toTermAt(10): "+ts1.toTermAt(10));
+		System.out.println("ts1.toConfigurationAt(10): "+ts1.toConfigurationAt(10));
+		System.out.println("ts1.successor(): "+ts1.successor());
+		} catch (Exception e) {
+			System.out.println("Exception: "+e.getMessage());
+			return false;
+		}
+		System.out.println("ts1.lastBit(): "+Tools.toPolynomialString(ts1.lastBit(), 'n'));
+		System.out.println("ts1.length(): "+Tools.toPolynomialString(ts1.length(), 'n'));
 		return true;
+	}
+	
+	/* 	public Termfiguration toTermfiguration();
+	public ExtendedTermfiguration toExtendedTermfiguration();
+	public TermfigurationSequence toTermfigurationSequence();
+	public boolean isOrnamented();
+	public void deOrnament() throws Exception;
+	public int[] getBase();
+	public int[] getExponent();
+	public int[] getIndex();
+	public int getState() throws Exception;
+	public int[] evalAt(int n) throws Exception;
+	public Term toTermAt(int n) throws Exception;
+	public Configuration toConfigurationAt(int n) throws Exception;
+	public CondensedConfiguration toCondensedConfigurationAt(int n) throws Exception;
+	public String toString();
+	public TermfigurationLike successor() throws Exception;
+	public int[] lastBit();
+	public int[] length();
+	public TermfigurationLike deepCopy();
+	public boolean equals(TermfigurationLike tl); */
+	public boolean extendedTermfigurationTest() {
+		//(01)^(N)
+		Termfiguration t = new Termfiguration(new int[] {0,1}, new int[] {0,1});
+		//(11)^(N)
+		Termfiguration u = new Termfiguration(new int[] {1,1}, new int[] {0,1});
+		//(01)^(N)__x E
+		Termfiguration ta = new Termfiguration(t, new int[] {2,2}, 4);
+		//__x(11)^(N) E
+		Termfiguration tb = new Termfiguration(u, new int[] {-1},  4);
+		//(01)^(N)11o E
+		ExtendedTermfiguration eta = new ExtendedTermfiguration(ta, new int[] {1,1,0});
+		//11o(11)^(N) E
+		ExtendedTermfiguration etb = new ExtendedTermfiguration(new int[] {1,1,0}, tb);
+		System.out.println("eta: "+eta.toString());
+		System.out.println("etb: "+etb.toString());
+		try {
+			System.out.println("eta.evalAt(0): "+Tools.toShortString(eta.evalAt(0)));
+			System.out.println("eta.evalAt(1): "+Tools.toShortString(eta.evalAt(1)));
+			System.out.println("eta.evalAt(2): "+Tools.toShortString(eta.evalAt(2)));
+			System.out.println("eta.evalAt(3): "+Tools.toShortString(eta.evalAt(3)));
+			System.out.println("etb.evalAt(0): "+Tools.toShortString(etb.evalAt(0)));
+			System.out.println("etb.evalAt(1): "+Tools.toShortString(etb.evalAt(1)));
+			System.out.println("etb.evalAt(2): "+Tools.toShortString(etb.evalAt(2)));
+			System.out.println("etb.evalAt(3): "+Tools.toShortString(etb.evalAt(3)));
+			System.out.println("eta.toConfigurationAt(0): "+eta.toConfigurationAt(0));
+			System.out.println("eta.toConfigurationAt(1): "+eta.toConfigurationAt(1));
+			System.out.println("eta.toConfigurationAt(2): "+eta.toConfigurationAt(2));
+			System.out.println("eta.toConfigurationAt(3): "+eta.toConfigurationAt(3));
+			System.out.println("etb.toConfigurationAt(0): "+etb.toConfigurationAt(0));
+			System.out.println("etb.toConfigurationAt(1): "+etb.toConfigurationAt(1));
+			System.out.println("etb.toConfigurationAt(2): "+etb.toConfigurationAt(2));
+			System.out.println("etb.toConfigurationAt(3): "+etb.toConfigurationAt(3));
+			System.out.println("etb.getIndex(): "+Tools.toString(etb.getIndex()));
+		} catch (Exception e) {
+			System.out.println("Exception 1 in extendedTermfigurationTest(): "+e.getMessage());
+			return false;
+		}
+		Lemma lem = null;
+		try {
+			lem = new Lemma(_machineList.get(4),eta,etb,new int[] {0,10});
+		} catch (Exception e) {
+			System.out.println("In extendedTermfigurationTest: "+e.getMessage());
+		}
+		System.out.println("lem proved: "+lem.isProved());
+		return lem.isProved();
 	}
 }
 

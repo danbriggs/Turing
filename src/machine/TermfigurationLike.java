@@ -2,7 +2,9 @@ package machine;
 
 /**Termfigurations and TermfigurationSequences.*/
 public interface TermfigurationLike {
+	public VeryTermfigurationLike toVeryTermfigurationLike();
 	public Termfiguration toTermfiguration();
+	public ExtendedTermfiguration toExtendedTermfiguration();
 	public TermfigurationSequence toTermfigurationSequence();
 	public boolean isOrnamented();
 	public void deOrnament() throws Exception;
@@ -20,8 +22,9 @@ public interface TermfigurationLike {
 	throws exception otherwise.*/
 	public Term toTermAt(int n) throws Exception;
 	public Configuration toConfigurationAt(int n) throws Exception;
+	public CondensedConfiguration toCondensedConfigurationAt(int n) throws Exception;
 	public String toString();
-	public TermfigurationLike successor() throws Exception;
+	public TermfigurationLike successor();
 	public int[] lastBit();
 	public int[] length();
 	public TermfigurationLike deepCopy();

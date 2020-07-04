@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 //import javax.swing.event.*;
 
-@SuppressWarnings("serial")
 public class MyPanel extends JPanel {
 	JMenuBar menuBar;
 	JMenu menu, menu2, submenu;
@@ -64,7 +63,7 @@ public class MyPanel extends JPanel {
 		menuBar.add(menu);
 
 		//a group of JMenuItems
-		menuItems = new JMenuItem[8];
+		menuItems = new JMenuItem[9];
 		menuItems[0] = new JMenuItem("Run all tests",
 		                         KeyEvent.VK_T);
 		menuItems[0].setAccelerator(KeyStroke.getKeyStroke(
@@ -88,6 +87,10 @@ public class MyPanel extends JPanel {
 		menuItems[7] = new JMenuItem("TermfigurationSequence Test", new ImageIcon(vPic));
 		menuItems[7].setMnemonic(KeyEvent.VK_F);
 		menu.add(menuItems[7]);
+		
+		menuItems[8] = new JMenuItem("ExtendedTermfiguration Test", new ImageIcon(vPic));
+		menuItems[8].setMnemonic(KeyEvent.VK_G);
+		menu.add(menuItems[8]);
 		
 		//a group of radio button menu items
 		menu.addSeparator();
@@ -314,6 +317,9 @@ public class MyPanel extends JPanel {
 			}});
 		menuItems[7].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			tests.termfigurationSequenceTest();
+			}});
+		menuItems[8].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
+			tests.extendedTermfigurationTest();
 			}});
 		menuItems[5].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			JFrame frame = new JFrame("FrameDemo");

@@ -39,8 +39,16 @@ public class TermfigurationSequence implements TermfigurationLike {
 		if (_ornamented) _activeTermIndex = ts.getActiveTermIndex();
 	}
 	
-	/**To address type issues introduced by introducing the interface TermfigurationLike.*/
-	public Termfiguration toTermfiguration() {return null;}
+	public VeryTermfigurationLike toVeryTermfigurationLike() {
+		if (isOrnamented()) return get(_activeTermIndex);
+		return null;
+	}
+	
+	public Termfiguration toTermfiguration() {
+		if (isOrnamented()) return get(_activeTermIndex);
+		return null;
+	}
+	
 	public boolean isOrnamented() {return _ornamented;}
 	/**Once this is run, one should not be able to recover the ornamentation.*/
 	public void deOrnament() throws Exception{
@@ -144,7 +152,7 @@ public class TermfigurationSequence implements TermfigurationLike {
 		return new Configuration(tapeContents, index, getState());
 	}
 	
-	public TermfigurationLike successor() throws Exception {
+	public TermfigurationLike successor() {
 		List<Termfiguration> tPrimeList = new ArrayList<Termfiguration>();
 		for (int i = 0; i < _tList.size(); i++)
 			tPrimeList.add(_tList.get(i).successor());
@@ -191,7 +199,29 @@ public class TermfigurationSequence implements TermfigurationLike {
 		return true;
 	}
 	
+	public ExtendedTermfiguration toExtendedTermfiguration() {
+		//TODO: if not ornamented, count how many terms have degree at least one.
+		//If more than one, forget about it.
+		//If ornamented, if any term other than the active term has degree greater than one, forget about it.
+		return null;
+	}
+	
 	public TermfigurationSequence toTermfigurationSequence() {
 		return this;
+	}
+	
+	public List<Term> toTermListAt(int n) {
+		List<Term> tl = new ArrayList<Term>();
+		for (int i = 0; i < _tList.size(); i++) {
+			try {tl.add(_tList.get(i).toTermAt(n));}
+			catch (Exception e) {System.out.println(e.getMessage()); return null;}
+		}
+		return tl;
+	}
+	
+	public CondensedConfiguration toCondensedConfigurationAt(int n) throws Exception {
+		if (!_ornamented) throw new Exception (
+				"In toCondensedConfigurationAt("+n+"), cannot convert unornamented TermfigurationSequence to CondensedConfiguration.");
+		return new CondensedConfiguration(toTermListAt(n), Tools.evalAt(getIndex(), n), getState());
 	}
 }

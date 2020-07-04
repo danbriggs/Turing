@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Termfiguration implements TermfigurationLike {
-	//Represents a term with a fixed sequence of bits as base and polynomial expression in a single variable n as exponent.
-	//This notation represents the base being repeated a given expression number of times.
+/**Represents a term with a fixed sequence of bits as base and polynomial expression in a single variable n as exponent.
+This notation represents the base being repeated a given expression number of times.*/
+public class Termfiguration extends VeryTermfigurationLike {
 	private int[] _base;
 	private int[] _exponent; //coefficients of n in rising degree
 	private int[] _index; //where the tape head is, as a polynomial expression in n
@@ -34,6 +34,16 @@ public class Termfiguration implements TermfigurationLike {
 		try {_state = t.getState();}
 		catch (Exception e) {_state = -2;}
 		_ornamented = t.isOrnamented();
+	}
+	
+	public Termfiguration(Termfiguration t, int[] index, int state) {
+		if (t.isOrnamented()) System.out.println(
+				"Warning: Attempt to create Termfiguration by adding index & state to already ornamented Termfiguration");
+		_base = t.getBase().clone();
+		_exponent = t.getExponent().clone();
+		_index = index;
+		_state = state;
+		_ornamented = true;
 	}
 	public Termfiguration toTermfiguration() {return this;}
 	
@@ -85,6 +95,14 @@ public class Termfiguration implements TermfigurationLike {
 		int index = Tools.evalAt(getIndex(), n);
 		return new Configuration(tapeContents, index, getState());
 	}
+	public CondensedConfiguration toCondensedConfigurationAt (int n) throws Exception {
+		if (!_ornamented) throw new Exception (
+				"In toCondensedConfigurationAt("+n+"), cannot convert unornamented Termfiguration to CondensedConfiguration.");
+		Term t = toTermAt(n);
+		List<Term> tl = new ArrayList<Term>();
+		tl.add(t);
+		return new CondensedConfiguration(tl, Tools.evalAt(_index, n), _state);
+	}
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		if (_ornamented) sb.append(Tools.asLetter(_state)+" ");
@@ -105,7 +123,7 @@ public class Termfiguration implements TermfigurationLike {
 		return sb;		
 	}
 	
-	public Termfiguration successor() throws Exception {
+	public Termfiguration successor() {
 		//Returns the Termfiguration obtained by replacing n with n+1.
 		int[] exponent = Tools.shiftBy(_exponent,1);
 		int[] index = Tools.shiftBy(_index, 1);
@@ -142,6 +160,10 @@ public class Termfiguration implements TermfigurationLike {
 		try {if (_state!=t.getState()) return false;}
 		catch (Exception e) {System.out.println("In Termfiguration.equals: "+e); return false;}
 		return true;
+	}
+	
+	public ExtendedTermfiguration toExtendedTermfiguration() {
+		return new ExtendedTermfiguration(this);
 	}
 	
 	public TermfigurationSequence toTermfigurationSequence() {
