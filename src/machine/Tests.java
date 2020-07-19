@@ -43,7 +43,7 @@ public class Tests {
 		ok &= actTest2();
 		ok &= stretchTapeTest(num);
 		ok &= bigStretchTapeTest(num);
-		ok &= bigStretchTapeTest2(num);
+		ok &= bigStretchTapeTest2(num, start, stop);
 		ok &= allProvedTest(num);
 		ok &= longestRunTest(num, start, stop);
 		ok &= yieldsTest(num, start, stop);
@@ -548,29 +548,32 @@ public class Tests {
 		return true;
 	}
 	
-	/**Tests for the functionality of tracking the periods when the machines are increasing the ranges of the StretchTapes.*/
-	public boolean bigStretchTapeTest2(int num) {
+	/**Tests for the functionality of tracking the periods when the machines are increasing the ranges of the StretchTapes.
+	 * Traditional is to go from 1000000 to 11000000 with a maximum of 30 data points and make the tape length numSteps/1650.*/
+	public boolean bigStretchTapeTest2(int num, int start, int stop) {
+		final int dividend = 1650;
 		String name = "Big Stretch Tape Test 2";
-		System.out.println("\n"+name+" beginning.");
+		System.out.println("\n"+name+" beginning from step #"+start+" to step #"+stop+".");
 		boolean ok = true;
 		if (num==0) {
 			for (int i=1; i<_machineList.size(); i++)
-				ok &= bigStretchTapeTest2Helper(i);
+				ok &= bigStretchTapeTest2Helper(i, start, stop, dividend);
 		}
 		else {
-			ok = bigStretchTapeTest2Helper(num);
+			ok = bigStretchTapeTest2Helper(num, start, stop, dividend);
 		}
 		if (ok) System.out.println(name+" successful.");		
 		return ok;
 	}
 	
-	private boolean bigStretchTapeTest2Helper(int num) {
-		int startingPoint = 1000000;
-		int numSteps = 10000000;
-		int maxNumDataPts = 30;
+	/**Here dividend means how to scale down the number of steps to make a length for the tape.*/
+	private boolean bigStretchTapeTest2Helper(int num, int start, int stop, int dividend) {
+		int startingPoint = start; //Traditional: 1000000
+		int numSteps = stop-start; //Traditional: 10000000
+		int maxNumDataPts = 217;
 		Machine m=_machineList.get(num);
 		m.reset();
-		int tapeLen = numSteps/1650;
+		int tapeLen = numSteps/dividend;
 		if (num==5||num==18) tapeLen*=3;
 		StretchTape t = new StretchTape(tapeLen);//risky
 		//old: /250, risky

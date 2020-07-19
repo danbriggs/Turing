@@ -175,13 +175,13 @@ public class MyPanel extends JPanel {
 		
         machineNoLabel = new JLabel ("Machine #(1-43; 0 for all)");
         machineNoField = new JTextField (5);
-        machineNoField.setText("25");
+        machineNoField.setText("2");
         startStepLabel = new JLabel ("Start Step");
         startStepField = new JTextField (5);
-        startStepField.setText("0");
+        startStepField.setText("10000000");
         endStepLabel = new JLabel ("End Step");
         endStepField = new JTextField (5);
-        endStepField.setText("100000");
+        endStepField.setText("110000000");
         run = new JButton("Run");
 
 		
@@ -375,7 +375,9 @@ public class MyPanel extends JPanel {
 			tests.bigStretchTapeTest(num);}});
 		bigStretchTapeTest2.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
-			tests.bigStretchTapeTest2(num);}});
+			int start = Integer.parseInt(startStepField.getText());
+			int stop = Integer.parseInt(endStepField.getText());
+			tests.bigStretchTapeTest2(num, start, stop);}});
 		allProvedTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
 			tests.allProvedTest(num);}});
