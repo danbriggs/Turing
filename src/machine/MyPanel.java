@@ -171,7 +171,7 @@ public class MyPanel extends JPanel {
 		leftToRightInductionTest = new JButton ("<html><center>Left to Right<br>Induction Test</html>");
 		rightToLeftInductionTest = new JButton ("<html><center>Right to Left<br>Induction Test</html>");
 		successorTest = new JButton ("Successor Test");
-		lemmaAsStringTest = new JButton ("<html><center>Lemma As String</html>");
+		lemmaAsStringTest = new JButton ("<html><center>Lemma as String</html>");
 		condensedConfigurationTest = new JButton ("<html><center>Condensed<br>Configuration Test</html>");
 		actTest1 = new JButton ("Act Test 1");
 		actTest2 = new JButton ("Act Test 2");

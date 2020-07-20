@@ -17,12 +17,13 @@ and only the steps where the tape head is on the left will be output.
 
 ## Big Stretch Test 2
 
-With "Machine" set to 1, "Start Step" 0 and "End Step" 1000,  
-click the lower-right button, "Big Stretch Test 2."  
+With "Machine" set to 1, "Start Step" 0 and "End Step" 1000, click the lower-right button, "Big Stretch Test 2."  
 You should see the following output:  
+
     Big Stretch Tape Test 2 beginning from step #0 to step #1000.
     HNR#1: [2, 5, 4, 11, 20, 26, 18, 5, 31, 11, 20, 26, 68, 66, 11, 20, 26, 48, 5, 151, 36, 42, 122, 58, 68, 74]
     Big Stretch Tape Test 2 successful.
+
 The list, which I call the __spectrum__ of the machine, is the differences in start steps of __pushing phases__,  
 meaning when the machine is increasing the extent of tape it has ever accessed.  
 Compare this to the results of an "Analytic run" of machine #1 from step 0 to step 1000  
