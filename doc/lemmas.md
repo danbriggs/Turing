@@ -58,6 +58,64 @@ whenever it is in state C at the leftmost bit of a sequence of 011s repeated at 
 (We could have just as easily written a lemma about (011)^(n) instead, and it could be used  
 when the machine encounters 011 repeated __any__ number of times.)
 
+## Using Lemmas to Accelerate Machines
+
+As long as you've run both induction tests, click on Act Test 1, and you should get the following output:
+
+    Act Test 1 beginning.
+    CondensedConfiguration cc before Acceleration.act(): C (011)^12 0
+    numSteps: 36
+    CondensedConfiguration cc after Acceleration.act():  C (110)^12 36
+    Act Test 1 successful.
+
+This means that the machine was able to pick out which lemma to use from a list of lemmas,  
+and it rightly chose to use the lemma we described above.  
+It applied that lemma to the CondensedConfiguration cc with an exponent of twelve on the active sequence,  
+and circumvented having to execute each of 36 steps explicitly.
+
+## Automatically Formulating Hypotheses and Proving Them
+
+If you set the machine number to 1, start step to 0, and end step to 1000, and click "Longest Run" (either on the panel or in the "Run" menu),  
+you should get output like this:  
+
+    Longest run test beginning for num=1
+    Looking for the longest run from 0 to 1000 for machine #1:
+    ...
+    The longest run started at 249 and was of length 23
+    ...
+    Finding the best run of perfect matches with skip 10: there are 31 matches at 304
+    ...
+    0	0	0	21	4	0	18	8	2	15	31	11	12	3	14	11	7	18	17	3	21	19	3	10	19	7	17	12	3	8	
+    0	-1	-1	269	95	-1	266	112	229	263	304	228	260	2	750	664	118	728	692	63	294	673	298	111	679	611	52	723	214	51	
+    0	0	0	19	-2	0	16	-4	-2	13	-19	-7	10	0	-8	5	-5	-10	11	-1	-13	15	-1	0	13	-5	1	-8	1	6	
+    
+    The best skip was 10 with 31 repetitions ending at step 304 after a displacement of -19.
+    The signed term length seems to be -6.129032, so I'm going to guess it's -6.
+    Tape at start step, then at end step: 
+    274 D 11011011011011011011011o01
+    304 D 11011o10110110110110110101
+    ...
+    Attempting linear induction.
+    VeryTermfigurationLike a: D (110110)^(n) -1+6n
+    VeryTermfigurationLike b: D (101101)^(n) -1
+    int[] numsteps as polynomial: 10n
+    ...
+    The Lemma was proved!
+    Longest run test successful.
+
+The output is fairly long, so I have truncated it in a few places.  
+The "longest run" portion of the Longest Run test is unimportant;  
+what's important is instead the "best run of perfect matches," in this case "with skip 10," where there were "31 matches (ending) at 304."  
+What this means is that the machine was in the same state looking at the same symbol 10 steps apart, 31 times in a row.  
+Since we can see that the machine was in state D looking at 0 on step 274, it was in state D looking at 0 on step 284.  
+Since we can see that the machine was in state D looking at 0 on step 304, it was in state D looking at 0 on step 314.  
+We have equivalences like that as well for __every__ pair n and n+10, where n is between 274 and 304  
+(although the state isn't necessarily D, and the bit isn't necessarily 0.)  
+This is a clue that the machine might be doing something very repetitive from step 274 to step 314,  
+and so the program tries to generate a lemma about it.  
+First, it guesses the length of a repeating bit sequence to use based on the fact that the tape head moves about 6 spaces left every 10 steps.  
+The source a is thus constructed based on what's on the nearest six bits going left from and including where the machine started at step #274,  
+and the target b based on what's on the same six bits after ten steps.
 
 Please see [src/images/flowchart.png](src/images/flowchart.png) to learn the similarities and differences among the different classes.
 

@@ -411,8 +411,9 @@ public class Tests {
 		LemmaList lemlist;
 		try {
 			lemlist = new LemmaList(protolemlist);
+			System.out.println("CondensedConfiguration cc before Acceleration.act(): "+cc);
 			Acceleration.act(cc, lemlist);
-			System.out.println("cc after Acceleration.act(): "+cc);
+			System.out.println("CondensedConfiguration cc after Acceleration.act():  "+cc);
 		} catch (Exception e) {
 			System.out.println("ERROR: actTest1() failed: "+e.getMessage());
 			return false;
