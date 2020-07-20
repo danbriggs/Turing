@@ -1,0 +1,65 @@
+NOTE: The following remarks are from July 24, 2010
+and the program used then.
+Importantly, machine numbers 27-42 would be 28-43 in the new program,
+since the machine BL_2 became #27.
+——————————————————————————————————————————————————————————————————————
+HNR# type  progress
+1
+2    lin   proved
+3    cbrt  shown ~7
+4    sqrt* proving
+5    lin   proved
+6    lin   proved
+7    cbrt  easy
+8    sqrt  proved
+9    log   proved
+10   log   proved
+11   sqrt  proved
+12   sqrt  proved
+13   sqrt  proved =12
+14
+15   log   
+16
+17   log?  easy
+18   lin   proved
+19
+20
+21
+22
+23   sqrt# proving
+24
+25   lin   proved
+26   log   
+27   sqrt  proving
+28   cbrt  easy
+29   log   not too hard
+30   lin&  easy
+31   log   not too hard?
+32   log   
+33   log   
+34   log   
+35   sqrt
+36
+37
+38
+39         not too hard
+40
+41
+42
+--------------------------------
+* 4 has log complexity.
+# 23 has fourth-root complexity.
+& 30 has a small piece of increasing numbers of 1s on the left end.
+--------------------------------
+11 is very similar to 8. 12 is different, increasing the number of components each time.
+10 is very similar to 9 (cross-referencing).
+17 is sqrt on the left, log on the right.
+7 is equivalent to 3 except for starting in different situations.
+26 is equivalent to 15 except for starting in different situations.
+15,26,32,33,34 are almost exactly the same.
+29 uses 11110s.
+35 has a log piece and phases.
+36 peppers the tape with 10s.
+37 uses 1100s; so does 41.
+28 has the same action on the right-hand side as 3, 7.
+NOTE: The BL_2 machine from subset dm_2 is also an HNR.

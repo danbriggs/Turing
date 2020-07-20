@@ -1,0 +1,94 @@
+HNR# type  progress
+1
+2    lin   proved
+3    cbrt  shown ~7
+4    sqrt* proving
+5    lin   proved
+6    lin   proved
+7    cbrt  easy
+8    sqrt  proved
+9    log   proved
+10   log   proved
+11   sqrt  proved
+12   sqrt  proved
+13   sqrt  proved =12
+14
+15   log   
+16
+17   log?  easy
+18   lin   proved
+19
+20
+21         proved by univerz
+22
+23   cbrt  proving (see data for 29; 28 in the old numbering)
+24         shown ~~16
+25   lin   proved
+26   log   
+BL_2
+28         proved$ ==21
+29         proved$ =23
+30   log   not too hard
+31   sqrt  proved by univerz; trivial
+32   log   proved by univerz
+33   log   
+34   log   
+35   log
+36   sqrt
+37
+38         shown ~~16
+39         proved$ ==21
+40         not too hard
+41         proved$ ==30
+42         shown ~~19
+43
+
+OOPS!
+In the new numbering, BL_2 is #27;
+in the old numbering in 2010; what is here #28 was #27.
+So everything after 26 is offset by one!
+
+CHANGELOG(7/19/20):
+changed lin& to sqrt for #31, wrote "trivial"
+deleted "cbrt" from 28
+added $, ~, ~~, and == footnotes
+added progress for 28 and 39; 24 and 38; 42; 41
+changed progress from "not too hard" to "proved$ =23" for #29
+added BL_2 row
+deleted log and sqrt# from "type" for #23 and #29
+added "proved by univerz" for #21, #31, #32
+wrote this changelog
+--------------------------------
+* 4 has log complexity.
+# 23 has fourth-root complexity.
+& 30 has a small piece of increasing numbers of 1s on the left end.
+$ details forthcoming.
+== equivalent with an offset.
+~ very similar type of action.
+~~ almost identical stepwise.
+--------------------------------
+11 is very similar to 8. 12 is different, increasing the number of components each time.
+10 is very similar to 9 (cross-referencing).
+17 is sqrt on the left, log on the right.
+7 is equivalent to 3 except for starting in different situations.
+26 is equivalent to 15 except for starting in different situations.
+15,26,32,33,34 are almost exactly the same.
+29 uses 11110s.
+35 has a log piece and phases.
+36 peppers the tape with 10s.
+37 uses 1100s; so does 41.
+28 has the same action on the right-hand side as 3, 7.
+NOTE: The BL_2 machine from subset dm_2 is also an HNR.
+
+STATUS:
+A total of 18 out of the 43 machines have been knocked out
+(although a few, by simple machine isomorphisms, are forthcoming).
+
+Of those that remain,
+machine #16, 24, 38 will undoubtedly be resolved by nearly identical proofs;
+machine #19, 42 will undoubtedly be resolved by nearly identical proofs;
+machine #3, 7 will very likely be resolved by nearly identical proofs.
+
+So I would say we likely have 21 essentially distinct proofs left to write.
+Of the proofs that I wrote, I would say the most important one to verify is the proof for #12;
+it is the most involved.

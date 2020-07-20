@@ -1,0 +1,89 @@
+I am looking at record.txt right now
+(which I've included; it's also linked at https://web.archive.org/web/20121026023118/http://web.mit.edu/~dbriggs/www/ in Turing72410.zip).
+
+In it, I was alleging that #s 2, 5, 6, 18, and 25 have linear growth and that I'd proved they never halt;
+by "linear growth" I mean that the total swath of tape accessed by the machine grows linearly as a function of the number of steps.
+Let me make sure that Big Stretch Tape Test 2 in my new program isn't inconsistent with that.
+
+"
+Big Stretch Tape Test 2 beginning from step #10000000 to step #110000000.
+HNR#2: [135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24, 37, 55, 11, 24, 79, 557, 11, 24, 103,
+        135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24, 37, 55, 11, 24, 79, 557, 11, 24, 103,
+		135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24, 37, 55, 11, 24, 79, 557, 11, 24, 103,
+		135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24, 37, 55, 11, 24, 79, 557, 11, 24, 103, 
+	    135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24]
+HNR#5: [135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40,...]
+HNR#6: [11, 24, 103, 135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24, 37, 55, 11, 24, 79, 557,
+        11, 24, 103, 135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24, 37, 55, 11, 24, 79, 557, 11, 24, 103, 135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24, 37, 55, 11, 24, 79, 557, 11, 24, 103, 135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433, 451, 11, 24, 37, 55, 11, 24, 79, 557, 11, 24, 103, 135, 24, 117, 251, 11, 24, 37, 67, 11, 24, 91, 357, 11, 24, 115, 151, 24, 123, 22, 40, 49, 22, 40, 67, 22, 40, 85, 22, 40, 151, 271, 40, 433]
+HNR#18: [266, 54, 231, 246, 346, 266, 54, 231, 246, 346, 266, 54, 231, 246, 346, 266, 54, 231, 246, 346, 266, 54, 231, 246, 346, 266, 54, 231, 246]
+HNR#25: [68, 34, 3, 12, 132, 112, 3, 12, 32, 134, 3, 12, 32, 68, 34, 3, 12, 132, 112, 3, 12, 32, 134, 3, 12, 32, 68, 34, 3]
+"
+The above lists, which I call "spectra," are sequences of numbers of steps between one phase when the machine is pushing the boundary of what it's accessed
+and the next phase when it's pushing the boundary of what it's accessed again; this is different from Skelet's "spectrum".
+
+#2's spectrum clearly has a period of 45, and #5's is exactly the same, so I'll believe myself there.
+#6 is clearly doing the same thing, with a period of some number of steps before its action matches up with theirs, or vice versa.
+#18's spectrum seems to have a period of 5 and #25's a period of 13. So I'll believe myself there.
+
+Next, I was alleging that #s 8, 11, 12, and 13 have square root growth and that I'd proved they never halt.
+This would usually be because the machine is running over a swath of tape that's increasing in length with each lap,
+adding more copies of the same sequence in between the "bookends."
+Let me make sure that Big Stretch Tape Test 2 in my new program isn't inconsistent with that.
+
+"
+Big Stretch Tape Test 2 beginning from step #10000000 to step #110000000.
+HNR#8: [7, 9971, 7, 9989, 7, 10107, 7, 9961, 7, 9991, 7, 10009, 7, 10127, 7, 9981, 7, 10011, 7, 10029, 7, 10147, 7, 10001, 7, 10031, 7, 10049, 7, 10167, 7, 10021, 7, 10051, 7, 10069]
+HNR#11: [7, 10069, 7, 9961, 7, 9997, 7, 9987, 7, 10089, 7, 9981, 7, 10017, 7, 10007, 7, 10109, 7, 10001, 7, 10037, 7, 10027, 7, 10129, 7, 10021, 7, 10057, 7, 10047, 7, 10149, 7, 10041]
+HNR#12: [3, 2241, 10076, 3, 2241, 18468, 3, 2245, 10092, 3, 2245, 26376, 3, 2249, 10112, 3, 2249, 18536, 3, 2253, 10128, 3, 2253, 22784,3, 2257, 10148, 3, 2257, 18600, 3, 2261, 10164, 3, 2261, 24980]
+HNR#13: [3, 2241, 10076, 3, 2241, 18468, 3, 2245, 10092, 3, 2245, 26376, 3, 2249, 10112, 3, 2249, 18536, 3, 2253, 10128, 3, 2253, 22784, 3, 2257, 10148, 3, 2257, 18600, 3, 2261, 10164, 3, 2261, 24980]
+"
+
+Using Differences[{a_1,...,a_n},1,2] in Mathematica, it's a repeating pattern,
+so I am convinced that what I said about #8 and #11 is true. #12 looks a little rougher, so I should extend it:
+
+"
+HNR#12: [3, 2241, 10076, 3, 2241, 18468, 3, 2245, 10092, 3, 2245, 26376,
+         3, 2249, 10112, 3, 2249, 18536, 3, 2253, 10128, 3, 2253, 22784,
+		 3, 2257, 10148, 3, 2257, 18600, 3, 2261, 10164, 3, 2261, 24980,
+		 3, 2265, 10184, 3, 2265, 18668, 3, 2269, 10200, 3, 2269, 22944,
+		 3, 2273, 10220, 3, 2273, 18732, 3, 2277, 10236, 3, 2277, 26220,
+		 3, 2281, 10256, 3, 2281, 18800, 3, 2285, 10272, 3, 2285, 23108,
+		 3, 2289, 10292, 3, 2289, 18864, 3, 2293, 10308, 3, 2293, 25332,
+		 3, 2297, 10328, 3, 2297, 18932, 3, 2301, 10344, 3, 2301, 23268,
+		 3, 2305, 10364, 3, 2305, 18996, 3, 2309, 10380, 3, 2309, 27536,
+		 3, 2313, 10400, 3, 2313, 19064, 3, 2317, 10416, 3, 2317, 23432,
+		 3, 2321, 10436, 3, 2321, 19128, 3, 2325, 10452, 3, 2325, 25688,
+		 3, 2329, 10472, 3, 2329, 19196, 3, 2333, 10488, 3, 2333, 23592,
+		 3, 2337, 10508, 3, 2337, 19260, 3, 2341, 10524, 3, 2341, 26960,
+		 3, 2345, 10544, 3, 2345, 19328, 3, 2349, 10560, 3, 2349, 23756, 
+		 3, 2353, 10580, 3, 2353, 19392, 3, 2357, 10596, 3, 2357, 26040,
+		 3, 2361, 10616, 3, 2361, 19460, 3, 2365, 10632, 3, 2365, 23916,
+		 3, 2369, 10652, 3, 2369, 19524, 3, 2373, 10668, 3, 2373, 27884,
+		 3, 2377, 10688, 3, 2377, 19592, 3, 2381, 10704, 3, 2381, 24080]
+"
+
+It seems #12's spectrum is comprised of sequences of length 24, in any spot 0 (mod 3) being 3,
+in any spot 1 (mod 3) increasing by 4 every 6, in any spot 2 (mod 6) adding 16 & 20 alternately,
+in any spot 5 (mod 12) adding 68 every first 12, and 64 every other 12.
+In fact, using Mathematica to look at finite differences in this list spaced various numbers of terms apart,
+it seems the finite difference method keeps going "almost all the way" toward explaining the pattern,
+and then there are a few stragglers (positions 11 (mod 24) or one residue in an even higher modulus) left unexplained.
+I'll have to look back at my proof for #12.
+
+
+At least #13's spectrum is identical, so I believe what I wrote about proving the machines equivalent.
+
+record.txt says that #9 and #10 have logarithmic growth; let's make sure Big Stretch Tape Test 2 isn't inconsistent with that.
+
+"
+Big Stretch Tape Test 2 beginning from step #1000 to step #100001000.
+HNR#9: [23, 3, 6113, 27, 3, 24541, 31, 3, 98265, 35, 3, 393173, 39, 3, 1572817, 43, 3, 6291405, 47, 3, 25165769, 51, 3]
+HNR#10: [29, 830, 32, 1361, 35, 2222, 38, 3617, 41, 5876, 44, 9533, 47, 15452, 50, 25031, 53, 40532, 56, 65615, 59, 106202, 62, 171875, 65, 278138, 68, 450077, 71, 728282, 74, 1178429, 77, 1906784, 80, 3085289, 83, 4992152, 86, 8077523, 89, 13069760, 92, 21147371, 95, 34217222, 98]
+"
+#9's spectrum has the interesting numbers (spots 2 mod 3, starting with "6113") multiplied by 4 and adding a number that grows by 12s, starting with 89,
+so I'll believe that what I wrote about that one is true.
+#10's spectrum has the interesting numbers (spots 1 mod 2) multiplied by a ratio approaching the golden ratio,
+so I'll believe that what I wrote about that one is true too.
+
+I've pushed a version of the project where you can run Big Stretch Tape Test 2 in the same way;
+just don't hit "Run" with such huge numbers or it'll just run out of memory allocating tape and/or freeze trying to print so much.
