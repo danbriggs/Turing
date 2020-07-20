@@ -1,15 +1,16 @@
-The goal of this project is to write accelerations for highly non-regular five-state Turing machines with the aim of proving they don't halt or running them until they do.
+The goal of this project is to write accelerations for hardly non-regular five-state Turing machines,  
+with the aim of proving they don't halt or running them until they do.
 
 # Early History of the Busy Beaver Problem
 
 Tibor Radó published [On Non-Computable Functions](https://archive.org/details/bstj41-3-877/mode/2up), in which he defined the Busy Beaver game, in 1962.  
-He defined S(n) as the largest number of steps an n-state Turing Machine can run for on a blank tape and then halt;  
-he defined Σ(n) as the largest number of symbols an n-state Turing Machine can leave on a blank tape and then halt.  
+He defined S(n) as the largest number of steps an n-state Turing machine can run for on a blank tape and then halt;  
+he defined Σ(n) as the largest number of symbols an n-state Turing machine can leave on a blank tape and then halt.  
 (Turing Machines by definition use just 0 & 1, and 0s are blanks, so Σ(n) is the largest number of 1s it can leave.)  
 He showed that both functions are non-computable.
 
 Shen Lin and Tibor Radó published [Computer Studies of Turing Machine Problems](https://dl.acm.org/doi/10.1145/321264.321270) in 1965,  
-based on Lin's [1963 Ohio State Ph. D. thesis of the same name](https://etd.ohiolink.edu/!etd.send_file?accession=osu1486554418657614&disposition=inline) presented to Radó.  
+based on Lin's [1963 Ohio State Ph.D. thesis of the same name](https://etd.ohiolink.edu/!etd.send_file?accession=osu1486554418657614&disposition=inline) accepted by Radó.  
 In it, Lin demonstrated by computer program that Σ(3)=6 and S(3)=21. The values came from two different machines.  
 (Appel and Haken are famous for using a computer for a proof in 1977, but Lin's paper did this 14 years earlier.)
 
@@ -46,8 +47,10 @@ Thus, 16 machines had been taken care of between us, and 27 remained.
 On July 19, 2020, I found some equivalences, so now 18 machines are done and there remain 25.  
 There are also some very near equivalences, so at most 21 essentially different proofs are needed.
 
-# The Program
+# How Can I Help?
 
-Please see [src/images/flowchart.png](src/images/flowchart.png) to learn the similarities and differences among the different classes.
+If you have git and a Java IDE, you can clone this project [(how to clone repositories)](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository);  
+if you don't have git, but you have a Java IDE, you can download it as a zip file using the green Code button above.  
+If you only have a Java runtime, you can download Turing.jar from the list of files above and run it.
 
-The tests are in place to verify that extensions to the project aren't breaking its older functionality; read [tests.md](tests.md) to learn the purposes of the tests and what needs to be added to them.
+## [Next Page](doc/program.md)
