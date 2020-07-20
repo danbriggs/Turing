@@ -53,4 +53,4 @@ If you have git and a Java IDE, you can clone this project [(how to clone reposi
 if you don't have git, but you have a Java IDE, you can download it as a zip file using the green Code button above.  
 If you only have a Java runtime, you can download Turing.jar from the list of files above and run it.
 
-## [Next Page](doc/program.md)
+## [Next Page: Using the Program](doc/program.md)

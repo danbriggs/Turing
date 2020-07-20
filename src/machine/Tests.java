@@ -53,11 +53,14 @@ public class Tests {
 		return ok;
 	}
 	
-	public void run(int num,   int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers) {
+	/**mode 0: guaranteed long enough tape.
+	 * mode 1: end step divided by 1000.
+	 * mode 2: constant million.*/
+	public void run(int num,   int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers, int mode) {
 		if (num>0 && num<_machineList.size()) {
 			Machine m = _machineList.get(num);
 			m.reset();
-			run(m,top1,top2,analytic,leftEdge,rightEdge,stepNumbers);
+			run(m,top1,top2,analytic,leftEdge,rightEdge,stepNumbers, mode);
 		}
 		else if (num==0) {
 			Thread t = new Thread(new Runnable() {
@@ -65,7 +68,7 @@ public class Tests {
 		        	  for (int i=1; i<_machineList.size(); i++) {
 		  				Machine m = _machineList.get(i);
 		  				m.reset();
-		  				Tests.run(m,top1,top2,analytic,leftEdge,rightEdge,stepNumbers);
+		  				Tests.run(m,top1,top2,analytic,leftEdge,rightEdge,stepNumbers, mode);
 		  				System.out.println(UNIT_SEPARATOR);
 		        	  }
 		        }
@@ -73,7 +76,7 @@ public class Tests {
 			t.start();
 		}
 	}
-	private static void run(Machine m, int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers) {
+	private static void run(Machine m, int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers, int mode) {
 		//Warning: does not automatically reset m to state A
 		//Make sure to call m.reset() before invoking this function
 		//if you're interested in a clean run from a blank tape.
@@ -712,7 +715,7 @@ public class Tests {
 		Termfiguration a1 = _lemma1.getSource().toTermfiguration();
 		Termfiguration b1 = _lemma1.getTarget().toTermfiguration();
 		Termfiguration a2 = _lemma2.getSource().toTermfiguration();
-		Termfiguration b2 = _lemma2.getTarget().toTermfiguration();
+		//Termfiguration b2 = _lemma2.getTarget().toTermfiguration();
 		Termfiguration a3 = _lemma3.getSource().toTermfiguration();
 		Termfiguration b3 = _lemma3.getTarget().toTermfiguration();
 		Termfiguration a4 = _lemma4.getSource().toTermfiguration();

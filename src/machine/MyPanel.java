@@ -12,6 +12,7 @@ import javax.swing.*;
 //import javax.swing.event.*;
 
 public class MyPanel extends JPanel {
+	
 	JMenuBar menuBar;
 	JMenu menu, menu2, submenu;
 	JMenuItem[] menuItems;
@@ -61,7 +62,7 @@ public class MyPanel extends JPanel {
 		menuBar.add(menu);
 
 		//a group of JMenuItems
-		menuItems = new JMenuItem[9];
+		menuItems = new JMenuItem[10];
 		menuItems[0] = new JMenuItem("Run all tests",
 		                         KeyEvent.VK_T);
 		menuItems[0].setAccelerator(KeyStroke.getKeyStroke(
@@ -94,6 +95,7 @@ public class MyPanel extends JPanel {
 		menu.addSeparator();
 		ButtonGroup group = new ButtonGroup();
 		fastRun = new JRadioButtonMenuItem("Fast run");
+		fastRun.setSelected(true);
 		//fastRun.setActionCommand("fast");
 		fastRun.setMnemonic(KeyEvent.VK_R);
 		group.add(fastRun);
@@ -101,7 +103,7 @@ public class MyPanel extends JPanel {
 
 		analyticRun = new JRadioButtonMenuItem("Analytic run");
 		//analyticRun.setActionCommand("analytic");
-		analyticRun.setSelected(true);
+		//analyticRun.setSelected(true);
 		analyticRun.setMnemonic(KeyEvent.VK_O);
 		group.add(analyticRun);
 		menu.add(analyticRun);
@@ -110,7 +112,7 @@ public class MyPanel extends JPanel {
 		menu.addSeparator();
 		leftEdge = new JCheckBoxMenuItem("Left edge");
 		leftEdge.setMnemonic(KeyEvent.VK_C);
-		leftEdge.setSelected(true);
+		//leftEdge.setSelected(true);
 		menu.add(leftEdge);
 
 		rightEdge = new JCheckBoxMenuItem("Right edge");
@@ -124,15 +126,23 @@ public class MyPanel extends JPanel {
 
 		//a submenu
 		menu.addSeparator();
-		submenu = new JMenu("A submenu");
+		submenu = new JMenu("Tape length");
 		submenu.setMnemonic(KeyEvent.VK_S);
 
-		menuItems[3] = new JMenuItem("An item in the submenu");
+		ButtonGroup group2 = new ButtonGroup();
+		menuItems[9] = new JRadioButtonMenuItem("Guaranteed long enough");
+		menuItems[9].setSelected(true);
+		group2.add(menuItems[9]);
+		submenu.add(menuItems[9]);
+		
+		menuItems[3] = new JRadioButtonMenuItem("One thousandth of End Step");
 		menuItems[3].setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_2, ActionEvent.ALT_MASK));
+		group2.add(menuItems[3]);
 		submenu.add(menuItems[3]);
 
-		menuItems[4] = new JMenuItem("Another item");
+		menuItems[4] = new JRadioButtonMenuItem("Constant million");
+		group2.add(menuItems[4]);
 		submenu.add(menuItems[4]);
 		menu.add(submenu);
 
@@ -384,8 +394,11 @@ public class MyPanel extends JPanel {
 				int num = Integer.parseInt(machineNoField.getText());
 				int lo = Integer.parseInt(startStepField.getText());
 				int hi = Integer.parseInt(endStepField.getText());
+				int mode=0;
+				if (menuItems[3].isSelected()) mode=1;
+				if (menuItems[4].isSelected()) mode=2;
 				boolean analytic = analyticRun.isSelected();
-				tests.run(num, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected());
+				tests.run(num, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected(), mode);
 			}
 		});
 	}
