@@ -15,7 +15,7 @@ Then click "Left edge" in the same menu, so that it is checked.
 Now you can easily run a machine from step 0 to step 10000,  
 and only the steps where the tape head is on the left will be output.
 
-## Big Stretch Test 2
+## Big Stretch Tape Test 2
 
 With "Machine" set to 1, "Start Step" 0 and "End Step" 1000, click the lower-right button, "Big Stretch Test 2."  
 You should see the following output:  
@@ -33,8 +33,8 @@ at steps 1, 3, 8, 12, 23, etc., and the differences in consecutive terms of this
 Big Stretch Test 2 really showcases how many steps can be run when the tape doesn't have to be output.  
 Set the start step to 10000000 (ten million), the end step to 100000000 (one hundred million),  
 and the machine number to anything from 1 to 43.  
-Then click on "Big Stretch Test 2" (don't click on "Run" or you'll have to force quit the program!)  
+Then click on "Big Stretch Test 2" (don't click on "Run" or you'll have to force quit the program!).  
 It will output up to 432 differences between consecutive "pushing phases" starting at or after step 10000000.  
-Examining spectra can also be a good way to determine if machines are likely equivalent to each other.  
+Examining spectra can be a good way to determine if machines are likely equivalent to each other.  
 
 ## [Next Page: Understanding Lemmas](lemmas.md)

@@ -73,7 +73,7 @@ and it rightly chose to use the lemma we described above.
 It applied that lemma to the CondensedConfiguration cc with an exponent of twelve on the active sequence,  
 and circumvented having to execute each of 36 steps explicitly.
 
-## Automatically Formulating Hypotheses and Proving Them
+## Automatically Formulating Hypotheses
 
 If you set the machine number to 1, start step to 0, and end step to 1000, and click "Longest Run" (either on the panel or in the "Run" menu),  
 you should get output like this:  
@@ -110,13 +110,13 @@ What this means is that the machine was in the same state looking at the same sy
 Since we can see that the machine was in state D looking at 0 on step 274, it was in state D looking at 0 on step 284.  
 Since we can see that the machine was in state D looking at 0 on step 304, it was in state D looking at 0 on step 314.  
 We have equivalences like that as well for __every__ pair n and n+10, where n is between 274 and 304  
-(although the state isn't necessarily D, and the bit isn't necessarily 0.)  
+(although the state isn't necessarily D, and the bit isn't necessarily 0).  
 This is a clue that the machine might be doing something very repetitive from step 274 to step 314,  
 and so the program tries to generate a lemma about it.  
 First, it guesses the length of a repeating bit sequence to use based on the fact that the tape head moves about 6 spaces left every 10 steps.  
 The source a is thus constructed based on what's on the nearest six bits going left from and including where the machine started at step #274,  
 and the target b based on what's on the same six bits after ten steps.
 
-Please see [src/images/flowchart.png](src/images/flowchart.png) to learn the similarities and differences among the different classes.
+See the [flowchart](../src/images/flowchart.png) to learn the similarities and differences among the different classes.
 
-The tests are in place to verify that extensions to the project aren't breaking its older functionality; read [tests.md](tests.md) to learn the purposes of the tests and what needs to be added to them.
+The tests are in place to verify that extensions to the project aren't breaking its older functionality; read [tests](tests.md) to learn the purposes of the tests and what needs to be added to them.

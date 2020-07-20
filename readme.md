@@ -50,7 +50,7 @@ There are also some very near equivalences, so at most 21 essentially different 
 # How Can I Help?
 
 If you have git and a Java IDE, you can fork and/or clone this project [(how to clone repositories)](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository);  
-if you don't have git, but you have a Java IDE, you can download this project as a zip file using the green Code button above.  
+if you don't have git, but you have a Java IDE, you can download the zip file using the green Code button above.  
 If you only have a Java runtime, you can download Turing.jar from the list of files above and run it.
 
 ## [Next Page: Using the Program](doc/program.md)
