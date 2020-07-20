@@ -35,15 +35,16 @@ Skelet (Georgi Georgiev) uploaded a [webpage](https://skelet.ludost.net/bb/nreg.
 alleging that his [program](https://skelet.ludost.net/bb/index.html) left only 43 Turing machines to be checked to finish the Busy Beaver of 5.  
 He calls these machines __HNR__, meaning "HardlyNonRegular."
 
-univerz (Pavel Kropitz) found automated proofs for twelve of these machines in April 2010, and [uploaded eleven of these proofs](https://web.archive.org/web/20130521181342/http://fu-solution.com/univerz/projects/unibb/machines/skelet/).
+univerz (Pavel Kropitz) found automated proofs for twelve of these machines in April 2010,  
+and [uploaded eleven of these proofs](https://web.archive.org/web/20130521181342/http://fu-solution.com/univerz/projects/unibb/machines/skelet/).
 
 By July 24, 2010, I found proofs taking care of eleven of Skelet's 43 machines.  
 These proofs were done by hand, and some (especially the one for HNR#12) are very hard to read.  
-I didn't know about univerz's proofs until shortly thereafter, so we ended up writing proofs for seven of the same machines.  
+I didn't know about univerz's proofs, so we ended up writing proofs for seven of the same machines.  
 Thus, 16 machines had been taken care of between us, and 27 remained.
 
-On July 19, 2020, I found several more machine equivalences, and so now 18 machines have been knocked out, and there remain 25.  
-But of these, there are also a few very near equivalences, so it is likely that they will only require at most 21 essentially different proofs.
+On July 19, 2020, I found some equivalences, so now 18 machines are done and there remain 25.  
+There are also some very near equivalences, so at most 21 essentially different proofs are needed.
 
 # The Program
 
