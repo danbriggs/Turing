@@ -1,0 +1,12 @@
+1 C1L 6 E0R 0 --- 9 C0R 2 D1R 5 A0L 4 A1R 3 D1R 7 A1L 8 B0R n/ind-proof #p=23 #sb=15774 ts=465
+1 C1L 5 A1L 0 --- 9 D0L 2 D1R 6 E0L 4 A1L 3 C0R 7 C1R 8 B0L n/ind-proof #p=23 #sb=15807 ts=465
+1 C1L 8 B0R 0 --- 9 D0R 2 D1L 7 A0R 3 E1R 6 C0L 5 C1R 4 E1R n/ind-proof #p=27 #sb=19126 ts=537
+1 C1L 8 B0R 0 --- 9 C0R 2 D1L 7 C0L 3 E0R 6 C1L 5 A0R 4 E1R n/ind-proof #p=10 #sb=3383 ts=81
+1 C1L 7 A0L 0 --- 9 A0R 2 D0R 6 A1L 4 E0R 3 D1R 5 A1L 8 B0R n/ind-proof #p=9 #sb=2886 ts=74
+1 B1L 0 --- 2 C0L 9 D0R 3 D1L 6 E0R 4 E1L 8 A0L 5 C1R 7 D0R n/ind-proof #p=16 #sb=7032 ts=141
+1 C1L 7 E1L 6 A1L 0 --- 2 D1R 9 E0R 5 B1R 3 E1R 4 C1R 8 A0L n/ind-proof #p=12 #sb=16883 ts=185
+1 C1L 9 A0R 8 A1L 0 --- 2 D1R 5 E1L 4 A1R 3 D0R 6 E0L 7 B0R n/ind-proof #p=9 #sb=7411 ts=265
+1 C1L 9 E0L 3 D1R 0 --- 2 B1L 7 E1L 6 A1R 4 E1R 8 A1L 5 D0R n/ind-proof #p=12 #sb=16903 ts=185
+1 C1L 5 B0R 6 E0R 0 --- 2 D0L 8 C1L 3 E1L 9 C0L 4 A1R 7 C0R n/ind-proof #p=8 #sb=3370 ts=138
+1 C1L 5 E0R 9 C0L 0 --- 2 D0L 8 B0L 3 D1R 4 A0R 7 A1R 6 D1L n/bt-proof #p=4 #sb=900 ts=26
+1 B1L 9 D1L 2 C1R 0 --- 7 E1R 3 D1R 4 E1L 6 C0R 8 A1L 5 D0L n/ind-proof #p=12 #sb=16892 ts=185

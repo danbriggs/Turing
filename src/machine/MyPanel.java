@@ -17,7 +17,6 @@ public class MyPanel extends JPanel {
 	JMenuItem[] menuItems;
 	JRadioButtonMenuItem fastRun, analyticRun;
 	JCheckBoxMenuItem leftEdge, rightEdge, stepNumbers;
-	boolean analytic;
 	
 	//private JButton normalActionTest;
 	private JButton longestRunTest;
@@ -49,7 +48,6 @@ public class MyPanel extends JPanel {
 	private JScrollPane jcomp13;
 
 	public MyPanel(Tests tests, List<Machine> machineList) {
-		analytic = false;
 		//construct components
 
 		//Create the menu bar.
@@ -97,13 +95,13 @@ public class MyPanel extends JPanel {
 		ButtonGroup group = new ButtonGroup();
 		fastRun = new JRadioButtonMenuItem("Fast run");
 		//fastRun.setActionCommand("fast");
-		fastRun.setSelected(true);
 		fastRun.setMnemonic(KeyEvent.VK_R);
 		group.add(fastRun);
 		menu.add(fastRun);
 
 		analyticRun = new JRadioButtonMenuItem("Analytic run");
 		//analyticRun.setActionCommand("analytic");
+		analyticRun.setSelected(true);
 		analyticRun.setMnemonic(KeyEvent.VK_O);
 		group.add(analyticRun);
 		menu.add(analyticRun);
@@ -112,6 +110,7 @@ public class MyPanel extends JPanel {
 		menu.addSeparator();
 		leftEdge = new JCheckBoxMenuItem("Left edge");
 		leftEdge.setMnemonic(KeyEvent.VK_C);
+		leftEdge.setSelected(true);
 		menu.add(leftEdge);
 
 		rightEdge = new JCheckBoxMenuItem("Right edge");
@@ -120,6 +119,7 @@ public class MyPanel extends JPanel {
 		
 		stepNumbers = new JCheckBoxMenuItem("Show step numbers");
 		stepNumbers.setMnemonic(KeyEvent.VK_I);
+		stepNumbers.setSelected(true);
 		menu.add(stepNumbers);
 
 		//a submenu
@@ -175,13 +175,13 @@ public class MyPanel extends JPanel {
 		
         machineNoLabel = new JLabel ("Machine #(1-43; 0 for all)");
         machineNoField = new JTextField (5);
-        machineNoField.setText("2");
+        machineNoField.setText("1");
         startStepLabel = new JLabel ("Start Step");
         startStepField = new JTextField (5);
-        startStepField.setText("10000000");
+        startStepField.setText("0");
         endStepLabel = new JLabel ("End Step");
         endStepField = new JTextField (5);
-        endStepField.setText("110000000");
+        endStepField.setText("1000");
         run = new JButton("Run");
 
 		
@@ -333,10 +333,6 @@ public class MyPanel extends JPanel {
 			frame.pack();
 			frame.setVisible(true);
 			}});
-		fastRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
-			analytic = false;}});
-		analyticRun.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
-			analytic = true;}});
 		longestRunTest.addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
 			int start = Integer.parseInt(startStepField.getText());
@@ -388,6 +384,7 @@ public class MyPanel extends JPanel {
 				int num = Integer.parseInt(machineNoField.getText());
 				int lo = Integer.parseInt(startStepField.getText());
 				int hi = Integer.parseInt(endStepField.getText());
+				boolean analytic = analyticRun.isSelected();
 				tests.run(num, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected());
 			}
 		});

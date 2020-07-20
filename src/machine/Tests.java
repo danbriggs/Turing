@@ -88,15 +88,18 @@ public class Tests {
 		//System.out.println(rightEdge);
 		try {
 			TapeLike t;
-			int idx = Math.min(top2,100000);
+			int idx = Math.min(top2,500000);
 			if (analytic)
 				t = new StretchTape(new int[idx*2+1],idx);
 			else
 				t = new Tape(new int[idx*2+1],idx);
 			int i;
 			for (i=0; i<top1; i++) m.act(t);
+			//System.out.println("Debug code:");
+			//System.out.println("analytic | i | top1 | leftEdge | t.onLeft() | rightEdge | t.onRight | shouldPrint");
 			for (i=top1; i<top2; i++) {
 				boolean shouldPrint = !analytic || i==top1 || leftEdge&&t.onLeft() || rightEdge&&t.onRight();
+				//System.out.println(analytic+" "+i+" "+top1+" "+leftEdge+" "+t.onLeft()+" "+rightEdge+" "+t.onRight()+" "+shouldPrint);
 				if (shouldPrint) {
 					if (stepNumbers)
 						System.out.print(i+" ");
@@ -551,7 +554,12 @@ public class Tests {
 	/**Tests for the functionality of tracking the periods when the machines are increasing the ranges of the StretchTapes.
 	 * Traditional is to go from 1000000 to 11000000 with a maximum of 30 data points and make the tape length numSteps/1650.*/
 	public boolean bigStretchTapeTest2(int num, int start, int stop) {
-		final int dividend = 1650;
+		int dividend = 1;
+		if (stop>15454) dividend = 10;
+		//Quick fix, janky
+		if (stop>1545454) dividend = (int)((stop-1000000)*11./60000);
+		// A dividend that grows linearly from 100 to 1650
+		if (stop>10000000) dividend = 1650;
 		String name = "Big Stretch Tape Test 2";
 		System.out.println("\n"+name+" beginning from step #"+start+" to step #"+stop+".");
 		boolean ok = true;
@@ -570,7 +578,7 @@ public class Tests {
 	private boolean bigStretchTapeTest2Helper(int num, int start, int stop, int dividend) {
 		int startingPoint = start; //Traditional: 1000000
 		int numSteps = stop-start; //Traditional: 10000000
-		int maxNumDataPts = 217;
+		int maxNumDataPts = 433;
 		Machine m=_machineList.get(num);
 		m.reset();
 		int tapeLen = numSteps/dividend;
