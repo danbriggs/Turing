@@ -1,0 +1,24 @@
+Please consult the proof of machines 2, 5, and 6 for an explanation of the notation.
+HNR#18: B1L H1L  C0L D0R  D1L E0R  E1L A0L  C1R D0R
+
+Theorem. HNR#18 never halts when run on a blank tape.
+
+Proof. Run HNR#18 using start step 6218 and end step 9648, Analytic run, All steps. You should observe the following:
+
+6218 A                                                          o00101001101010100111101010100&x
+7203 C                                       101010101001001010101001001001010010010101010101o&x
+9647 A o00101001101010100111101010100111010101001101001111101010100110100111110101010011010011&x,
+
+where x = 111101001010011001111010011111111111110100111111111111.
+(The output has been aligned to its actual alignment.)
+
+Moreover, step 7203 is the furthest right the tape head moves for the whole time
+(29 spaces to the right of where it was on step 6218).
+
+The tape is blank to the left of the tape head on steps 6218 and 9647;
+the first 30 bits starting at the tape head going right are identical at steps 6218 and 9647;
+and the machine is in state A at both steps.
+
+Thus, by induction, the machine continues moving the tape head 57 spaces left
+(the difference in position between step 6218 and step 9647)
+every 3429 steps starting with step 6218 forever.

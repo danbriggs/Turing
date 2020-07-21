@@ -1,0 +1,19 @@
+Please consult the proof of machines 2, 5, and 6 for an explanation of the notation.
+HNR#25: C1L A0R  A1L H1L  D1R E1L  A1R D0R  E0L B0R
+
+Theorem. HNR#25 never halts when run on a blank tape.
+
+Proof. Run HNR#25 using start step 6076 and end step 6694, Analytic run, All steps. You should observe the following:
+
+6076 D x&0010000100100001010000101000010100i
+6344 C x&o1101101110111011011101101110110111011101111
+6693 D x&100101000010010001001000110010000100001010000101000010100i,
+where x = 10010010000101000010010001001000100100010010001001000110010100110010100100100010010001001000100100010010001001000100100010010001100100001000010010000100.
+
+Moreover, step 6344 is the furthest left the tape head moves for the whole time (34 bits left).
+
+Note too that the last 35 bits ending at the tape head are the same on steps 6076 and 6693,
+and the machine is in the same state at those two steps.
+
+Thus the tape head will continue advancing 23 bits to the right (the difference from 6076 to 6693)
+every 617 steps forever.

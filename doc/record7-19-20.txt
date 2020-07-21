@@ -15,7 +15,7 @@ HNR# type  progress
 14
 15   log   
 16
-17   log?  easy
+17         easy
 18   lin   proved
 19
 20
@@ -28,7 +28,7 @@ HNR# type  progress
 BL_2
 28         proved$ ==21
 29         proved$ =23
-30   log   not too hard
+30         not too hard
 31   sqrt  proved by univerz; trivial
 32   log   proved by univerz
 33   log   
@@ -43,14 +43,14 @@ BL_2
 42         shown ~~19
 43
 
-OOPS!
+NOTE!
 In the new numbering, BL_2 is #27;
-in the old numbering in 2010; what is here #28 was #27.
+in the old numbering in 2010, what is here #28 was #27.
 So everything after 26 is offset by one!
 
 CHANGELOG(7/19/20):
 changed lin& to sqrt for #31, wrote "trivial"
-deleted "cbrt" from 28
+deleted "cbrt" from 27
 added $, ~, ~~, and == footnotes
 added progress for 28 and 39; 24 and 38; 42; 41
 changed progress from "not too hard" to "proved$ =23" for #29
@@ -58,6 +58,8 @@ added BL_2 row
 deleted log and sqrt# from "type" for #23 and #29
 added "proved by univerz" for #21, #31, #32
 wrote this changelog
+CHANGELOG(7/20/20):
+deleted "log?" from #17 and "log" from #30
 --------------------------------
 * 4 has log complexity.
 # 23 has fourth-root complexity.

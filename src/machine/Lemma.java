@@ -190,7 +190,10 @@ public class Lemma {
 	 * (If the opposite wing had contents, the form would be inappropriate for applying the inductive hypothesis directly.)
 	 * So in the following code we'll assume
 	 * (1) the tape head is in one wing
-	 * (2) the opposite wing is empty.*/
+	 * (2) the opposite wing is empty.
+	 * Note: so far, inductiveStepV2 is only capable of working with
+	 * ExtendedTermfigurations with an empty left wing.
+	 * We basically have to copy the code over carefully to make them work with the opposite orientation.*/
 	private boolean inductiveStepV2(Machine m, ExtendedTermfiguration a, ExtendedTermfiguration b, int[] numSteps) throws Exception {
 		int lca = a.getExponent()[1]; //linear coefficient of a's exponent
 		int lcb = b.getExponent()[1]; //linear coefficient of b's exponent

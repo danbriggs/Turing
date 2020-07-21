@@ -117,12 +117,4 @@ First, it guesses the length of a repeating bit sequence to use based on the fac
 The source a is thus constructed based on what's on the nearest six bits going left from and including where the machine started at step #274,  
 and the target b based on what's on the same six bits after ten steps.
 
-## See the [flowchart](../src/images/flowchart.png)
-
-to learn the similarities and differences among the different classes.
-
-The tests are in place to verify that extensions to the project aren't breaking its older functionality;
-
-## Read [tests](tests.md)
-
-to learn the purposes of the tests and what needs to be added to them.
+## [Next page: Proofs of non-halting](proofs.md)

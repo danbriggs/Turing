@@ -17,7 +17,7 @@ public class MyPanel extends JPanel {
 	JMenu menu, menu2, submenu;
 	JMenuItem[] menuItems;
 	JRadioButtonMenuItem fastRun, analyticRun;
-	JCheckBoxMenuItem leftEdge, rightEdge, stepNumbers;
+	JCheckBoxMenuItem leftEdge, rightEdge, allSteps, stepNumbers;
 	
 	//private JButton normalActionTest;
 	private JButton longestRunTest;
@@ -94,7 +94,7 @@ public class MyPanel extends JPanel {
 		//a group of radio button menu items
 		menu.addSeparator();
 		ButtonGroup group = new ButtonGroup();
-		fastRun = new JRadioButtonMenuItem("Fast run");
+		fastRun = new JRadioButtonMenuItem("Fast run (slow output)");
 		fastRun.setSelected(true);
 		//fastRun.setActionCommand("fast");
 		fastRun.setMnemonic(KeyEvent.VK_R);
@@ -118,6 +118,9 @@ public class MyPanel extends JPanel {
 		rightEdge = new JCheckBoxMenuItem("Right edge");
 		rightEdge.setMnemonic(KeyEvent.VK_H);
 		menu.add(rightEdge);
+		
+		allSteps = new JCheckBoxMenuItem("All steps");
+		menu.add(allSteps);
 		
 		stepNumbers = new JCheckBoxMenuItem("Show step numbers");
 		stepNumbers.setMnemonic(KeyEvent.VK_I);
@@ -397,8 +400,12 @@ public class MyPanel extends JPanel {
 				int mode=0;
 				if (menuItems[3].isSelected()) mode=1;
 				if (menuItems[4].isSelected()) mode=2;
-				boolean analytic = analyticRun.isSelected();
-				tests.run(num, lo, hi, analytic, leftEdge.isSelected(), rightEdge.isSelected(), stepNumbers.isSelected(), mode);
+				tests.run(num, lo, hi, analyticRun.isSelected(),
+									   leftEdge.isSelected(),
+									   rightEdge.isSelected(),
+									   allSteps.isSelected(),
+									   stepNumbers.isSelected(),
+									   mode);
 			}
 		});
 	}

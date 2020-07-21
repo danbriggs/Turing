@@ -1,0 +1,45 @@
+This proof is currently under construction.
+
+Please consult the proof of machines 2, 5, and 6 for an explanation of the notation.
+
+HNR#8: C1L B0R  H1L C0R  D1L C0L  E0R C1L  A0R E1R
+
+Lemma 1. HNR#8 turns A (111)^(N) with tape head at the leftmost bit
+                into A (010)^(N) with tape head off the right
+				  in 7N steps.
+
+Proof: observe the action of HNR#8 on a blank tape from step 1526 to step 1533.
+The tape head never leaves the three-bit window as it transforms 111 into 010.
+The result follows by induction.
+
+1526 A ...i11...
+1527 B ...0i1...
+1528 C ...00i...
+1529 C ...0o0...
+1530 D ...o10...
+1531 E ...0i0...
+1532 E ...01o...
+1533 A ...010... >
+
+Lemma 2. Under construction!
+
+Lemma 3 etc. Under construction!
+
+Lemma. HNR#8 turns (0)^(∞)o11101100(111)^(2+N)0001100000110000     &x C into
+                   (0)^(∞)o11101100(111)^(3+N)000110000011000000111&x C
+in 596+80N steps.
+(The extra spaces are not blank bits; they were just added to make this easier to look at.)
+
+Proof. Under construction! By induction.
+
+Theorem. HNR#8 never halts when run on a blank tape.
+
+Proof. Run HNR#8 using start step 1513 and end step 2109, Analytic run, All steps. You should observe the following:
+
+1513 C         o111011001111110001100000110000000001110111110000111
+2035 A  0111100100100101111110111111011111110o000001110111110000111
+2109 C o11101100111111111000110000011000000111000001110111110000111
+
+Moreover, step 2035 is the furthest to the right the tape head goes for the whole time.
+
+                         

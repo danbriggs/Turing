@@ -1,0 +1,1 @@
+void makemachines (machine*, int);

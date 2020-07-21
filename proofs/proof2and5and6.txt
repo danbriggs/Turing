@@ -1,0 +1,81 @@
+What follows is a proof that HNR #s 2, 5, and 6 never halt.
+
+HNR#2: C1L E0R  H1L C0R  D1R A0L  A1R D1R  A1L B0R
+HNR#5: C1L A1L  H1L D0L  D1R E0L  A1L C0R  C1R B0L
+HNR#6: C1L B0R  H1L D0R  D1L A0R  E1R C0L  C1R E1R
+
+Lemma. For any N ≥ 0, HNR#2 turns
+(*) B x&(11111111111111100111111111110001111100011111111100011111111100011111111100)^(N  )01111111110001111111110111000111111111111111111111111100i(0)^(∞)
+into
+    B x&(11111111111111100111111111110001111100011111111100011111111100011111111100)^(N+1)01111111110001111111110111000111111111111111111111111100i(0)^(∞)
+in 4328 steps.
+
+Here x denotes any bit sequence, finite or infinite, & denotes where the alignments of the two tapes match,
+i denotes the tape head on a 1 bit, and (0)^(∞) indicates that the tape is blank to the right of the tape head.
+An exponent denotes the number of repetitions of the given base sequence.
+
+Proof. Run HNR#2, displaying every step from 15169 to 19497
+(Analytic run, All steps, has fast enough output).
+Observe the following three steps:
+         
+15169 B x&01111111110001111111110111000111111111111111111111111100i
+16367 C x&o111111111111101110111011101110111111101110111111101111111111111111111111111110111
+19497 B x&1111111111111110011111111111000111110001111111110001111111110001111111110001111111110001111111110111000111111111111111111111111100i,
+where x = (0)^(∞)111000111110111000111110111000111110111000111110111000111110111000111110111000111110111000111110111000111110111000111110111000111111111111110001111100011111111100011111111100011111111100.
+
+(o denotes the tape head on a 0.)
+Note that the tape head never goes further to the left than where it is at step 16367, at any step along the way.
+Also note that steps 15169 and 19497 are of the form (*) from the statement of this lemma for N = 0, 1 respectively.
+The result follows by induction.
+
+Theorem. HNR#2 never halts when run on a blank tape.
+
+Proof. We have that HNR#2 reaches form (*) from the lemma for N = 0 at step 15169.
+Thus, by the lemma, it continues running for another 4328 steps forever.
+
+Proposition. HNR#5 from step 128 on is equivalent to HNR#2 from step 120 on.
+
+Proof. Notice that the tape for HNR#5 at step 128,
+128 D 111011111i000111,
+ is the reverse of the tape for HNR#2 at step 120, namely,
+120 C 111000i111110111.
+
+We show that the following relabeling scheme turns the transition diagram of HNR#5 into that of HNR#2:
+A -> D, B -> B, C -> A, D -> C, E -> E, L <-> R.
+
+Original:
+ 5: C1L A1L  H1L D0L  D1R E0L  A1L C0R  C1R B0L
+Now we shuffle the states according to the relabeling scheme without relabeling:
+    D1R E0L  H1L D0L  A1L C0R  C1L A1L  C1R B0L
+Now we relabel the states and the directions:
+    C1L E0R  H1R C0R  D1R A0L  A1R D1R  A1L B0R
+Finally, we compare this to the state diagram of HNR#2:	
+ 2: C1L E0R  H1L C0R  D1R A0L  A1R D1R  A1L B0R
+
+The only difference is the direction it moves if it ever halts, which is immaterial.
+
+Thus we have
+
+Theorem. HNR#5 never halts when run on a blank tape.
+
+Lemma. HNR#6 at step 24263 is in state B and has a tape identical to HNR#2 at step 15169 extended by a bit-sequence y to the left of the leftmost non-blank symbol,
+where y = 111000111110111000111110111000111110111000111110111000111110111000111110.
+
+Proof. Run each machine for the stated number of steps, and align the tape heads.
+
+Proposition. HNR#6 has a state diagram equivalent to that of HNR#2 with an equivalence that does not preserve the start state.
+
+Proof. Apply the following four transformations: E -> D -> C -> A -> E, to the state diagram of machine #6.
+ 6: C1L B0R  H1L D0R  D1L A0R  E1R C0L  C1R E1R.
+First, we move the transitions around without relabeling:
+    D1L A0R  H1L D0R  E1R C0L  C1R E1R  C1L B0R.
+Now relabel the states according to the same transformation:
+    C1L E0R  H1L C0R  D1R A0L  A1R D1R  A1L B0R.
+This is identical to the state diagram for HNR#2.
+ 2: C1L E0R  H1L C0R  D1R A0L  A1R D1R  A1L B0R
+
+Theorem: HNR#6 never halts when run on a blank tape.
+
+Proof: In the proof of non-halting of HNR#2, it was established that the tape head does not move left of the alignment symbol & after step 15169.
+Now HNR#6 at 24263 and HNR#2 at 15169 have tapes that are identical to the right of the alignment symbol; both are in state B; and B maps to B under the equivalence.
+Thus HNR#6 continues to run for another 4328 steps forever.

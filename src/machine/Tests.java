@@ -56,11 +56,11 @@ public class Tests {
 	/**mode 0: guaranteed long enough tape.
 	 * mode 1: end step divided by 1000.
 	 * mode 2: constant million.*/
-	public void run(int num,   int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers, int mode) {
+	public void run(int num,   int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode) {
 		if (num>0 && num<_machineList.size()) {
 			Machine m = _machineList.get(num);
 			m.reset();
-			run(m,top1,top2,analytic,leftEdge,rightEdge,stepNumbers, mode);
+			run(m,top1,top2,analytic,leftEdge,rightEdge,allSteps,stepNumbers, mode);
 		}
 		else if (num==0) {
 			Thread t = new Thread(new Runnable() {
@@ -68,7 +68,7 @@ public class Tests {
 		        	  for (int i=1; i<_machineList.size(); i++) {
 		  				Machine m = _machineList.get(i);
 		  				m.reset();
-		  				Tests.run(m,top1,top2,analytic,leftEdge,rightEdge,stepNumbers, mode);
+		  				Tests.run(m,top1,top2,analytic,leftEdge,rightEdge,allSteps,stepNumbers, mode);
 		  				System.out.println(UNIT_SEPARATOR);
 		        	  }
 		        }
@@ -76,7 +76,7 @@ public class Tests {
 			t.start();
 		}
 	}
-	private static void run(Machine m, int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean stepNumbers, int mode) {
+	private static void run(Machine m, int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode) {
 		//Warning: does not automatically reset m to state A
 		//Make sure to call m.reset() before invoking this function
 		//if you're interested in a clean run from a blank tape.
@@ -101,7 +101,7 @@ public class Tests {
 			//System.out.println("Debug code:");
 			//System.out.println("analytic | i | top1 | leftEdge | t.onLeft() | rightEdge | t.onRight | shouldPrint");
 			for (i=top1; i<top2; i++) {
-				boolean shouldPrint = !analytic || i==top1 || leftEdge&&t.onLeft() || rightEdge&&t.onRight();
+				boolean shouldPrint = !analytic || allSteps || i==top1 || i==top2-1|| leftEdge&&t.onLeft() || rightEdge&&t.onRight();
 				//System.out.println(analytic+" "+i+" "+top1+" "+leftEdge+" "+t.onLeft()+" "+rightEdge+" "+t.onRight()+" "+shouldPrint);
 				if (shouldPrint) {
 					if (stepNumbers)
@@ -826,7 +826,30 @@ public class Tests {
 			System.out.println("In extendedTermfigurationTest: "+e.getMessage());
 		}
 		System.out.println("lem proved: "+lem.isProved());
-		return lem.isProved();
+		
+		//What follows is an attempt to prove a Lemma for machine #2.
+		//Later will split this off into a "proofs" section.
+		//Issues right now are that the VeryTermfigurationLikes are of different lengths;
+		//how do we indicate being at the right end of the tape?
+		Lemma lem2 = null;
+		int[] repeatingBase = new int[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0,
+					                     0,0,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,0};
+		Termfiguration t2 = new Termfiguration(repeatingBase, new int[] {0,1});
+		Termfiguration u2 = new Termfiguration(repeatingBase, new int[] {1,1});
+		//we need the tape head to be at 56+74N and the state to be B
+		Termfiguration ta2 = new Termfiguration(t2, new int[] {56 ,74}, 1);
+		Termfiguration tb2 = new Termfiguration(u2, new int[] {128,74}, 1);
+		int[] rightWing = new int[]
+				{0,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1};
+		ExtendedTermfiguration eta2 = new ExtendedTermfiguration(ta2, rightWing);
+		ExtendedTermfiguration etb2 = new ExtendedTermfiguration(tb2, rightWing);
+		try {
+			lem2 = new Lemma(_machineList.get(2),eta2,etb2,new int[] {4328,0});
+		} catch (Exception e) {
+			System.out.println("In extendedTermfigurationTest: "+e.getMessage());
+		}
+		System.out.println("lem2 proved: "+lem2.isProved());
+		return lem.isProved() && lem2.isProved();
 	}
 }
 
