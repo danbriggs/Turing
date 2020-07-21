@@ -2,7 +2,8 @@
 
 There are two ways to prove that an HNR (or any other Turing machine) doesn't halt:  
 - by hand,
-- automatically.  
+- automatically.
+
 The most effective methods at the moment, however, seem to be somewhere in between the two.
 
 Back in 2010, I would go through the output of my C-subset C++ program and analyze it to write proofs by hand.  
@@ -75,5 +76,10 @@ and ~ when they seem to be conducting exactly the same process but with differen
 
 If all else fails, it might be a good idea to generate the set of all configurations that could lead to a halt state in 1, 2, 3,... steps.  
 So far, this method has not yielded results for any of the HNRs. But it has been an invaluable tool working with larger sets of simpler machines!
+
+## I just want the state diagrams for the 43 machines
+
+They're at the bottom of [record7-19-20.txt](record7-19-20.txt).  
+They were taken from [Skelet's nonregular machines page](https://skelet.ludost.net/bb/nreg.html).
 
 ## [Next page: extending the program code](extend.md)
