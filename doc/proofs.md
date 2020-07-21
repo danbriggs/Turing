@@ -49,7 +49,7 @@ in 596+80N steps.
 But depending on how many times the machine has to pass over the variable-length portion,  
 a proof by hand of a statement like this gets longer and longer.
 
-[Proof of non-halting for machine 8, using old program, rtf format, 2010](../Turing2010/proofs/8/proof for 8th.rtf)
+[Proof of non-halting for machine 8, using old program, rtf format, 2010](../Turing2010/proofs/8/proof%20for%208th.rtf)
 
 There may be more machines in the list that have precisely square-root growth;  
 then there are machines like 12&13 that have square-root growth, but it may not be precise.
@@ -61,12 +61,12 @@ One of the more immediate goals of the new program is to fully automate proofs f
 These concepts are defined analogously to the linear and square root growth outlined above.  
 When their growth rate is precise, a proof is generally arduous but manageable;  
 when imprecise, the sky's the limit on the difficulty.  
-See [record7-19-20.txt] for the growth rates of several of the 43 machines.
+See [record7-19-20.txt](record7-19-20.txt) for the growth rates of several of the 43 machines.
 
 ## Machine equivalences and near equivalences
 
 Several of the 43 machines are equivalent to each other, just as in the proof of 2, 5, and 6.  
-In [record7-19-20.txt] I use the symbol = when their actions match from the same step on;  
+In [record7-19-20.txt](record7-19-20.txt) I use the symbol = when their actions match from the same step on;  
 == when their actions match with an offset in step number;  
 ~~ when they exhibit matching action with slightly different tape contents in a region that seems never to be accessed, and neither has yet been proved to never halt;  
 and ~ when they seem to be conducting exactly the same process but with different "start" conditions, such that their contents never match exactly.
