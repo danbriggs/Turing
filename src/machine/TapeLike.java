@@ -3,6 +3,7 @@ package machine;
 public interface TapeLike {
 	public int[] getTape();
 	public int getIndex();
+	public int getNormalizedIndex(); //To discount left padding if it is present
 	public boolean onLeft();
 	public boolean onRight();
 	//WARNING: onLeft() and onRight()
@@ -11,6 +12,7 @@ public interface TapeLike {
 	//or it may mean the left (resp. right) of the current nonzero portion.
 	public void setIndex(int index) throws Exception;
 	public String toString();
+	public String getTrimAsString();
 	public void printTape();
 	public void printTrim();
 	public int getSymbol();

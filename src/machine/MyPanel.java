@@ -45,10 +45,12 @@ public class MyPanel extends JPanel {
     private JLabel endStepLabel;
     private JTextField endStepField;
     private JButton run;
+    private JButton runOnAll;
 	private JTextArea jcomp12;
 	private JScrollPane jcomp13;
-
+	private List<Machine> _machineList;
 	public MyPanel(Tests tests, List<Machine> machineList) {
+		_machineList = machineList;
 		//construct components
 
 		//Create the menu bar.
@@ -186,7 +188,7 @@ public class MyPanel extends JPanel {
 		jcomp12 = new JTextArea (5, 5);
 		jcomp13 = new JScrollPane(jcomp12);
 		
-        machineNoLabel = new JLabel ("Machine #(1-43; 0 for all)");
+        machineNoLabel = new JLabel ("Machine #(1–43; 0=all; -1=custom)");
         machineNoField = new JTextField (5);
         machineNoField.setText("1");
         startStepLabel = new JLabel ("Start Step");
@@ -196,6 +198,7 @@ public class MyPanel extends JPanel {
         endStepField = new JTextField (5);
         endStepField.setText("1000");
         run = new JButton("Run");
+        runOnAll = new JButton("Run On All Tapes");
 
 		
 		longestRunTest.setToolTipText ("hi");
@@ -232,8 +235,8 @@ public class MyPanel extends JPanel {
 		bigStretchTapeTest1.setFont(defaultFont);
 		bigStretchTapeTest2.setFont(defaultFont);
 		allProvedTest.setFont(defaultFont);
-
 		run.setFont(defaultFont);
+		runOnAll.setFont(defaultFont);
 		
 		jcomp12.setFont(new Font("Courier New",Font.PLAIN,12));
 		
@@ -266,6 +269,7 @@ public class MyPanel extends JPanel {
 		add(endStepLabel);
 		add(endStepField);
 		add(run);
+		add(runOnAll);
 		
 		//think 1512 x 945
 		//or 1366*.9 x 768 *.9
@@ -310,7 +314,8 @@ public class MyPanel extends JPanel {
 		endStepLabel.setBounds(x1+4*dx,y1+4*smallh,smallw,smallh);
 		endStepField.setBounds(x1+4*dx,y1+5*smallh,smallw,smallh);
 		int runY = y1+7*smallh;
-		run.setBounds(x1+4*dx,runY,smallw,fourthRow+mediumh-runY);
+		run.setBounds(x1+4*dx,runY,smallw,thirdRow+mediumh-runY);
+		runOnAll.setBounds(x1+4*dx,fourthRow,smallw,mediumh);
 		
 		menuItems[0].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
@@ -395,22 +400,91 @@ public class MyPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				jcomp12.setText("");
 				int num = Integer.parseInt(machineNoField.getText());
-				int lo = Integer.parseInt(startStepField.getText());
-				int hi = Integer.parseInt(endStepField.getText());
+				long lo = Long.parseLong(startStepField.getText());
+				long hi = Long.parseLong(endStepField.getText());
 				int mode=0;
 				if (menuItems[3].isSelected()) mode=1;
 				if (menuItems[4].isSelected()) mode=2;
-				tests.run(num, lo, hi, analyticRun.isSelected(),
+				if (num>=0) {
+				Run.run(_machineList, num, lo, hi, analyticRun.isSelected(),
 									   leftEdge.isSelected(),
 									   rightEdge.isSelected(),
 									   allSteps.isSelected(),
 									   stepNumbers.isSelected(),
-									   mode);
+									   mode,
+									   null);
+				}
+				else {
+	                String name = JOptionPane.showInputDialog((Component) e.getSource(),
+	                        "Input state diagram in the following format:\n"
+	                        + "B1R C1L C1R B1R D1R E0L A1L D1L H1R A0L\n"
+	                        + "having lo then hi transition for each state", null);
+	                String startConfig = JOptionPane.showInputDialog((Component) e.getSource(),
+	                        "Input start configuration using this format:\n"
+	                        + "1101010100o11110 C\n"
+	                        + "use O for 100 0s and I for 100 1s\n"
+	                        + "use % for 10000 0s and $ for 1000000 0s\n"
+	                        + "leave it blank for blank tape in state A", null);
+	                System.out.println("Machine: "+name);
+	                System.out.println("Config.: "+startConfig);
+	                try {
+	                	Machine m = SkeletPageParser.process(name);
+	    				Run.run(m, lo, hi, analyticRun.isSelected(),
+								   leftEdge.isSelected(),
+								   rightEdge.isSelected(),
+								   allSteps.isSelected(),
+								   stepNumbers.isSelected(),
+								   mode,
+								   startConfig);
+	                	
+	                } catch (Exception ex) {
+	                	System.out.println("Could not process input.");
+	                }
+				}
 			}
 		});
+		runOnAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Machine m = null;
+				int num = Integer.parseInt(machineNoField.getText());
+				if (num < 0) {
+	                String name = JOptionPane.showInputDialog((Component) e.getSource(),
+	                        "Input state diagram in the following format:\n"
+	                        + "B1R C1L C1R B1R D1R E0L A1L D1L H1R A0L\n"
+	                        + "having lo then hi transition for each state", null);
+                	try {
+                		m = SkeletPageParser.process(name);					
+                	} catch (Exception ex) {
+                		System.out.println("Could not process input.");
+                		return;
+                	}
+				}
+				else if (num > 0) m= _machineList.get(num);
+				JTextField xField = new JTextField(5);
+				JTextField yField = new JTextField(5);
+				
+				JPanel myPanel = new JPanel();
+				myPanel.add(new JLabel("Number of tapes to run it on:"));
+				myPanel.add(xField);
+				myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+				myPanel.add(new JLabel("Maximum number of steps to run it on each tape:"));
+				myPanel.add(yField);
+				
+				int result = JOptionPane.showConfirmDialog(null, myPanel, 
+		               "Please Enter numTapesToRun and maxNumSteps", JOptionPane.OK_CANCEL_OPTION);
+				if (result == JOptionPane.OK_OPTION) {
+					int numTapesToRun = Integer.parseInt(xField.getText());
+					long maxNumSteps = Long.parseLong(yField.getText());
+					Run.runOnAllTapes(m, numTapesToRun, maxNumSteps, 100000);
+				}
+			}
+		});
+
 	}
-
-
+	/*
+*/
+	
 	public void show (String[] args) {
 		JFrame frame = new JFrame ("MyPanel");
 		frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);

@@ -43,9 +43,10 @@ public class Machine {
 		if (_state==-1) throw new Exception("Cannot act with machine in halt state");
 		if (_state<-1||_state>=_transitions.length) throw new Exception("_state is "+_state+" but should be in range [0,"
 				+ (_transitions.length-1)+"]");
-		int direction = _transitions[_state].getToGo(tape.getSymbol());
-		int nextState = _transitions[_state].getNextState(tape.getSymbol());
-		tape.replace(_transitions[_state].getToWrite(tape.getSymbol()));
+		int symbol = tape.getSymbol();
+		int direction = _transitions[_state].getToGo(symbol);
+		int nextState = _transitions[_state].getNextState(symbol);
+		tape.replace(_transitions[_state].getToWrite(symbol));
 		tape.go(direction);
 		_state = nextState;
 	}
@@ -64,6 +65,7 @@ public class Machine {
 	/**Gets the number of states of this Machine.*/
 	public int numStates() {return _transitions.length;}
 	public int getState() {return _state;}
+	public void setState(int state) {_state = state;} //Do not overuse!
 	/**Returns an array consisting of all the Transitions of this Machine.*/
 	public Transition[] getTransitions() {return _transitions;}
 	public int getID() {return _id;}

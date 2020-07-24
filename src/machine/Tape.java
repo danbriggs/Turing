@@ -31,11 +31,13 @@ public class Tape implements TapeLike{
 		this.setTape(tape);
 		this.setIndex(index);
 	}
+	/**s should have exactly one o or i in it, denoting tape head at 0 or 1.*/
 	public Tape(String s) throws Exception {
-		//s should have exactly one o or i in it, denoting tape head at 0 or 1.
-		int lengthOfTape = s.length();
+		
+		int lengthOfString  = s.length();
+		
 		boolean headFound = false;
-		for (int i=0; i<lengthOfTape; i++) {
+		for (int i=0; i<lengthOfString; i++) {
 			if (s.charAt(i)=='o'||s.charAt(i)=='i') {
 				if (headFound) throw new Exception("In stringToTape(): Multiple tape heads found at indices "+_index+" and "+i+" in string s="+s);
 				_index = i;
@@ -43,16 +45,36 @@ public class Tape implements TapeLike{
 			}
 		}
 		if (!headFound) throw new Exception("No tape head found in string s="+s);
+		
+		int countOs       = s.length() - s.replace("O", "").length();
+		int countPercents = s.length() - s.replace("%", "").length();
+		int countDollars  = s.length() - s.replace("$", "").length();
+		int lengthOfTape  = lengthOfString + countOs*99 + countPercents*9999 + countDollars*999999;
+		//Special characters used to represent 100, 10000, and 1000000 0s, respectively
+		
 		_tape = new int[lengthOfTape];
-		for (int i=0; i<lengthOfTape; i++) {
+		for (int i=0, j=0; i<lengthOfString; i++) {
 			char c=s.charAt(i);
-			if (c=='0'||c=='o') _tape[i]=0;
-			else if (c=='1'||c=='i') _tape[i]=1;
+			if (c=='0'||c=='o') j+=1;
+			else if (c=='1'||c=='i') {_tape[j]=1; j+=1;}
+			else if (c=='O') j += 100;
+			else if (c=='%') j += 10000;
+			else if (c=='$') j += 1000000;
 			else throw new Exception("Unrecognized character "+c+" at position "+i+" in string "+s);
 		}
 	}
+	/**For this one use just 0s and 1s in the string.*/
+	public Tape(String s, int index) throws Exception {
+		this(
+				s.substring(0,index) +
+				s.substring(index,index+1)
+				.replace('0', 'o')
+				.replace('1', 'i')
+				+s.substring(index+1));
+	}
 	public int[] getTape() {return _tape;}
 	public int getIndex() {return _index;}
+	public int getNormalizedIndex() {return _index;}
 	public boolean onLeft() {
 		for (int i=_index-1; i>=0; i--) {
 			if (_tape[i]!=0) return false;

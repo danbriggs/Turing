@@ -5,7 +5,10 @@ Tape needs to not have to update values like this, in order to run as fast as po
 StretchTape needs to keep track of them, in order not to have to check every bit in order to be able to report them.
 Warning: getIndex() will jump after the edge of the allocated region is reached.*/
 public class StretchTape implements TapeLike{
+	//TODO: Consolidate the padding elements from pushing and from the constructor from a string
+	//      Consider making getIndex() ignore padding
 	private static int pushBlock = 10000;
+	private int _totalPadding;
 	private int[] _tape;
 	private int _index;
 	private int _min; //new
@@ -20,6 +23,7 @@ public class StretchTape implements TapeLike{
 		_index = index;
 		_min = index; //new
 		_max = index; //new
+		_totalPadding = index;
 		_borked = false;
 	}
 	public StretchTape(StretchTape t) {
@@ -28,6 +32,7 @@ public class StretchTape implements TapeLike{
 		_min = t.getMin();
 		_max = t.getMax();
 		_justPushed = t.getJustPushed();
+		_totalPadding = t.getTotalPadding();
 		_borked = t.getBorked();
 	}
 	public StretchTape(int[] tape) throws Exception {
@@ -52,6 +57,7 @@ public class StretchTape implements TapeLike{
 				break;
 			}
 		_index = index;
+		_totalPadding = 0;
 		_borked = false;
 	}
 	public StretchTape(Integer[] tape, int index) throws Exception {
@@ -70,37 +76,44 @@ public class StretchTape implements TapeLike{
 				_max=max;
 				break;
 			}
+		_totalPadding = 0;
 		_borked = false;
 	}
 	public StretchTape(String s) throws Exception {
-		int lengthOfTape = s.length();
-		if (!(lengthOfTape>0)) throw new Exception("In stringToTape(): string length must be greater than zero");
-		if (s.charAt(0)=='0'||s.charAt(lengthOfTape-1)=='0') throw new Exception("A StretchTape initialized from a string should not have leading or trailing zeros.");
-		_min=0;
-		_max=s.charAt(lengthOfTape-1);
+		this(s,50);
+	}
+	public StretchTape(String s, int padding) throws Exception {
+		int lengthOfString = s.length();
+		if (!(lengthOfString>0)) throw new Exception("In stringToTape(): string length must be greater than zero");
+		if (s.charAt(0)=='0'||s.charAt(lengthOfString-1)=='0') throw new Exception("A StretchTape initialized from a string should not have leading or trailing zeros.");
+		_min=padding+0;
+		_max=padding+lengthOfString-1;
 		boolean headFound = false;
-		for (int i=0; i<lengthOfTape; i++) {
+		for (int i=0; i<lengthOfString; i++) {
 			if (s.charAt(i)=='o'||s.charAt(i)=='i') {
 				if (headFound) throw new Exception("In stringToTape(): Multiple tape heads found at indices "+_index+" and "+i+" in string s="+s);
-				_index = i;
+				_index = padding + i;
 				headFound = true;
 			}
 		}
 		if (!headFound) throw new Exception("No tape head found in string s="+s);
-		_tape = new int[lengthOfTape];
-		for (int i=0; i<lengthOfTape; i++) {
+		_tape = new int[padding + lengthOfString + padding];
+		for (int i=0; i<lengthOfString; i++) {
 			char c=s.charAt(i);
-			if (c=='0'||c=='o') _tape[i]=0;
-			else if (c=='1'||c=='i') _tape[i]=1;
+			if (c=='0'||c=='o') _tape[padding + i]=0;
+			else if (c=='1'||c=='i') _tape[padding + i]=1;
 			else throw new Exception("Unrecognized character "+c+" at position "+i+" in string "+s);
 		}
+		_totalPadding = padding;
 		_borked = false;
 	}
 	public int[] getTape() {return _tape;}
 	public int getIndex() {return _index;}
+	public int getNormalizedIndex() {return _index-_totalPadding;}
 	public int getMin() {return _min;}
 	public int getMax() {return _max;}
 	public int getRange() {return _max-_min;}
+	public int getTotalPadding() {return _totalPadding;}
 	public boolean onLeft() {return _index==_min;}
 	public boolean onRight() {return _index==_max;}
 	private void setTape(int[] tape) {this._tape=tape; _borked = true;}
@@ -129,15 +142,7 @@ public class StretchTape implements TapeLike{
 	}
 	public void printTape() {System.out.println(toString());}
 	public void printTrim() {System.out.println(toString());}
-	/*public String getTrimAsString() {
-		String s=toString();
-		int i=0;
-		while (_tape[i]==0&&i<_index) i++;
-		int j=_tape.length-1;
-		while (_tape[j]==0&&j>_index) j--;
-		return s.substring(i,j+1);
-	}*/
-	//public void printTrim() {System.out.println(getTrimAsString());}
+	public String getTrimAsString() {return toString();}
 	public char toLetter(int symbol) {
 		if (symbol==0) return 'o';
 		if (symbol==1) return 'i';
@@ -173,6 +178,7 @@ public class StretchTape implements TapeLike{
 		_index+=pushBlock;
 		_min+=pushBlock;
 		_max+=pushBlock;
+		_totalPadding+=pushBlock;
 		_borked=true;
 	}
 	

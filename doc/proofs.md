@@ -62,7 +62,13 @@ One of the more immediate goals of the new program is to fully automate proofs f
 These concepts are defined analogously to the linear and square root growth outlined above.  
 When their growth rate is precise, a proof is generally arduous but manageable;  
 when imprecise, the sky's the limit on the difficulty.  
-See [record7-19-20.txt](record7-19-20.txt) for the growth rates of several of the 43 machines.
+See [record7-19-20.txt](record7-19-20.txt) for the growth rates of several of the 43 machines.  
+However, the growth rate may be misidentified in several cases based on local behavior.  
+For example, there are several machines (such as #32 and probably #15) that exhibit counting behavior  
+at least hundreds of millions of steps, and then go into a different phase.  
+It will be necessary to add capability for writing and automatically proving lemmas about "counting up" in a custom numeral system,  
+even just to be able to observe the action of these machines for longer.  
+This will be significantly more involved than the precisely square-root growth lemmas mentioned above, but not extraordinarily difficult.
 
 ## Machine equivalences and near equivalences
 

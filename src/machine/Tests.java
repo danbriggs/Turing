@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tests {
-	static final char UNIT_SEPARATOR = 31;
 	private Machine _m;
 	private List<Machine> _machineList;
 	private Lemma _lemma1;
@@ -53,73 +52,6 @@ public class Tests {
 		return ok;
 	}
 	
-	/**mode 0: guaranteed long enough tape.
-	 * mode 1: end step divided by 1000.
-	 * mode 2: constant million.*/
-	public void run(int num,   int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode) {
-		if (num>0 && num<_machineList.size()) {
-			Machine m = _machineList.get(num);
-			m.reset();
-			run(m,top1,top2,analytic,leftEdge,rightEdge,allSteps,stepNumbers, mode);
-		}
-		else if (num==0) {
-			Thread t = new Thread(new Runnable() {
-				public void run() {
-		        	  for (int i=1; i<_machineList.size(); i++) {
-		  				Machine m = _machineList.get(i);
-		  				m.reset();
-		  				Tests.run(m,top1,top2,analytic,leftEdge,rightEdge,allSteps,stepNumbers, mode);
-		  				System.out.println(UNIT_SEPARATOR);
-		        	  }
-		        }
-			});
-			t.start();
-		}
-	}
-	private static void run(Machine m, int top1, int top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode) {
-		//Warning: does not automatically reset m to state A
-		//Make sure to call m.reset() before invoking this function
-		//if you're interested in a clean run from a blank tape.
-		//If analytic is false, displays all steps from top1 to top2.
-		//If analytic is true, displays initial & final steps,
-		//as well as steps whenever the tape head is at the left/right edge, respectively,
-		//according to the value of leftEdge/rightEdge.
-		String name = "Run";
-		System.out.println("\n"+name+" beginning.");
-		System.out.println(m);
-		//System.out.println(leftEdge);
-		//System.out.println(rightEdge);
-		try {
-			TapeLike t;
-			int idx = Math.min(top2,500000);
-			if (analytic)
-				t = new StretchTape(new int[idx*2+1],idx);
-			else
-				t = new Tape(new int[idx*2+1],idx);
-			int i;
-			for (i=0; i<top1; i++) m.act(t);
-			//System.out.println("Debug code:");
-			//System.out.println("analytic | i | top1 | leftEdge | t.onLeft() | rightEdge | t.onRight | shouldPrint");
-			for (i=top1; i<top2; i++) {
-				boolean shouldPrint = !analytic || allSteps || i==top1 || i==top2-1|| leftEdge&&t.onLeft() || rightEdge&&t.onRight();
-				//System.out.println(analytic+" "+i+" "+top1+" "+leftEdge+" "+t.onLeft()+" "+rightEdge+" "+t.onRight()+" "+shouldPrint);
-				if (shouldPrint) {
-					if (stepNumbers)
-						System.out.print(i+" ");
-					System.out.print((char)(m.getState()+65)+" ");
-					t.printTrim();
-				}
-				m.act(t);
-			}
-			System.out.print((char)(m.getState()+65)+" ");
-		} catch (Exception e) {
-			System.out.println("ERROR: run() failed: "+e.getMessage());
-			return;
-		}
-		System.out.println(name+" successful.");
-		return;
-		
-	}
 	
 	/*public boolean normalActionTest(int num, int top1, int top2){
 		String name = "Normal Action Test";

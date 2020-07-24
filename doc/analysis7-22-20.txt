@@ -1,0 +1,6 @@
+(Or one could say late night 7/21)
+
+Does the 5-state Busy Beaver champion halt on all (finite) inputs?
+B1R C1L C1R B1R D1R E0L A1L D1L H1R A0L
+101o101 A: 47176872
+IiI E: 23730

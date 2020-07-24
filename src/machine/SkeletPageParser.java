@@ -76,7 +76,7 @@ public class SkeletPageParser {
 			return st.substring(currIndex+1,nextIndex).trim();
 		return "";
 	}
-	private Machine process(String st) throws Exception {
+	public static Machine process(String st) throws Exception {
 		StringTokenizer st1 = new StringTokenizer(st," ");
 		/*HNR1 = {
 		{{1,1},{-1,-1},{2,4}},
@@ -100,7 +100,7 @@ public class SkeletPageParser {
 		return new Machine(t);
 		//later include the IDs
 	}
-	private void spill(int[][] state, String s1, String s2) {
+	public static void spill(int[][] state, String s1, String s2) {
 		state[0][0] = (int)(s1.charAt(1)-'0');
 		state[0][1] = (int)(s2.charAt(1)-'0');
 		state[1][0] = decodeDirection(s1.charAt(2));
@@ -108,11 +108,11 @@ public class SkeletPageParser {
 		state[2][0] = decodeState(s1.charAt(0));
 		state[2][1] = decodeState(s2.charAt(0));
 	}
-	private int decodeState(char c) {
+	public static int decodeState(char c) {
 		if (c=='H') return -1;
 		return (int)(c-'A');
 	}
-	private int decodeDirection(char c) {
+	public static int decodeDirection(char c) {
 		if (c=='L') return -1;
 		if (c=='R') return 1;
 		return 0;

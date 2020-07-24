@@ -1,0 +1,31 @@
+(Or one could say late night 7/22)
+
+The 5-state busy beaver seems to halt on all the first 1000 tapes in lexicographic order,
+and in no case does it seem to take much longer than S(5) steps.
+
+5-state champion:
+B1R C1L C1R B1R D1R E0L A1L D1L H1R A0L
+
+4-state champion:
+1RB	1LA	1RH	1RD
+1LB	0LC	1LD	0RA
+
+That is to say, as a 5-stater,
+B1R B1L A1L C0L H1R D1L D1R A0R H0R H0R
+
+3-state Sigma champion:
+1RB	0RC	1LC
+1RH	1RB	1LA
+
+That is to say, as a 5-stater,
+B1R H1R C0R B1R C1L A1L H0R H0R H0R H0R
+
+3-state Shift champion:
+1RB 1LB 1LC
+1RH 0RC 1LA
+
+As a 5-stater,
+B1R H1R B1L C0R C1L A1L H0R H0R H0R H0R
+
+The 2-state champion.
+B1R B1L A1L H1R
