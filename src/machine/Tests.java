@@ -412,8 +412,15 @@ public class Tests {
 			LemmaList lemlist = new LemmaList(protolemlist);
 			Acceleration.act(cc, lemlist);
 			System.out.println("cc2.toString(): "+cc2.toString());
-			Acceleration.act(cc2, lemlist);
-			System.out.println("cc2.toString(): "+cc2.toString());
+			Configuration c2 = cc2.toConfiguration();
+			System.out.println(" c2.toString(): "+c2.toString());
+			for (int i=0; i<10; i++) {
+				int howManySteps = Acceleration.act(cc2, lemlist);
+				System.out.println("cc2.toString(): "+cc2.toString());
+				for (int j = 0; j < howManySteps; j++) lemlist.getMachine().actOnConfig(c2);
+				System.out.println(" c2.toString(): "+ c2.toString());
+				System.out.println("cc2.equals(c2): "+cc2.equals(c2));
+			}
 		} catch (Exception e) {
 			System.out.println("ERROR: actTest2() failed: "+e.getMessage());
 			return false;
@@ -514,7 +521,8 @@ public class Tests {
 	private boolean bigStretchTapeTest2Helper(int num, int start, int stop, int dividend) {
 		int startingPoint = start; //Traditional: 1000000
 		int numSteps = stop-start; //Traditional: 10000000
-		int maxNumDataPts = 433;
+		//int maxNumDataPts = 433; //Normally
+		int maxNumDataPts = 579;  //For HNR#14
 		Machine m=_machineList.get(num);
 		m.reset();
 		int tapeLen = numSteps/dividend;
@@ -542,10 +550,8 @@ public class Tests {
 				if (starts.size()>=maxNumDataPts) break;
 			}
 			System.out.print("HNR#"+num+": ");
-			//System.out.println("Starts: "+starts);
-			//System.out.println("Stops: "+stops);
-			//System.out.println("Differences: "+Tools.differences(stops,starts));
 			System.out.println(Tools.differences(starts));
+			System.out.println("Length of starts was "+starts.size()+" so this list of differences is length "+(starts.size()-1)+".");
 			if (t.getBorked()) System.out.println(""
 					+ "...but it is borked because it had to push left beyond index 0. "
 					+ "Try allocating more tape at the outset.");

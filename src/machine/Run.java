@@ -135,7 +135,7 @@ public class Run {
 					if (stepNumbers) System.out.print(i+" ");
 					System.out.print((char)(m.getState()+65)+" ");
 					String s = t.getTrimAsString();
-					if (s.length() < 1000) System.out.println(s);
+					if (s.length() < 10000) System.out.println(s);
 					else System.out.println("SWATH OF LENGTH "+s.length()+" TRUNCATED TO 1000 CHARS AT MIDDLE "+s.substring(0,500)+"..."+s.substring(s.length()-500));
 				} catch (Exception e) {
 					System.out.println("Error 2 in run() at step " + i + ": " +e.getMessage());

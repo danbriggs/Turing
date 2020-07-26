@@ -26,6 +26,9 @@ public class CondensedConfiguration extends CondensedTape {
 	public String expandToString() {
 		return Tools.asLetter(_state)+" "+super.expandToString()+" "+_index;
 	}
+	public Configuration toConfiguration() throws Exception {
+		return new Configuration(expandToArray(), _index, _state);
+	}
 	public boolean equals(Configuration c) {
 		if (_index!=c.getIndex()) return false;
 		if (_state!=c.getState()) return false;
@@ -36,11 +39,11 @@ public class CondensedConfiguration extends CondensedTape {
 		for (int i=0; i<asArray.length; i++) if (asArray[i]!=csTape[i]) return false;
 		return true;
 	}
+	/** Returns a 2-tuple consisting of
+	    the index of the term _index is in
+	    and the index of _index in that term.
+	    Returns {-1,_index} if _index is out of bounds.*/
 	public int[] termNumAndIndex() {
-		//Returns a 2-tuple consisting of
-		//the index of the term _index is in
-		//and the index of _index in that term.
-		//Returns {-1,_index} if _index is out of bounds.
 		if (_index<0) return new int[] {-1,_index};
 		int lengthOfTermsSoFar = 0;
 		Iterator<Term> i = getTermList().iterator();

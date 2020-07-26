@@ -62,6 +62,21 @@ public class Machine {
 		c.setState(_state);
 		_state = stateHolder; //sorry
 	}
+	/**Returns the direction to go afterwards.
+	 * Who knows how that'll need to be used.*/
+	public int actOnTerm(Term t, int index) throws Exception {
+		if (_state==-1) throw new Exception("Cannot act with machine in halt state");
+		if (_state<-1||_state>=_transitions.length) throw new Exception("_state is "+_state+" but should be in range [0,"
+				+ (_transitions.length-1)+"]");
+		if (t.getExponent() != 1) throw new Exception("Cannot act on Term with exponent other than 1.");
+		if (index < 0 || index >= t.getBase().length) throw new Exception("In actOnTerm(): index out of bounds for Term."); 
+		int symbol = t.getBase()[index];
+		int direction = _transitions[_state].getToGo(symbol);
+		int nextState = _transitions[_state].getNextState(symbol);
+		t.getBase()[index] = _transitions[_state].getToWrite(symbol);
+		_state = nextState;
+		return direction;
+	}
 	/**Gets the number of states of this Machine.*/
 	public int numStates() {return _transitions.length;}
 	public int getState() {return _state;}

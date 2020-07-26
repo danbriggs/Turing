@@ -13,6 +13,19 @@ public class CondensedTape {
 	public CondensedTape(List<Term> termlist) {_termlist = termlist;}
 	public List<Term> getTermList() {return _termlist;}
 	public void setTermList(List<Term> termlist) {_termlist = termlist;}
+	/**Returns -1 if it doesn't work out.*/
+	public int getBit(int termNum, int indexInTerm) {
+		Term term = _termlist.get(termNum);
+		int[] base = term.getBase();
+		int exponent = term.getExponent();
+		int baselen = base.length;
+		if (indexInTerm < baselen * exponent)
+			return base[indexInTerm % base.length];
+		return -1;
+	}
+	public int getExponent(int termNum) {
+		return _termlist.get(termNum).getExponent();
+	}
 	public void append(Term t) {
 		_termlist.add(t);
 	}
@@ -40,6 +53,61 @@ public class CondensedTape {
 			a.addAll(ab);
 		}
 		return a;
+	}
+	public int[] expandToArray() {
+		Iterator<Term> i=_termlist.iterator();
+		int length = 0;
+		while (i.hasNext()) {
+			Term t = i.next();
+			length += t.getBase().length * t.getExponent();
+		}
+		int[] arr = new int[length];
+		
+		i=_termlist.iterator();
+		int pos = 0;
+		while(i.hasNext()) {
+			Term t = i.next();
+			for (int j = 0; j < t.getExponent(); j++) {
+				for (int k = 0; k < t.getBase().length; k++) {
+					arr[pos] = t.getBase()[k];
+					pos++;
+				}
+			}
+		}
+		
+		return arr;
+	}
+	/**Splits an exponent 1 copy of the termNumth term's base off at whatever copy of the base indexInTerm indexes into,
+	 * as long as its exponent is greater than 1.
+	 * Thus the number of terms increases by 1 if at the first or last copy of the base, and 2 otherwise.
+	 * Returns a length 2 array consisting of the new term number and index therein of the pair if successful, null otherwise.
+	 * */
+	public int[] split(int termNum, int indexInTerm) {
+		Term term = _termlist.get(termNum);
+		int[] base = term.getBase();
+		int baselen = base.length;		
+		int whichCopyOfBase = indexInTerm / baselen;
+		int exponent = term.getExponent();
+		if (whichCopyOfBase >= exponent) {
+			System.out.println("indexInTerm too high in split()");
+			return null;
+		}
+		if (exponent == 1) return new int[] {termNum, indexInTerm};
+		if (whichCopyOfBase == 0) {
+			term.setExponent(exponent-1);
+			_termlist.add(termNum, new Term(base, 1));
+			//I made sure to add .clone() to the constructor 7/25/20
+			return new int[] {termNum, indexInTerm};
+		}
+		if (whichCopyOfBase == exponent -1) {
+			term.setExponent(exponent-1);
+			_termlist.add(termNum+1, new Term(base, 1));
+			return new int[] {termNum+1, indexInTerm - (exponent - 1)*baselen};		
+		}
+		_termlist.add(termNum+1, new Term(base, exponent-whichCopyOfBase-1));
+		_termlist.add(termNum  , new Term(base, whichCopyOfBase));
+		term.setExponent(1);
+		return new int[] {termNum+1, indexInTerm - whichCopyOfBase*baselen};
 	}
 	public String expandToString() {
 		List<Integer> a = expand();

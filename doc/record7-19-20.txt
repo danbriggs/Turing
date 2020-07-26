@@ -5,14 +5,14 @@ HNR# type  progress
 4    sqrt* proving
 5    lin   proved
 6    lin   proved
-7    cbrt  easy
+7    cbrt  easy?
 8    sqrt  proved
 9    log   proved
 10   log   proved
 11   sqrt  proved
 12   sqrt  proved
 13   sqrt  proved =12
-14
+14   lin   proved
 15   log   
 16
 17         easy
@@ -60,6 +60,10 @@ added "proved by univerz" for #21, #31, #32
 wrote this changelog
 CHANGELOG(7/20/20):
 deleted "log?" from #17 and "log" from #30
+CHANGELOG(7/24/20):
+Added "lin" and "proved" to #14.
+The proof can be found in analysis7-24-20.txt
+Added "?" to "easy" for HNR#7.
 --------------------------------
 * 4 has log complexity.
 # 23 has fourth-root complexity.

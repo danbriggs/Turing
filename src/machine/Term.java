@@ -3,7 +3,8 @@ package machine;
 public class Term {
 	private int[] _base;
 	private int _exponent;
-	public Term(int[] base, int exponent) {_base=base;_exponent=exponent;}
+	//New code 7/25/20: .clone()
+	public Term(int[] base, int exponent) {_base=base.clone();_exponent=exponent;}
 	public int[] getBase() {return _base;}
 	public int getExponent() {return _exponent;}
 	public int length() {return _base.length*_exponent;}

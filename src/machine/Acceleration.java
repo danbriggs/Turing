@@ -48,10 +48,38 @@ public class Acceleration {
 				return numSteps;
 			}
 		}
-		else {
-			//Just act for one step
+		//Just act for one step
+		return actForOneStep(lemlist.getMachine(), cc, termNum, indexInTerm);
+	}
+	
+	/**Have m act on cc for one step.
+	 * Returns 1 if successful, 0 otherwise.*/
+	public static int actForOneStep(Machine m, CondensedConfiguration cc, int termNum, int indexInTerm) {
+		//int bit = cc.getBit(termNum, indexInTerm);
+		//if (bit < 0) System.out.println("getBit() failed");
+		int exp = cc.getExponent(termNum);
+		//If the exponent is greater than 1, then we have to split the term
+		int[] retval;
+		if (exp > 1) {
+			retval = cc.split(termNum, indexInTerm);
+			if (retval == null || retval.length != 2) {
+				System.out.println("actForOneStep() didn't work");
+				return 0;
+			}
+			termNum = retval[0];
+			indexInTerm = retval[1];
 		}
-		return 0;
+		//Now the exponent is guarantted to be 1, so we can just act on the term directly
+		m.setState(cc.getState());
+		int toGo = 0;
+		try {
+			toGo = m.actOnTerm(cc.getTermList().get(termNum), indexInTerm);
+		} catch (Exception e) {
+			System.out.println("Error in actOnTerm(): "+e.getMessage());
+		}
+		cc.setState(m.getState()); //sorry
+		cc.setIndex(cc.getIndex()+toGo);
+		return toGo*toGo; //The number of steps it acted for.
 	}
 	
 	/**Attempts to look for a simple state-loop that m can enter while progressing to the left,

@@ -8,6 +8,7 @@ public class LemmaList {
 	//that the Lemmas of a given list all use the same machine,
 	//and (2) for locating the first Lemma applicable to a given term. 
 	private List<Lemma> _lemlist;
+	private Machine _m;
 	public LemmaList(List<Lemma> lemlist) throws Exception {
 		if (lemlist.size()==0) {_lemlist=lemlist; return;}
 		Machine firstMachine = lemlist.get(0).getMachine();
@@ -18,8 +19,10 @@ public class LemmaList {
 				throw new Exception("Can't make a LemmaList using Lemmas from distinct machines");
 		}
 		_lemlist=lemlist;
+		_m = firstMachine;
 	}
 	public List<Lemma> getLemList() {return _lemlist;}
+	public Machine getMachine() {return _m;}
 	public Integer[] firstMatchAndValue(Term term, int side, int state) {
 		//Returns a pair consisting of the index of the first Lemma applicable to term, if one exists (-1 otherwise),
 		//and the value of n to use in that Lemma's source's evalAt(n) to make it applicable.
