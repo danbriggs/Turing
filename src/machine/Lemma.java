@@ -279,4 +279,14 @@ public class Lemma {
 		else sb.append("Undecided.");
 		return sb.toString();
 	}
+	
+	public boolean equals(Lemma lem) {
+		//System.out.println("Reached Lemma.equals().");
+		if (_handedness!=lem.getHandedness()) {/*System.out.println("Reason 1.");*/ return false;}
+		if (!_m.equals(lem.getMachine())) {/*System.out.println("Reason 2.");*/ return false;}
+		if (!_a.equals(lem.getSource())) {/*System.out.println("Reason 3.");*/ return false;}
+		if (!_b.equals(lem.getTarget())) {/*System.out.println("Reason 4.");*/ return false;}
+		if (!Tools.equal(_numSteps, lem.getNumSteps())) {/*System.out.println("Reason 5.");*/ return false;}
+		return true;
+	}
 }

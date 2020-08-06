@@ -2,6 +2,7 @@ package machine;
 
 public interface TapeLike {
 	public int[] getTape();
+	public int length();
 	public int getIndex();
 	public int getNormalizedIndex(); //To discount left padding if it is present
 	public boolean onLeft();

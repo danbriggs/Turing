@@ -348,13 +348,22 @@ public class Acceleration {
 				}
 				results[skip][0] = bestNumMatches;
 				results[skip][1] = at;
-				if (at>=bestNumMatches) results[skip][2] = theTapeHead[at]-theTapeHead[at-bestNumMatches];
+				if (at-lower_bound>=bestNumMatches) {
+					System.out.println("Debug code:"
+							+ " skip = " + skip
+							+ " at = " + at
+							+ " bestNumMatches = " + bestNumMatches
+							+ " theTapeHead.length = swath = " + swath);
+					results[skip][2] = theTapeHead[at-lower_bound]-theTapeHead[at-lower_bound-bestNumMatches];
+				}
 				System.out.println("there are "+bestNumMatches+" matches at " + at);
 			}
 			System.out.println(Tools.matrixToString(results, true));
 			return results;
 		}
-		catch(Exception e) {System.out.println("Error in bestPattern: "+e.getMessage()); return null;}
+		catch(Exception e) {System.out.println("Error in bestPattern: "+e.getMessage());
+		e.printStackTrace();
+		return null;}
 	}
 	
 	/**Attempts to formulate and prove a Lemma about the action of m based on the patternArray passed in.
@@ -374,6 +383,15 @@ public class Acceleration {
 		System.out.println("The best skip was "+bestSkip+" with "+bestSwath+" repetitions ending at step "+endStep+" after a displacement of "+displacement+".");
 		float approxTermLength = (float)displacement/bestSwath*bestSkip;
 		int termLength = Math.round(approxTermLength);
+		float error = termLength - approxTermLength;
+		if (error > .15 || error < -.15) {
+			System.out.println("The signed term length was not close to an integer, so I'm not even going to bother.");
+			return null;
+		}
+		if (termLength == 0) {
+			System.out.println("The term length was zero, so I'm not even going to bother.");
+			return null;
+		}
 		System.out.println("The signed term length seems to be "+approxTermLength+", so I'm going to guess it's "+termLength+".");
 		StretchTape t1 = new StretchTape(endStep);
 		int startStep = endStep - bestSwath + 1;

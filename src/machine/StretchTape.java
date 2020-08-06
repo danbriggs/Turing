@@ -3,7 +3,8 @@ package machine;
 /**Class for being identical to a Tape, but with an awareness of the min & max indices ("stretch") accessed.
 Tape needs to not have to update values like this, in order to run as fast as possible;
 StretchTape needs to keep track of them, in order not to have to check every bit in order to be able to report them.
-Warning: getIndex() will jump after the edge of the allocated region is reached.*/
+Warning: getIndex() will jump after the edge of the allocated region is reached.
+     Use getNormalizedIndex() to make this not happen.*/
 public class StretchTape implements TapeLike{
 	//TODO: Consolidate the padding elements from pushing and from the constructor from a string
 	//      Consider making getIndex() ignore padding
@@ -18,6 +19,7 @@ public class StretchTape implements TapeLike{
 	public StretchTape() {
 		this(500);
 	}
+	/**getNormalizedIndex() will report 0 at outset no matter what.*/
 	public StretchTape(int index) {
 		_tape = new int[2*index+1];
 		_index = index;
@@ -108,6 +110,7 @@ public class StretchTape implements TapeLike{
 		_borked = false;
 	}
 	public int[] getTape() {return _tape;}
+	public int length() {return _tape.length;}
 	public int getIndex() {return _index;}
 	public int getNormalizedIndex() {return _index-_totalPadding;}
 	public int getMin() {return _min;}

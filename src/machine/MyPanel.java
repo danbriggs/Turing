@@ -16,7 +16,7 @@ public class MyPanel extends JPanel {
 	JMenuBar menuBar;
 	JMenu menu, menu2, submenu;
 	JMenuItem[] menuItems;
-	JRadioButtonMenuItem fastRun, analyticRun;
+	JRadioButtonMenuItem fastRun, analyticRun, acceleratedRun, sixteenMacroRun;
 	JCheckBoxMenuItem leftEdge, rightEdge, allSteps, stepNumbers;
 	
 	//private JButton normalActionTest;
@@ -110,6 +110,14 @@ public class MyPanel extends JPanel {
 		group.add(analyticRun);
 		menu.add(analyticRun);
 
+		acceleratedRun = new JRadioButtonMenuItem("Accelerated run");
+		group.add(acceleratedRun);
+		menu.add(acceleratedRun);
+		
+		sixteenMacroRun = new JRadioButtonMenuItem("16-Macro run");
+		group.add(sixteenMacroRun);
+		menu.add(sixteenMacroRun);
+		
 		//a group of check box menu items
 		menu.addSeparator();
 		leftEdge = new JCheckBoxMenuItem("Left edge");
@@ -398,6 +406,10 @@ public class MyPanel extends JPanel {
 		run.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				int typeOption = 0;
+				if (analyticRun.isSelected()) typeOption = 1;
+				else if (acceleratedRun.isSelected()) typeOption = 2;
+				else if (sixteenMacroRun.isSelected()) typeOption = 3;
 				jcomp12.setText("");
 				int num = Integer.parseInt(machineNoField.getText());
 				long lo = Long.parseLong(startStepField.getText());
@@ -406,7 +418,7 @@ public class MyPanel extends JPanel {
 				if (menuItems[3].isSelected()) mode=1;
 				if (menuItems[4].isSelected()) mode=2;
 				if (num>=0) {
-				Run.run(_machineList, num, lo, hi, analyticRun.isSelected(),
+				Run.run(_machineList, num, lo, hi, typeOption,
 									   leftEdge.isSelected(),
 									   rightEdge.isSelected(),
 									   allSteps.isSelected(),
@@ -429,7 +441,7 @@ public class MyPanel extends JPanel {
 	                System.out.println("Config.: "+startConfig);
 	                try {
 	                	Machine m = SkeletPageParser.process(name);
-	    				Run.run(m, lo, hi, analyticRun.isSelected(),
+	    				Run.run(m, lo, hi, typeOption,
 								   leftEdge.isSelected(),
 								   rightEdge.isSelected(),
 								   allSteps.isSelected(),

@@ -1,5 +1,6 @@
 package machine;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class LemmaList {
 		_lemlist=lemlist;
 		_m = firstMachine;
 	}
+	public int size() {return _lemlist.size();}
 	public List<Lemma> getLemList() {return _lemlist;}
 	public Machine getMachine() {return _m;}
 	public Integer[] firstMatchAndValue(Term term, int side, int state) {
@@ -38,5 +40,23 @@ public class LemmaList {
 			if (!_lemlist.get(i).isProved()) return false;
 		}
 		return true;
+	}
+	public void reduce() {
+		List<Lemma> newLemlist = new ArrayList<Lemma>();
+		Iterator<Lemma> lemIterator = _lemlist.iterator();
+		while (lemIterator.hasNext()) {
+			Lemma currLem=lemIterator.next();
+			Iterator<Lemma> newLemIterator = newLemlist.iterator();
+			boolean wasFound = false;
+			while (newLemIterator.hasNext()) {
+				Lemma currNewLem = newLemIterator.next();
+				if (currNewLem.equals(currLem)) {
+					wasFound = true;
+					break;
+				}
+			}
+			if (!wasFound) newLemlist.add(currLem);
+		}
+		_lemlist = newLemlist;
 	}
 }

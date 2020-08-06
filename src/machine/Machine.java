@@ -4,6 +4,7 @@ public class Machine {
 	private Transition[] _transitions;
 	private int _state;
 	private int _id;//for keeping track of Skelet's IDs
+	private KMachine _speedup; //For 16-bit machine analogous to this
 	public Machine() {
 		//For creating a null machine. Little purpose.
 		_transitions = null;
@@ -112,5 +113,14 @@ public class Machine {
 		if (m.numStates()!=n) return false;
 		for (int i=0; i<n; i++) if (!getTransitions()[i].equals(m.getTransitions()[i])) return false;
 		return true;
+	}
+	public boolean hasSpeedUp() {return _speedup!=null;}
+	public KMachine getSpeedUp() {return _speedup;}
+	public void setSpeedUp(KMachine m16) {
+		if (!m16.getMachine().equals(this)) {
+			System.out.println("In Machine.setSpeedUp(): wrong machine");
+			return;
+		}
+		_speedup = m16;
 	}
 }

@@ -72,7 +72,12 @@ public class Tape implements TapeLike{
 				.replace('1', 'i')
 				+s.substring(index+1));
 	}
+	public Tape(Tape t) {
+		_tape = t.getTape().clone();
+		_index = t.getIndex();
+	}
 	public int[] getTape() {return _tape;}
+	public int length() {return _tape.length;}
 	public int getIndex() {return _index;}
 	public int getNormalizedIndex() {return _index;}
 	public boolean onLeft() {
@@ -125,5 +130,14 @@ public class Tape implements TapeLike{
 	public void go(int direction) throws Exception {
 		if (direction!=-1 && direction!=1) throw new Exception("Direction must be -1 or 1 but is "+direction);
 		_index+=direction;
+	}
+	public boolean equals(Tape t) {
+		if (_index != t.getIndex()) return false;
+		if (_tape.length != t.length()) return false;
+		int[] otherTape = t.getTape();
+		for (int i=0; i<_tape.length; i++) {
+			if (_tape[i]!=otherTape[i]) return false;
+		}
+		return true;
 	}
 }

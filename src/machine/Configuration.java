@@ -1,5 +1,10 @@
 package machine;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 public class Configuration extends Tape {
 	private int _state;
 	public Configuration(int[] tape) throws Exception {
@@ -21,10 +26,24 @@ public class Configuration extends Tape {
 		if (s.charAt(0)=='@') _state=-1;
 		else _state = (int)(s.charAt(0)-'A');
 	}
+	public Configuration(Tape t, int state) {
+		super(t);
+		_state = state;
+	}
+	public Configuration(Tape t) {
+		this(t,0);
+	}
 	public String toString() {
 		String s = (char)(getState()+65)+" ";
 		if (getIndex()==-1) s+='<';
 		s+=super.toString();
+		if (getIndex()==getTape().length) s+='>';
+		return s;
+	}
+	public String getTrimAsString() {
+		String s = (char)(getState()+65)+" ";
+		if (getIndex()==-1) s+='<';
+		s+=super.getTrimAsString();
 		if (getIndex()==getTape().length) s+='>';
 		return s;
 	}
@@ -44,4 +63,73 @@ public class Configuration extends Tape {
 		return true;
 	}
 	public Configuration copy() throws Exception {return new Configuration(getTape().clone(),getIndex(),getState());}
+	
+	/** Looks through this's tape for patterns matching patternList's first pattern etc.
+	 *  and generates a condensed configuration with a Term for each repeating sequence
+	 *  and a Term for each stretch between and beyond repeating sequences.*/
+	public CondensedConfiguration condenseUsing (List<int[]> patternList) {
+		return condenseUsing(patternList, 2);
+	}
+	
+	/** Makes a new term only if the number of repetitions is at least numtimes.*/
+	public CondensedConfiguration condenseUsing (List<int[]> patternList, int numtimes) {
+		int[] toSkip = new int[length()]; //If the given bit begins a sequence of bits already involved in a pattern,
+		                                  //record the number of bits involved
+		int[] baselens = new int[length()];
+		int[] exponents = new int[length()];
+		Iterator<int[]> i = patternList.iterator();
+		while (i.hasNext()) {
+			int[] currPattern = i.next();
+			int lowerThreshold = currPattern.length * numtimes;
+			for (int j = 0; j < length(); j++) {
+				if (toSkip[j] > 0) {
+					j += toSkip[j] - 1; //Because continuing will already add one
+					continue;
+				}
+				int numMatches = numMatches(currPattern, j, toSkip);
+				if (numMatches >= lowerThreshold) {
+					int numTerms = numMatches / currPattern.length;
+					toSkip[j] = numTerms * currPattern.length;
+					baselens[j] = currPattern.length;
+					exponents[j] = numTerms;
+					j += toSkip[j] - 1;
+				}
+			}
+		}
+		//Now we go through getTape() and make terms wherever there was an exponent.
+		//We put the stuff before, between and after into exponent 1 terms. 
+		List<Term> termlist = new ArrayList<Term>();
+		int index = 0;
+		int nextIndex = 0;
+		Term t = null;
+		while (index < length()) {
+			int baselen = baselens[index];
+			int exponent = exponents[index];
+			if (exponent > 0) {
+				nextIndex = index + baselen * exponent;
+				t = new Term(Arrays.copyOfRange(getTape(), index, index + baselen), exponent);
+			}
+			else {
+				//The next index will be wherever a new pattern starts or the end of the tape.
+				while (nextIndex < length() && exponents[nextIndex] == 0) nextIndex++;
+				t = new Term(Arrays.copyOfRange(getTape(), index, nextIndex), 1);
+			}
+			termlist.add(t);
+			index = nextIndex;
+		}
+		return new CondensedConfiguration(termlist, getIndex(), getState());
+	}
+	
+	/** Returns the number of bits matching pattern repeated this's tape has starting at index.
+	 *  Stops counting if it encounters a nonzero entry in toSkip.*/
+	private int numMatches(int[] pattern, int index, int[] toSkip) {
+		int total = 0;
+		int patlen = pattern.length;
+		for (int i = index; i < length(); i++) {
+			if (toSkip[i] != 0) break;
+			if (getTape()[i] == pattern[total % patlen]) total++;
+			else break;
+		}
+		return total;
+	}
 }

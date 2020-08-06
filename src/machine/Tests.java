@@ -10,6 +10,7 @@ public class Tests {
 	private Lemma _lemma2;
 	private Lemma _lemma3;
 	private Lemma _lemma4;
+	LemmaList _lemlist;
 	
 	public Tests(List<Machine> machineList) {
 		this();
@@ -18,10 +19,70 @@ public class Tests {
 		_lemma2 = null;
 		_lemma3 = null;
 		_lemma4 = null;
+		_lemlist = null;
+		boolean kMachineTestPassed = kMachineTest();
+		System.out.println("kMachineTest() passed: "+kMachineTestPassed);
 	}
 	public Tests() {
 		try {_m = new Machine(Tools.HNR1);} 
 		catch (Exception e) {System.out.println("ERROR: Failed to initialize Machine HNR1: "+e.getMessage());}
+	}
+	
+	/**Tests the construction of a fast KMachine from HNR#1
+	 * and the fast actOnBitTape method.*/
+	public boolean kMachineTest() {
+		_m.reset();
+		KMachine HNR1K = new KMachine(_machineList.get(1));
+		for (int i = 0; i < 256; i++) {
+			byte testByte = (byte)(-128+i);
+			byte compByte;
+			try {
+				int[] eightIntArray = BitTape.toBinary(testByte);
+				System.out.println ("Byte "+testByte+" gives "+Tools.toString(eightIntArray));
+				compByte = BitTape.fromBinary(eightIntArray);
+			} catch (Exception e) {
+				System.out.println("to/from binary exception on "+testByte+": "+e.getMessage());
+				return false;
+			}
+			if (compByte !=testByte) {
+				System.out.println("to/from binary failed: "+compByte+"!="+testByte);
+				return false;
+			}
+		}
+		Tape t = null;
+		BitTape bt = null;
+		try {
+			t = new Tape(new int[240],120);
+			bt = new BitTape(t);
+		} catch (Exception e) {
+			System.out.println("Tape or BitTape construction failed: "+e.getMessage());
+			return false;
+		}
+		int numSteps = 0;
+		System.out.println("bitTape: " + numSteps + " " + (char)(HNR1K.getState()+65) + " " + bt.toString());
+		System.out.println("regular: " + numSteps + " " + (char)(_m.getState()+65) + " " + t.toString());
+		try {
+			for (int i=0; i<100; i++) {
+				int currSteps = HNR1K.actOnBitTape(bt);
+				for (int j=0; j<currSteps; j++) _m.act(t);
+				numSteps += currSteps;
+				System.out.println("bitTape: " + numSteps + " " + (char)(HNR1K.getState()+65) + " " + bt.toString());
+				System.out.println("regular: " + numSteps + " " + (char)(_m.getState()+65) + " " + t.toString());
+				if (bt.getIndex() != t.getIndex()) {
+					System.out.println("Unequal indices.");
+					return false;
+				}
+				if (!Tools.areIdentical(bt.getTape(), t.getTape())) {
+					System.out.println("Unequal arrays.");
+					return false;
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("actOnBitTape() failed: "+e.getMessage());
+			return false;
+		}
+		_m.reset();
+		return true;
 	}
 	
 	public boolean runTests(int num, int start, int stop) {
@@ -321,6 +382,25 @@ public class Tests {
 		}
 		System.out.println("c as a String:       "+c);
 		System.out.println("cc equals c: "+cc.equals(c));
+		
+		System.out.println("Now testing Configuration.condenseUsing(List<int[]> patternList)");
+		int numStepsToDo = 500;
+		Configuration cNew = new Configuration(new Tape(numStepsToDo)); //Prepared to do at least numStepsToDo steps
+		try {for (int i = 0; i < numStepsToDo; i++) _m.actOnConfig(cNew);}
+		catch (Exception e) {
+			System.out.println("Error in condensedConfigurationTest(): "+e.getMessage());
+			return false;
+		}
+		System.out.println("The configuration: "+cNew.getTrimAsString());
+		int[] pattern1 = new int[] {0,1,1};
+		int[] pattern2 = new int[] {0};
+		List<int[]> patternList = new ArrayList<int[]>();
+		patternList.add(pattern1);
+		patternList.add(pattern2);
+		CondensedConfiguration ccNew = cNew.condenseUsing(patternList);
+		System.out.println("Condenses to: "+ccNew);
+		System.out.println("Equal? " + ccNew.equals(cNew));
+		
 		System.out.println(name+" successful.");
 		return true;
 	}
@@ -342,14 +422,49 @@ public class Tests {
 		protolemlist.add(_lemma2);
 		LemmaList lemlist;
 		try {
-			lemlist = new LemmaList(protolemlist);
+			if (_lemlist == null) lemlist = new LemmaList(protolemlist);
+			else lemlist = _lemlist;
 			System.out.println("CondensedConfiguration cc before Acceleration.act(): "+cc);
 			Acceleration.act(cc, lemlist);
 			System.out.println("CondensedConfiguration cc after Acceleration.act():  "+cc);
 		} catch (Exception e) {
-			System.out.println("ERROR: actTest1() failed: "+e.getMessage());
+			System.out.println("ERROR 1: actTest1() failed: "+e.getMessage());
 			return false;
 		}
+		
+		System.out.println("\nNow we begin the comprehensive Act test. Are you ready?");
+		int numStepsToDo = 500;
+		Configuration cNew = new Configuration(new Tape(numStepsToDo)); //Prepared to do at least numStepsToDo steps
+		try {for (int i = 0; i < numStepsToDo; i++) _m.actOnConfig(cNew);}
+		catch (Exception e) {
+			System.out.println("Error 2 in actTest1(): "+e.getMessage());
+			return false;
+		}
+		System.out.println("The configuration: "+cNew.getTrimAsString());
+		int[] pattern1 = new int[] {0,1,1};
+		int[] pattern2 = new int[] {1,1,0};
+		int[] pattern3 = new int[] {0};
+		List<int[]> patternList = new ArrayList<int[]>();
+		patternList.add(pattern1);
+		patternList.add(pattern2);
+		patternList.add(pattern3);
+		CondensedConfiguration ccNew = cNew.condenseUsing(patternList);
+		for (int i = numStepsToDo; i < numStepsToDo * 2; i++) {
+			try {
+				int numStepsPassed = Acceleration.act(ccNew, lemlist);
+				ccNew.glueOutward();
+				if (numStepsPassed < 1) {
+					System.out.println("In actTest1(): numStepsPassed < 1");
+					return false;
+				}
+				i +=  numStepsPassed - 1;
+				System.out.println(i + " " + ccNew);
+			} catch (Exception e) {
+				System.out.println("Error 3 in actTest1(): "+e.getMessage());
+				return false;
+			}
+		}
+		
 		System.out.println(name+" successful.");
 		return true;
 	}
@@ -402,14 +517,15 @@ public class Tests {
 		CondensedTape ct2 = new CondensedTape(termlist2);
 		CondensedConfiguration cc2 = new CondensedConfiguration(ct2, 0, 2);
 
-		
+		LemmaList lemlist = null;
 		try {
 			_lemma3 = new Lemma(_m,t1,t2,numSteps);
 			_lemma4 = new Lemma(_m,t3,t4,numSteps2);
 			System.out.println("_lemma4: "+_lemma4);
 			List<Lemma> protolemlist = new ArrayList<Lemma>();
 			protolemlist.add(_lemma3);
-			LemmaList lemlist = new LemmaList(protolemlist);
+			protolemlist.add(_lemma4);
+			lemlist = new LemmaList(protolemlist);
 			Acceleration.act(cc, lemlist);
 			System.out.println("cc2.toString(): "+cc2.toString());
 			Configuration c2 = cc2.toConfiguration();
@@ -421,10 +537,18 @@ public class Tests {
 				System.out.println(" c2.toString(): "+ c2.toString());
 				System.out.println("cc2.equals(c2): "+cc2.equals(c2));
 			}
+			List<Term> termlist3 = new ArrayList<Term>();
+			termlist3.add(new Term(new int[100], 9));
+			CondensedConfiguration cc3 = new CondensedConfiguration(new CondensedTape(termlist3), 450, 0);
+			for (int i=0; i<100; i++) {
+				Acceleration.act(cc3, lemlist);
+				System.out.println("cc3.toString(): "+cc3.toString());
+			}
 		} catch (Exception e) {
 			System.out.println("ERROR: actTest2() failed: "+e.getMessage());
 			return false;
 		}
+		_lemlist = lemlist;
 		System.out.println(name+" successful.");
 		return true;
 	}

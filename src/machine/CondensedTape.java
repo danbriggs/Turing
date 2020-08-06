@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-//Later: include index for tape head?
-
 public class CondensedTape {
 	private List<Term> _termlist;
 	public CondensedTape() {_termlist = new ArrayList<Term>();}
 	public CondensedTape(List<Term> termlist) {_termlist = termlist;}
 	public List<Term> getTermList() {return _termlist;}
+	public Term get(int i) {return _termlist.get(i);}
+	public int numTerms() {return _termlist.size();}
 	public void setTermList(List<Term> termlist) {_termlist = termlist;}
 	/**Returns -1 if it doesn't work out.*/
 	public int getBit(int termNum, int indexInTerm) {
@@ -118,5 +118,22 @@ public class CondensedTape {
 			sb.append(ii.intValue());
 		}
 		return sb.toString();
+	}
+	protected void glueExcluding(int termNum) {
+		//Order is important here!
+		glueToward(termNum + 1, 1);
+		glueToward(termNum - 1, -1);
+	}
+	/**Glues termNum together with its neighbor adjacent in the direction dir if possible.*/
+	protected void glueToward(int currNum, int dir) {
+		int nextNum = currNum + dir;
+		if (nextNum >= 0 && nextNum < numTerms()) {
+			Term currTerm = get(currNum);
+			Term nextTerm = get(nextNum);
+			if (Tools.areIdentical(currTerm.getBase(), nextTerm.getBase())) {
+				_termlist.set(currNum, new Term(currTerm.getBase(), currTerm.getExponent() + nextTerm.getExponent()));
+				_termlist.remove(nextNum);
+			}
+		}
 	}
 }

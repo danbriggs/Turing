@@ -1,5 +1,7 @@
 package machine;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -10,11 +12,11 @@ public class Run {
 	 * mode 2: constant million.
 	 * initConfig should have two tokens: tape contents and state.
 	 * Leave it null or empty for blank tape in state A.*/
-	public static void run(List<Machine> _machineList, int num,   long top1, long top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode, String initConfig) {
+	public static void run(List<Machine> _machineList, int num,   long top1, long top2, int typeOption, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode, String initConfig) {
 		if (num>0 && num<_machineList.size()) {
 			Machine m = _machineList.get(num);
 			m.reset();
-			run(m,top1,top2,analytic,leftEdge,rightEdge,allSteps,stepNumbers, mode, initConfig);
+			run(m,top1,top2,typeOption,leftEdge,rightEdge,allSteps,stepNumbers, mode, initConfig);
 		}
 		else if (num==0) {
 			Thread t = new Thread(new Runnable() {
@@ -23,7 +25,7 @@ public class Run {
 		  				Machine m = _machineList.get(i);
 		  				m.reset();
 		  				System.out.println("For HNR#"+i+":");
-		  				Run.run(m,top1,top2,analytic,leftEdge,rightEdge,allSteps,stepNumbers, mode, initConfig);
+		  				Run.run(m,top1,top2,typeOption,leftEdge,rightEdge,allSteps,stepNumbers, mode, initConfig);
 		  				System.out.println(UNIT_SEPARATOR);
 		        	  }
 		        }
@@ -31,7 +33,18 @@ public class Run {
 			t.start();
 		}
 	}
-	public static void run(Machine m, long top1, long top2, boolean analytic, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode, String initConfig) {
+	public static void run(Machine m, long top1, long top2, int typeOption, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode, String initConfig) {
+		//TODO: mode hasn't been implemented yet
+		//Thousandth of end step, constant million, etc.
+		if (typeOption == 2) {
+			runAccelerated(m,top1,top2,leftEdge,rightEdge,allSteps,stepNumbers,mode,initConfig);
+			return;
+		}
+		else if (typeOption == 3) {
+			runSixteenMacro(m,top1,top2,leftEdge,rightEdge,allSteps,stepNumbers,mode,initConfig);
+			return;
+		}
+		boolean analytic = (typeOption == 1);
 		//Warning: does not automatically reset m to state A
 		//Make sure to call m.reset() before invoking this function
 		//if you're interested in a clean run from a blank tape.
@@ -49,19 +62,7 @@ public class Run {
 		//Default 0s just to avoid compiler warnings
 		try {
 			TapeLike t = null;
-			if (initConfig!=null && initConfig.length()>0) {
-				StringTokenizer st = new StringTokenizer(initConfig);
-				if (st.countTokens()!=2) throw new Exception("Could not process Tape field.");
-				String tapeContents = st.nextToken();
-				tapeContents = tapeContents.replaceAll("I", "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
-				String stateIn = st.nextToken();
-				if (stateIn.length()!=1) throw new Exception("State must be one character.");
-				char c=stateIn.charAt(0);
-				if (c<'A'||c>'E') throw new Exception("State must be from A to E.");
-				m.setState(c-'A');
-				if (analytic) t = new StretchTape(tapeContents);
-				else t = new Tape(tapeContents);
-			}
+			if (initConfig!=null && initConfig.length()>0) setTapeLikeAndState(t, m, initConfig, analytic);
 			else {
 				int idx = (int) Math.min(top2,500000);
 				//int idx = (int) Math.min(top2,50000000); //Custom for HNR#14
@@ -190,6 +191,7 @@ public class Run {
 			numForBinary++;
 		}
 	}
+	
 	/**Returns whether the machine halted.
 	 * Does _not_ automatically reset m before or after the run.*/
 	public static boolean runSimple(Machine m, TapeLike t, long maxNumSteps, int numTapesRun) {
@@ -209,5 +211,193 @@ public class Run {
 		if (m.getState() >= 0)
 			System.out.println("Did not halt on tape " + numTapesRun + " in " + numSteps + "steps.");
 		return m.getState() < 0;
+	}
+	
+	/**Runs the machine normally until top1,
+	 * then condenses the tape according to patternList (?)
+	 * and applies lemmaList (?) to accelerate the run from then until top2.*/
+	public static void runAccelerated(Machine m, long top1, long top2, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode, String initConfig) {
+		//Probably amn't going to implement mode.
+		if (top1 > Integer.MAX_VALUE) {
+			System.out.println("In runAccelerated(): Error 1: Start step too high.");
+			return;
+		}
+		int top1int = (int) top1;
+		List<Lemma> protolemlist = new ArrayList<Lemma>();
+		for (int braky = 0; braky < 10; braky ++) { //breaks the run from 0 to top1int into 10 phases, looks for best patterns for each phase
+			int[][] patternArray = Acceleration.bestPattern(m, top1int * braky / 10, top1int * (braky + 1) / 10, 30); //30 is max pattern length
+			if (patternArray == null) return;
+			Lemma lem = Acceleration.guessLemma(m, patternArray);
+			if (lem == null) {
+				System.out.println("No hypothesis was found.");
+				continue;
+			}
+			if (lem.isProved()) {
+				System.out.println("The Lemma was proved!");
+				protolemlist.add(lem);
+			}
+			else System.out.println("The Lemma was not proved.");
+		}
+		LemmaList lemlist = null;
+		try {lemlist = new LemmaList(protolemlist);}
+		catch (Exception e) {
+			System.out.println("In runAccelerated(): Error 2: " + e.getMessage());
+			return;
+		}
+		lemlist.reduce();
+		if (lemlist == null || lemlist.size() == 0) {
+			System.out.println("In runAccelerated(): there was no lemma.");
+			return;
+		}
+		System.out.println("Found "+lemlist.size()+" distinct lemmas.");
+		//Warning: patternArray in Acceleration and patternList in Configuration are completely different.
+		Tape t = null;
+		if (initConfig!=null && initConfig.length()>0) {
+			try {setTapeLikeAndState(t, m, initConfig, false);}
+			catch (Exception e) {
+				System.out.println("In runAccelerated(): Error 3: " + e.getMessage());
+				return;
+			}
+		}
+		else {
+			int idx = (int) Math.min(top2,500000);
+			try {
+				t = new Tape(new int[idx*2+1],idx);
+				m.reset();
+			} catch (Exception e) {
+				System.out.println("In runAccelerated(): Error 4: " + e.getMessage());
+				return;
+			}
+		}
+		Configuration c = new Configuration (t, m.getState());
+		System.out.println("Configuration c at step 0: ");
+		System.out.println(c.getTrimAsString());
+		for (int i = 0; i < top1int; i++) {
+			try {m.actOnConfig(c);}
+			catch (Exception e) {
+				System.out.println("In runAccelerated(): Error 5: " + e.getMessage());
+				return;
+			}
+		}
+		System.out.println("Configuration c at step " + top1int + ": ");
+		System.out.println(c.getTrimAsString());
+		List<int[]> patternList = new ArrayList<int[]>();
+		Iterator<Lemma> lemIterator = lemlist.getLemList().iterator();
+		while (lemIterator.hasNext()) {
+			Lemma lem = lemIterator.next();
+			int[] pattern = lem.getSource().getBase();
+			Iterator<int[]> patternIterator = patternList.iterator();
+			boolean wasFound = false;
+			while (patternIterator.hasNext()) {
+				int[] patternToCompare = patternIterator.next();
+				if (Tools.areIdentical(pattern, patternToCompare)) wasFound = true;
+			}
+			if (!wasFound) patternList.add(pattern);
+		}
+		patternList.add(new int[] {0});
+		System.out.println("Now condensing the following configuration: ");
+		System.out.println(c.getTrimAsString());
+		CondensedConfiguration cc = c.condenseUsing(patternList);
+		System.out.println("Obtained: ");
+		System.out.println(cc.toString());
+		int numSteps = top1int;
+		try {
+			while (numSteps <= top2) {
+				int numPassed = Acceleration.act(cc, lemlist);
+				if (numPassed == 0) {
+					System.out.println("In runAccelerated: numPassed == 0");
+					break;
+				}
+				cc.glueOutward();
+				numSteps += numPassed;
+				if (numPassed > 1) System.out.println(numPassed + " steps passed.");
+				System.out.println(numSteps + " " + cc);
+			}
+		} catch (Exception e) {
+			System.out.println("In runAccelerated(): Error 6: " + e.getMessage());
+			return;
+		}
+	}
+	
+	/**Approximates a good tape index to start with from a number of steps to run.
+	 * Assumes at most square root machine.
+	 * Guaranteed to be divisible by 8.*/
+	private static int reduceNumber (long n) {
+		if (n < 100) return (int)(n+8)/8*8;
+		else if (n < 10000) return 96 + (int)(n/10)/8*8;
+		else return Math.min(1000000,  10 * (int) (Math.sqrt((double)n))/8*8);
+	}
+	
+	public static void runSixteenMacro(Machine m, long top1, long top2, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode, String initConfig) {
+		if (initConfig!=null && initConfig.length()!=0) {
+			System.out.println("Run.runSixteenMacro() does not yet support custom tapes.");
+			return;
+		}
+		KMachine m16 = null;
+		if (top1>0) {
+			m16 = new KMachine(m);
+			m16.loadFreqTable(top1, reduceNumber(top1));
+			m.setSpeedUp(m16);
+		}
+		else {
+			if (m.hasSpeedUp()) m16 = m.getSpeedUp();
+			else m16 = new KMachine(m);
+		}
+		runSixteenMacro(m16,top2,leftEdge,rightEdge,allSteps,stepNumbers,mode,initConfig);
+	}
+	
+	public static void runSixteenMacro(KMachine m16, long top2, boolean leftEdge, boolean rightEdge, boolean allSteps, boolean stepNumbers, int mode, String initConfig) {	
+		if (m16==null) {
+			System.out.println("Null 16-Machine in runSixteenMacro()");
+			return;
+		}
+		m16.reset();
+		int index = reduceNumber(top2);
+		Tape t = null;
+		try {
+			t = new Tape(new int[index*2],index);
+		} catch (Exception e) {
+			System.out.println("Run.runSixteenMacro() failed: "+e.getMessage());
+			return;
+		}
+		BitTape bt = new BitTape(t);
+		long numSteps = 0;
+		int currSteps = 0;
+		if (stepNumbers) System.out.print(numSteps + " ");
+		System.out.println((char)(m16.getState()+65) + " " + bt.getTrimAsString());
+		while (numSteps < top2) {
+			if (allSteps) {
+				if (stepNumbers) System.out.print(numSteps + " ");
+				System.out.println((char)(m16.getState()+65) + " " + bt.getTrimAsString());
+			}
+			try {
+				currSteps = m16.actOnBitTape(bt);
+			} catch (Exception e) {
+				System.out.println("In Run.runSixteenMacro(), actOnBitTape() failed: "+e.getMessage());
+				return;
+			}
+			if (currSteps<=0) {
+				System.out.println("In Run.runSixteenMacro(), actOnBitTape() returned "+currSteps+" steps.");
+				return;
+			}
+			numSteps+=currSteps;
+		}
+		if (stepNumbers) System.out.print(numSteps + " ");
+		System.out.println((char)(m16.getState()+65) + " " + bt.getTrimAsString());
+		m16.doStatistics();
+	}
+	
+	public static void setTapeLikeAndState(TapeLike t, Machine m, String initConfig, boolean analytic) throws Exception {
+		StringTokenizer st = new StringTokenizer(initConfig);
+		if (st.countTokens()!=2) throw new Exception("Could not process Tape field.");
+		String tapeContents = st.nextToken();
+		tapeContents = tapeContents.replaceAll("I", "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+		String stateIn = st.nextToken();
+		if (stateIn.length()!=1) throw new Exception("State must be one character.");
+		char c=stateIn.charAt(0);
+		if (c<'A'||c>'E') throw new Exception("State must be from A to E.");
+		m.setState(c-'A');
+		if (analytic) t = new StretchTape(tapeContents);
+		else t = new Tape(tapeContents);
 	}
 }

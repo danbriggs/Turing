@@ -58,4 +58,7 @@ public class CondensedConfiguration extends CondensedTape {
 		}
 		return new int[] {-1,_index};
 	}
+	public void glueOutward() {
+		glueExcluding(termNumAndIndex()[0]);
+	}
 }
