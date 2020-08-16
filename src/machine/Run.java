@@ -61,8 +61,8 @@ public class Run {
 		long stepForMinTapeHead = 0, stepForMaxTapeHead = 0;
 		//Default 0s just to avoid compiler warnings
 		try {
-			TapeLike t = null;
-			if (initConfig!=null && initConfig.length()>0) setTapeLikeAndState(t, m, initConfig, analytic);
+			TapeLike t = new Tape();//Just for the reference
+			if (initConfig!=null && initConfig.length()>0) t = getTapeLikeAndSetState(m, initConfig, analytic);
 			else {
 				int idx = (int) Math.min(top2,500000);
 				//int idx = (int) Math.min(top2,50000000); //Custom for HNR#14
@@ -74,12 +74,14 @@ public class Run {
 					//t = new Tape(new int[idx*2+1],idx/2); //Custom for HNR#14
 				}
 			}
+			System.out.println("Is t null? "+(t==null));
 			long i;
 			for (i=0; i<top1; i++) m.act(t);
 			minTapeHead = t.getNormalizedIndex();
 			maxTapeHead = t.getNormalizedIndex();
 			stepForMinTapeHead = top1;
 			stepForMaxTapeHead = top1;
+			System.out.println("Debug code: analytic: "+analytic+"; allSteps: "+allSteps);
 			if (analytic) {
 				for (i=top1; i<top2; i++) {
 					int currState = m.getState();
@@ -126,6 +128,7 @@ public class Run {
 			else {
 				//Normal Tape, show only the first and last configurations
 				try {
+					System.out.println("Here 1");
 					if (stepNumbers) System.out.print(i+" ");
 					System.out.print((char)(m.getState()+65)+" ");
 					t.printTrim();
@@ -251,9 +254,9 @@ public class Run {
 		}
 		System.out.println("Found "+lemlist.size()+" distinct lemmas.");
 		//Warning: patternArray in Acceleration and patternList in Configuration are completely different.
-		Tape t = null;
+		TapeLike t = null;
 		if (initConfig!=null && initConfig.length()>0) {
-			try {setTapeLikeAndState(t, m, initConfig, false);}
+			try {t = getTapeLikeAndSetState(m, initConfig, false);}
 			catch (Exception e) {
 				System.out.println("In runAccelerated(): Error 3: " + e.getMessage());
 				return;
@@ -269,7 +272,7 @@ public class Run {
 				return;
 			}
 		}
-		Configuration c = new Configuration (t, m.getState());
+		Configuration c = new Configuration ((Tape)t, m.getState());
 		System.out.println("Configuration c at step 0: ");
 		System.out.println(c.getTrimAsString());
 		for (int i = 0; i < top1int; i++) {
@@ -387,7 +390,7 @@ public class Run {
 		m16.doStatistics();
 	}
 	
-	public static void setTapeLikeAndState(TapeLike t, Machine m, String initConfig, boolean analytic) throws Exception {
+	public static TapeLike getTapeLikeAndSetState(Machine m, String initConfig, boolean analytic) throws Exception {
 		StringTokenizer st = new StringTokenizer(initConfig);
 		if (st.countTokens()!=2) throw new Exception("Could not process Tape field.");
 		String tapeContents = st.nextToken();
@@ -397,7 +400,10 @@ public class Run {
 		char c=stateIn.charAt(0);
 		if (c<'A'||c>'E') throw new Exception("State must be from A to E.");
 		m.setState(c-'A');
+		TapeLike t = null;
 		if (analytic) t = new StretchTape(tapeContents);
 		else t = new Tape(tapeContents);
+		System.out.println("TapeLike and state set:\n"+t.getTrimAsString()+" "+Tools.asLetter(m.getState()));
+		return t;
 	}
 }

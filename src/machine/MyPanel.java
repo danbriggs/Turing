@@ -36,6 +36,7 @@ public class MyPanel extends JPanel {
 	private JButton bigStretchTapeTest1;
 	private JButton bigStretchTapeTest2;
 	private JButton allProvedTest;
+	private JButton machineSpecific;
 	//private JCheckBox jcomp10;
 	//private JCheckBox jcomp11;
     private JLabel machineNoLabel;
@@ -49,6 +50,7 @@ public class MyPanel extends JPanel {
 	private JTextArea jcomp12;
 	private JScrollPane jcomp13;
 	private List<Machine> _machineList;
+	
 	public MyPanel(Tests tests, List<Machine> machineList) {
 		_machineList = machineList;
 		//construct components
@@ -207,7 +209,7 @@ public class MyPanel extends JPanel {
         endStepField.setText("1000");
         run = new JButton("Run");
         runOnAll = new JButton("Run On All Tapes");
-
+        machineSpecific = new JButton("<html>Machine<br>Specific</html>");
 		
 		longestRunTest.setToolTipText ("hi");
 
@@ -219,7 +221,7 @@ public class MyPanel extends JPanel {
 
 		//adjust size and set layout
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int screenWidth = (int)(screenSize.width*.9);
+		int screenWidth = (int)(screenSize.width*.99);//was .9
 		int screenHeight = (int)(screenSize.height*.9);
 		
 		//setPreferredSize (new Dimension (1500, 1000));
@@ -245,6 +247,7 @@ public class MyPanel extends JPanel {
 		allProvedTest.setFont(defaultFont);
 		run.setFont(defaultFont);
 		runOnAll.setFont(defaultFont);
+		machineSpecific.setFont(defaultFont);
 		
 		jcomp12.setFont(new Font("Courier New",Font.PLAIN,12));
 		
@@ -278,12 +281,13 @@ public class MyPanel extends JPanel {
 		add(endStepField);
 		add(run);
 		add(runOnAll);
+		add(machineSpecific);
 		
 		//think 1512 x 945
 		//or 1366*.9 x 768 *.9
-		int x1 = (int)(.0462*screenWidth);
-		int y1 = (int)(.074*screenHeight);
-		int dx = (int)(.19*screenWidth);
+		int x1 = (int)(.010*screenWidth);//was .0462
+		int y1 = (int)(.010*screenHeight);//was .074
+		int dx = (int)(.18*screenWidth);//was .19
 		int dy = (int)(.0952*screenHeight);
 		int w = (int)(dx*.867);
 		int h=(int)(0.0794*screenHeight);
@@ -294,7 +298,7 @@ public class MyPanel extends JPanel {
 		int thirdRow = (int)(y1+2*dy-.3*h);
 		int fourthRow = (int)(y1+3*dy-.6*h);
 		int fifthRow = (int)(y1+4*dy-.9*h);
-		int scrollPaneWidth = (int)(.903*screenWidth);
+		int scrollPaneWidth = (int)(.98*screenWidth);//was .903
 		int scrollPaneHeight = screenHeight - fifthRow;
 		//set component bounds (only needed by Absolute Positioning)
 		longestRunTest.setBounds (x1, y1, w, mediumh);
@@ -324,6 +328,8 @@ public class MyPanel extends JPanel {
 		int runY = y1+7*smallh;
 		run.setBounds(x1+4*dx,runY,smallw,thirdRow+mediumh-runY);
 		runOnAll.setBounds(x1+4*dx,fourthRow,smallw,mediumh);
+		int x6 = x1+5*dx+smallw-w;
+		machineSpecific.setBounds(x6,runY,x1 + scrollPaneWidth - x6,fourthRow+mediumh-runY);
 		
 		menuItems[0].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
@@ -492,7 +498,15 @@ public class MyPanel extends JPanel {
 				}
 			}
 		});
-
+		machineSpecific.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int num = Integer.parseInt(machineNoField.getText());
+				int start = Integer.parseInt(startStepField.getText());
+				int stop = Integer.parseInt(endStepField.getText());
+				Analysis.analyze(_machineList, num, start, stop);
+			}
+		});
 	}
 	/*
 */

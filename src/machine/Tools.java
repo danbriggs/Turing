@@ -103,6 +103,17 @@ public class Tools {
 		}
 		return result;
 	}
+	public static long longPow(long a, int b) {
+		if (b<0) {
+			System.out.println("Warning: Integer exponentiation for "+a+"^"+b+"?");
+			return 0;
+		}
+		long result = 1;
+		for (int i = 1; i <= b; i++) {
+			result *= a;
+		}
+		return result;
+	}
 	public static int[] shiftBy(int[] coeffs, int h) {
 		//Returns an array consisting of the coefficients
 		//of the polynomial resulting by replacing the variable n
@@ -167,6 +178,11 @@ public class Tools {
 	}
 	public static char asLetter(int n) {
 		if (-32<n&&n<65000) return (char)(n+65);
+		return '?';
+	}
+	public static char asLR(int n) {
+		if (n==-1) return 'L';
+		if (n== 1) return 'R';
 		return '?';
 	}
 	public static String matrixToString(int[][] mat) {

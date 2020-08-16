@@ -1,0 +1,16 @@
+• The number of 1s to the right of the 0 seems unable to affect
+  the number of swaths.
+• The number of 1s to the right of the 0 seems to have a more
+  predictable and steady effect on the number of steps passed
+  than the number of 1s to the left of the 0.
+• The number of 1s to the right of the 0 seems to have either a
+  constant, 2 for 2, or 2 for every other 2 effect on the
+  number of 1s left left of the 0.
+  Using C for constant, = for 2 for 2, / for 2 every other 2,
+  here's how it goes based on the number of 1s on the left:
+   0:/  2:=  4:/  6:C  8:C 10:C 12:/ 14:C 16:C 18:C 20:/ 22:C
+  24:C 26:C 28:/ 30:C 32:C 34:C 36:/ 38:C 40:C 42:C 44:/ 46:C
+  48:C 50:C 52:/ 54:C 56:C 58:C
+  So it seems that for m >= 4 even, the rule is:
+  we get / when m is 4 (mod 8), C when it's anything else.
+  

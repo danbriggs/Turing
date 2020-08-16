@@ -1,5 +1,7 @@
 package machine;
 
+import java.util.Arrays;
+
 public class Tape implements TapeLike{
 	private int[] _tape;
 	private int _index;
@@ -40,7 +42,6 @@ public class Tape implements TapeLike{
 		for (int i=0; i<lengthOfString; i++) {
 			if (s.charAt(i)=='o'||s.charAt(i)=='i') {
 				if (headFound) throw new Exception("In stringToTape(): Multiple tape heads found at indices "+_index+" and "+i+" in string s="+s);
-				_index = i;
 				headFound = true;
 			}
 		}
@@ -49,14 +50,17 @@ public class Tape implements TapeLike{
 		int countOs       = s.length() - s.replace("O", "").length();
 		int countPercents = s.length() - s.replace("%", "").length();
 		int countDollars  = s.length() - s.replace("$", "").length();
-		int lengthOfTape  = lengthOfString + countOs*99 + countPercents*9999 + countDollars*999999;
+		int totalShift = countOs*99 + countPercents*9999 + countDollars*999999;
+		int lengthOfTape  = lengthOfString + totalShift;
 		//Special characters used to represent 100, 10000, and 1000000 0s, respectively
 		
 		_tape = new int[lengthOfTape];
 		for (int i=0, j=0; i<lengthOfString; i++) {
 			char c=s.charAt(i);
-			if (c=='0'||c=='o') j+=1;
-			else if (c=='1'||c=='i') {_tape[j]=1; j+=1;}
+			if (c=='0') j+=1;
+			else if (c=='o') {_index=j; j+=1;}
+			else if (c=='1') {_tape[j]=1; j+=1;}
+			else if (c=='i') {_tape[j]=1; _index = j; j+=1;}
 			else if (c=='O') j += 100;
 			else if (c=='%') j += 10000;
 			else if (c=='$') j += 1000000;
@@ -80,17 +84,25 @@ public class Tape implements TapeLike{
 	public int length() {return _tape.length;}
 	public int getIndex() {return _index;}
 	public int getNormalizedIndex() {return _index;}
-	public boolean onLeft() {
-		for (int i=_index-1; i>=0; i--) {
+	public boolean onLeft() {return nearLeft(0);}
+	public boolean onRight() {return nearRight(0);}
+	/**Returns whether the tape head is within dist of the left  edge of the 1 bits.*/
+	public boolean nearLeft(int dist) {
+		for (int i=_index-1-dist; i>=0; i--) {
 			if (_tape[i]!=0) return false;
 		}
 		return true;
 	}
-	public boolean onRight() {
-		for (int i=_index+1; i<_tape.length; i++) {
+	/**Returns whether the tape head is within dist of the right edge of the 1 bits.*/
+	public boolean nearRight(int dist) {
+		for (int i=_index+1+dist; i<_tape.length; i++) {
 			if (_tape[i]!=0) return false;
 		}
 		return true;
+	}
+	/**Returns whether _index is at an extreme possible value.*/
+	public boolean atExtreme() {
+		return (_index==0||_index==_tape.length-1);
 	}
 	public void setTape(int[] tape) {this._tape=tape;}
 	public void setTape(Integer[] tape) {
@@ -112,12 +124,18 @@ public class Tape implements TapeLike{
 	}
 	public void printTape() {System.out.println(toString());}
 	public String getTrimAsString() {
-		String s=toString();
 		int i=0;
 		while (_tape[i]==0&&i<_index) i++;
 		int j=_tape.length-1;
 		while (_tape[j]==0&&j>_index) j--;
-		return s.substring(i,j+1);
+		StringBuilder sb = new StringBuilder(_tape.length);
+		if (_index==-1) sb.append('<');
+		for (int k=i; k<=j; k++) {
+			if (k==_index) sb.append(toLetter(_tape[k]));
+			else sb.append(_tape[k]);
+		}
+		if (_index==_tape.length) sb.append('>'); 
+		return sb.toString();
 	}
 	public void printTrim() {System.out.println(getTrimAsString());}
 	private char toLetter(int symbol) {
@@ -139,5 +157,20 @@ public class Tape implements TapeLike{
 			if (_tape[i]!=otherTape[i]) return false;
 		}
 		return true;
+	}
+	
+	/**Returns the subarray from the index to the outermost 1 bit out from there, inclusive.*/
+	public int[] tail(int dir) {
+		if (dir == 1) {
+			int j =_tape.length-1;
+			while (_tape[j]==0&&j>_index) j--;
+			return Arrays.copyOfRange(_tape, _index, j + 1);
+		}
+		else if (dir == -1) {
+			int i = 0;
+			while (_tape[i]==0&&i<_index) i++;
+			return Arrays.copyOfRange(_tape, i, _index + 1);			
+		}
+		return null;
 	}
 }

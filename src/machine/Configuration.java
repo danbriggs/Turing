@@ -47,6 +47,9 @@ public class Configuration extends Tape {
 		if (getIndex()==getTape().length) s+='>';
 		return s;
 	}
+	public void printTrim() {
+		System.out.println(getTrimAsString());
+	}
 	public int getState() {return _state;}
 	public void setState(int state) {_state = state;}
 	public boolean isAlive() {

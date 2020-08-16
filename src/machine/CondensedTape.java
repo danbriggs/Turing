@@ -11,6 +11,7 @@ public class CondensedTape {
 	public CondensedTape(List<Term> termlist) {_termlist = termlist;}
 	public List<Term> getTermList() {return _termlist;}
 	public Term get(int i) {return _termlist.get(i);}
+	public int size() {return _termlist.size();}
 	public int numTerms() {return _termlist.size();}
 	public void setTermList(List<Term> termlist) {_termlist = termlist;}
 	/**Returns -1 if it doesn't work out.*/

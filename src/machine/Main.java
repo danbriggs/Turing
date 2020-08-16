@@ -20,6 +20,14 @@ public class Main {
 			System.out.println(machineList.get(i));
 		}
 		Tests tests = new Tests(machineList);
+		
+		AllMachines allMachines = new AllMachines();
+		try {
+			allMachines.makeMachines();
+		} catch (Exception e) {
+			System.out.println("AllMachines.makeMachines() exited with "+e.getMessage());
+		}
+		
 		MyPanel myPanel = new MyPanel(tests, machineList);
 		myPanel.show(args);
 		//System.out.println(Acceleration.longestRepeatedSubSeq("AABEBCDD")); ;

@@ -8,9 +8,9 @@ public interface TapeLike {
 	public boolean onLeft();
 	public boolean onRight();
 	//WARNING: onLeft() and onRight()
-	//will have different meanings for different implementations of TapeLike.
-	//It may mean the left (resp. right) of the stretch ever accessed,
-	//or it may mean the left (resp. right) of the current nonzero portion.
+	//has different meanings for different implementations of TapeLike.
+	//For StretchTape, it means the left (resp. right) of the stretch ever accessed;
+	//for Tape, it means the left (resp. right) of the current nonzero portion.
 	public void setIndex(int index) throws Exception;
 	public String toString();
 	public String getTrimAsString();
