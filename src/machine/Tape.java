@@ -173,4 +173,42 @@ public class Tape implements TapeLike{
 		}
 		return null;
 	}
+	
+	/**Returns a tape consisting of everything from begin up to but not including sup.*/
+	public Tape subtape(int begin, int sup) {
+		int[] arr = Arrays.copyOfRange(getTape(), begin, sup);
+		try {
+			return new Tape(arr, _index - begin);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**Returns a tape consisting of everything from begin up to but not including sup
+	 * with new index newIndex.*/
+	public Tape subtape(int begin, int sup, int newIndex) {
+		int[] arr = Arrays.copyOfRange(getTape(), begin, sup);
+		try {
+			return new Tape(arr, newIndex);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**Returns whether the tape matches the array pattern
+	   going in the direction direction from the tape head.
+	   Returns false if it goes out of bounds.*/
+	public boolean matches(int[] pattern, int direction) {
+		if (direction!=1 && direction!=-1) return false;
+		int beginForPattern = 0;
+		if (direction==-1) beginForPattern = pattern.length - 1;
+		try {
+			for (int i=0; i<pattern.length; i++) {
+				if (_tape[_index+i*direction]!=pattern[beginForPattern+i*direction]) return false;
+			}
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 }

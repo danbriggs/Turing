@@ -34,4 +34,7 @@ public class Term {
 	public boolean equals(Term t) {
 		return Tools.areIdentical(_base, t.getBase()) && _exponent==t.getExponent();
 	}
+	public Term reverse() {
+		return new Term(Tools.reverse(_base), _exponent);
+	}
 }

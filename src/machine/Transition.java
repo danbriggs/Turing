@@ -41,6 +41,12 @@ public class Transition {
 			sb.append("/"+_toWrite[i]+","+Tools.asArrow(_toGo[i])+","+Tools.asLetter(_nextState[i]));
 		return sb.substring(1);
 	}
+	public String toShortString() {
+		StringBuffer sb=new StringBuffer();
+		for (int i=0; i<NUM_SYMBOLS; i++)
+			sb.append(""+Tools.asLetter(_nextState[i])+_toWrite[i]+Tools.asLR(_toGo[i])+" ");
+		return sb.toString();
+	}
 	public boolean equals(Transition t) {
 		if (NUM_SYMBOLS!=t.NUM_SYMBOLS) return false; //Yikes
 		for (int i=0; i<NUM_SYMBOLS; i++) {

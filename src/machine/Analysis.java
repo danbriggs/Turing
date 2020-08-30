@@ -12,11 +12,51 @@ public class Analysis {
 			thirdMachineRightEndRuns(machineList.get(num), 3);
 			thirdMachineRuns(machineList.get(num), start, stop);
 		}
+		else if (num==16) {
+			sixteenthMachineRightEndRun(machineList.get(num), start, stop);
+		}
 		else {
 			System.out.println("Haven't written analysis for that machine yet.");
 		}
 	}
 	
+	private static void sixteenthMachineRightEndRun(Machine m, int start, int stop) {
+		int idx = (int) Math.min(stop,500000);
+		TapeLike t = new StretchTape(idx);
+		int i=0;
+		for (i=0; i<start; i++) {
+			try {
+				m.act(t);
+			} catch (Exception e) {
+				System.out.println("Error 1 in Analysis.sixteenthMachineRightEndRun(): "+e.getMessage());
+				return;
+			}
+		}
+		int delay = 0;
+		for (i=start; i<stop; i++) {
+			int currState = m.getState();
+			boolean shouldPrint = i==start || i==stop-1 || t.onRight() && delay >= 10 || currState<0;
+			if (shouldPrint) {
+				System.out.print(i+" "+(char)(currState+65)+" ");
+				t.printTrim();
+				delay = 0;
+			}
+			else {
+				delay++;
+			}
+			if (currState<0) break;
+			try {
+				m.act(t);
+			} catch (Exception e) {
+				System.out.println("Error 2 in Analysis.sixteenthMachineRightEndRun(): "+e.getMessage());
+				return;
+			}
+		}
+		System.out.print(i+" "+(char)(m.getState()+65)+" ");
+		t.printTrim();
+
+	}
+
 	/**Pass HNR#3 ONLY into this method.
 	 * Creates a configuration of the form 1^(2m)01^(2n)i A
 	 * for a variety of pairs of positive integers m, n,

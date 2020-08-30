@@ -1,6 +1,8 @@
 package machine;
 
 public class Lemma {
+	static final boolean LOUD = false;
+	static final boolean FIVE_LINE = false;
 	private boolean _proved;
 	private boolean _disproved;
 	private int _handedness;
@@ -75,24 +77,24 @@ public class Lemma {
 			throw new Exception("Invalid polynomial for linear induction: numSteps should be of length 2 but is length "+numSteps.length);
 		//In this case numsteps is a linear expression, and so a straightforward linear induction should suffice.
 		//We should really try a few cases first, though.
-		System.out.println("Attempting linear induction.");
-		System.out.println("VeryTermfigurationLike a: "+a.toString());
-		System.out.println("VeryTermfigurationLike b: "+b.toString());
-		System.out.println("int[] numsteps as polynomial: "+Tools.toPolynomialString(numSteps, 'n'));
+		if (LOUD) System.out.println("Attempting linear induction.");
+		if (LOUD) System.out.println("VeryTermfigurationLike a: "+a.toString());
+		if (LOUD) System.out.println("VeryTermfigurationLike b: "+b.toString());
+		if (LOUD) System.out.println("int[] numsteps as polynomial: "+Tools.toPolynomialString(numSteps, 'n'));
 		int minFora=Tools.minForNonnegative(a.getExponent());
-		System.out.println("minFora: "+minFora);
+		if (LOUD) System.out.println("minFora: "+minFora);
 		int minForb=Tools.minForNonnegative(b.getExponent());
-		System.out.println("minForb: "+minForb);
+		if (LOUD) System.out.println("minForb: "+minForb);
 		int minForNumSteps=Tools.minForNonnegative(numSteps);
-		System.out.println("minForNumSteps: "+minForNumSteps);
+		if (LOUD) System.out.println("minForNumSteps: "+minForNumSteps);
 		int minForAll = Math.max(Math.max(minFora, minForb),minForNumSteps);
-		System.out.println("minForAll: "+minForAll);
+		if (LOUD) System.out.println("minForAll: "+minForAll);
 		Configuration ca = a.toConfigurationAt(minForAll);
-		System.out.println("Configuration ca: "+ca.toString());
+		if (LOUD) System.out.println("Configuration ca: "+ca.toString());
 		Configuration cb = b.toConfigurationAt(minForAll);
-		System.out.println("Configuration cb: "+cb.toString());
+		if (LOUD) System.out.println("Configuration cb: "+cb.toString());
 		int baseNumSteps = Tools.evalAt(numSteps, minForAll);
-		System.out.println("baseNumSteps: "+baseNumSteps);
+		if (LOUD) System.out.println("baseNumSteps: "+baseNumSteps);
 		boolean baseCase = m.yields(ca, cb, baseNumSteps);
 		System.out.println("baseCase: "+baseCase);
 		if (!baseCase) {_disproved = true; return false;}
@@ -265,7 +267,8 @@ public class Lemma {
 	public String toString(){
 		if (_proved&&_disproved) return "ERROR: Can't have a Lemma proved & disproved!";
 		StringBuffer sb = new StringBuffer();
-		sb.append("Lemma: The machine\n");
+		sb.append("Lemma: The machine ");
+		if (FIVE_LINE) sb.append("\n");
 		sb.append(_m);
 		sb.append("transforms ");
 		sb.append(_a);

@@ -232,4 +232,24 @@ public class Tools {
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
+	
+	/**The array should be rectangular (not jagged),
+	 * and none of the array's dimensions should be 0.*/
+	public static int[][][] threeDeepCopy(int[][][] array) {
+		int m = array.length, n = array[0].length, r = array[0][0].length;
+		int[][][] ret = new int[m][n][r];
+		for (int i=0; i<m; i++)
+			for (int j=0; j<n; j++)
+				for (int k=0; k<r; k++)
+					ret[i][j][k] = array[i][j][k];
+		return ret;
+	}
+	
+	public static int[] reverse(int[] array) {
+		int[] ret = new int[array.length];
+		for (int i=0; i<array.length; i++) {
+			ret[i] = array[array.length - 1 - i];
+		}
+		return ret;
+	}
 }

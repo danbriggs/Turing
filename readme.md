@@ -44,7 +44,7 @@ These proofs were done by hand, and some (especially the one for HNR#12) are ver
 I didn't know about univerz's proofs, so we ended up writing proofs for seven of the same machines.  
 Thus, 16 machines had been taken care of between us, and 27 remained.
 
-On July 19, 2020, I found some equivalences, so now 18 machines are done and there remain 25.  
+On July 19, 2020, I found some equivalences, and on July 25, one more proof, so now 19 machines are done, and there remain 24.  
 There are also some very near equivalences, so at most 21 essentially different proofs are needed.
 
 # How Can I Help?

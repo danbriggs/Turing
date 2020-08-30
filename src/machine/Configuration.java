@@ -67,6 +67,54 @@ public class Configuration extends Tape {
 	}
 	public Configuration copy() throws Exception {return new Configuration(getTape().clone(),getIndex(),getState());}
 	
+	/**Condenses it, splitting it from the index going in direction direction.*/
+	public CondensedConfiguration condenseAndSplitUsing(int direction, int[] pattern) {
+		if (direction ==0) return null;
+		if (direction > 0) return condenseAndSplitUsing(pattern);
+		return reverse().condenseAndSplitUsing(Tools.reverse(pattern)).reverse();
+	}
+	
+	public CondensedConfiguration condenseAndSplitUsing(int[] pattern) {
+		Configuration c1 = subcon(0,getIndex(),0);
+		//0's a dummy value for the index of the first configuration
+		Configuration c2 = subcon(getIndex(),length());
+		CondensedConfiguration cc1 = c1.condenseUsing(pattern);
+		CondensedConfiguration cc2 = c2.condenseUsing(pattern);
+		return CondensedConfiguration.combine(cc1,cc2,1);
+	}
+	
+	/**returns a configuration consisting of everything from begin up to but not including sup.*/
+	public Configuration subcon(int begin, int sup) {
+		Tape t = super.subtape(begin, sup);
+		return new Configuration(t,_state);
+	}
+
+	/**returns a configuration consisting of everything from begin up to but not including sup
+	 * with new index newIndex.*/
+	public Configuration subcon(int begin, int sup, int newIndex) {
+		Tape t = super.subtape(begin, sup, newIndex);
+		return new Configuration(t,_state);
+	}
+	
+	public Configuration reverse() {
+		try {
+			return new Configuration(Tools.reverse(getTape()), length() - 1 - getIndex(), _state);
+		} catch (Exception e) {
+			System.out.println("Error in Configuration.reverse(): " + e.getMessage());
+			return null;
+		}
+	}
+	
+	public CondensedConfiguration condenseUsing (int[] pattern) {
+		return condenseUsing(pattern, 2);
+	}
+
+	public CondensedConfiguration condenseUsing (int[] pattern, int numtimes) {
+		List<int[]> patternList = new ArrayList<int[]>();
+		patternList.add(pattern);
+		return condenseUsing(patternList, numtimes);
+	}
+	
 	/** Looks through this's tape for patterns matching patternList's first pattern etc.
 	 *  and generates a condensed configuration with a Term for each repeating sequence
 	 *  and a Term for each stretch between and beyond repeating sequences.*/
@@ -135,4 +183,37 @@ public class Configuration extends Tape {
 		}
 		return total;
 	}
+	
+	/**Returns -1 if there is no good spot.
+	 * Only picks up on the spot if pattern is actually repeated!*/
+	public int bestSpot(int[] pattern, int handedness) {
+		List<int[]> patternList = new ArrayList<int[]>();
+		patternList.add(pattern);
+		CondensedConfiguration cc = condenseUsing(patternList);
+		List<Term> termList = cc.getTermList();
+		Iterator<Term> termIterator = termList.iterator();
+		int crawlingIndex = 0;
+		int bestIndex = -1;
+		int maxExponent = 2;
+		while (termIterator.hasNext()) {
+			Term t = termIterator.next();
+			int currExponent = t.getExponent();
+			if (currExponent >= maxExponent) {
+				//Here we can be confident that the base was pattern,
+				//since patternList has only one pattern
+				if (currExponent > maxExponent || handedness < 0 || bestIndex == -1) {
+					if (handedness > 0) bestIndex = crawlingIndex;
+					else bestIndex = crawlingIndex + t.length() - 1;
+				}
+				maxExponent = currExponent;
+			}
+			crawlingIndex += t.length();
+		}
+		return bestIndex;
+	}
+	
+	StepConfiguration toStepConfigurationAt(int numSteps) throws Exception{
+		return new StepConfiguration(getTape(), getIndex(), _state, numSteps);
+	}
+	
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class SkeletPageParser {
+	static final boolean LOUD = false;
 	private String _filename;
 	private boolean _weAreCollectingMachines;
 	private int _numHNRs;
@@ -30,11 +31,11 @@ public class SkeletPageParser {
 		_weAreCollectingMachines = false;
 		_numHNRs = 0;
 		while ((st = br.readLine()) != null) {
-			System.out.println(st);
+			if (LOUD) System.out.println(st);
 			parse(st);
 		}
 		br.close();
-		System.out.println("_numHNRs: "+_numHNRs);
+		if (LOUD) System.out.println("_numHNRs: "+_numHNRs);
 	} 
 	private void parse(String st) {
 		//Parses a line of Skelet's HNRs page.
@@ -90,12 +91,12 @@ public class SkeletPageParser {
 			int[][] state = new int[3][2];
 			String s1=st1.nextToken();
 			String s2=st1.nextToken();
-			System.out.println("lo "+i+":"+s1);
-			System.out.println("hi "+i+":"+s2);
+			if (LOUD) System.out.println("lo "+i+":"+s1);
+			if (LOUD) System.out.println("hi "+i+":"+s2);
 			spill(state,s1,s2);
-			System.out.println("lo & hi processed: "+Tools.matrixToString(state));
+			if (LOUD) System.out.println("lo & hi processed: "+Tools.matrixToString(state));
 			t[i]=new Transition(state);
-			System.out.println("t["+i+"]: "+t[i]);
+			if (LOUD) System.out.println("t["+i+"]: "+t[i]);
 		}
 		return new Machine(t);
 		//later include the IDs

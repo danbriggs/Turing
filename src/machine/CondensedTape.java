@@ -12,6 +12,16 @@ public class CondensedTape {
 	public List<Term> getTermList() {return _termlist;}
 	public Term get(int i) {return _termlist.get(i);}
 	public int size() {return _termlist.size();}
+	public int length() {
+		int sum = 0;
+		Iterator<Term> i=_termlist.iterator();
+		while (i.hasNext()) {
+			Term t = i.next();
+			sum += t.getBase().length * t.getExponent();
+		}
+		return sum;
+		
+	}
 	public int numTerms() {return _termlist.size();}
 	public void setTermList(List<Term> termlist) {_termlist = termlist;}
 	/**Returns -1 if it doesn't work out.*/
@@ -136,5 +146,15 @@ public class CondensedTape {
 				_termlist.remove(nextNum);
 			}
 		}
+	}
+	
+	public CondensedTape reverse() {
+		List<Term> termlist = new ArrayList<Term>();
+		Iterator<Term> it = _termlist.iterator();
+		while (it.hasNext()) {
+			Term t = it.next();
+			termlist.add(0,t.reverse());
+		}
+		return new CondensedTape(termlist);
 	}
 }

@@ -1,6 +1,7 @@
 package machine;
 
 public class Machine {
+	static final boolean FIVE_LINE = false;
 	private Transition[] _transitions;
 	private int _state;
 	private int _id;//for keeping track of Skelet's IDs
@@ -104,7 +105,12 @@ public class Machine {
 	public String toString() {
 		if (_transitions==null) return "null machine";
 		StringBuffer sb = new StringBuffer();
-		for (int i=0; i<_transitions.length; i++) sb.append(Tools.asLetter(i)+": "+_transitions[i].toString()+'\n');
+		for (int i=0; i<_transitions.length; i++) {
+			String output;
+			if (FIVE_LINE) output =  Tools.asLetter(i)+": "+_transitions[i].toString()+'\n';
+			else           output = _transitions[i].toShortString() + " ";
+			sb.append(output);
+		}
 		return sb.toString();
 	}
 	/**Machines do *not* have to be in the same state to be equal.*/

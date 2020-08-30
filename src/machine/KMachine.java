@@ -127,12 +127,14 @@ public class KMachine {
 				after[k+2] = numSteps;
 				_whatToDo.put(before, after);
 			}
-			System.out.println("Finished for state "+Tools.asLetter(state));
+			if (LOUD) System.out.println("Finished for state "+Tools.asLetter(state));
 			//}
 		}
-		System.out.println("_hasLoop: "+_hasLoop);
-		System.out.println("Max numSteps: "+maxNumSteps);
-		System.out.println("Avg numSteps: "+totNumSteps*1.0/m.numStates()/numCeiling);
+		if (LOUD) {
+			System.out.println("_hasLoop: "+_hasLoop);
+			System.out.println("Max numSteps: "+maxNumSteps);
+			System.out.println("Avg numSteps: "+totNumSteps*1.0/m.numStates()/numCeiling);
+		}
 		_state = 0;
 	}
 
@@ -172,7 +174,7 @@ public class KMachine {
 	        _stateToLeaveIn[beforeState*65536+charBeforeSeq] = (byte)afterState;
 	        _numStepsTaken[beforeState*65536+charBeforeSeq] = afterSteps;*/
 	    }
-	    System.out.println("Speedup finished.");
+	    if (LOUD) System.out.println("Speedup finished.");
 
 		_whatToDo.clear(); //Get rid of all that memory overhead!
 		_whatToDo = null;

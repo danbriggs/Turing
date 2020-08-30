@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tests {
+	static final boolean LOUD = false;
 	private Machine _m;
 	private List<Machine> _machineList;
 	private Lemma _lemma1;
@@ -21,7 +22,7 @@ public class Tests {
 		_lemma4 = null;
 		_lemlist = null;
 		boolean kMachineTestPassed = kMachineTest();
-		System.out.println("kMachineTest() passed: "+kMachineTestPassed);
+		if (LOUD) System.out.println("kMachineTest() passed: "+kMachineTestPassed);
 	}
 	public Tests() {
 		try {_m = new Machine(Tools.HNR1);} 
@@ -38,7 +39,7 @@ public class Tests {
 			byte compByte;
 			try {
 				int[] eightIntArray = BitTape.toBinary(testByte);
-				System.out.println ("Byte "+testByte+" gives "+Tools.toString(eightIntArray));
+				if (LOUD) System.out.println ("Byte "+testByte+" gives "+Tools.toString(eightIntArray));
 				compByte = BitTape.fromBinary(eightIntArray);
 			} catch (Exception e) {
 				System.out.println("to/from binary exception on "+testByte+": "+e.getMessage());
@@ -59,15 +60,15 @@ public class Tests {
 			return false;
 		}
 		int numSteps = 0;
-		System.out.println("bitTape: " + numSteps + " " + (char)(HNR1K.getState()+65) + " " + bt.toString());
-		System.out.println("regular: " + numSteps + " " + (char)(_m.getState()+65) + " " + t.toString());
+		if (LOUD) System.out.println("bitTape: " + numSteps + " " + (char)(HNR1K.getState()+65) + " " + bt.toString());
+		if (LOUD) System.out.println("regular: " + numSteps + " " + (char)(_m.getState()+65) + " " + t.toString());
 		try {
 			for (int i=0; i<100; i++) {
 				int currSteps = HNR1K.actOnBitTape(bt);
 				for (int j=0; j<currSteps; j++) _m.act(t);
 				numSteps += currSteps;
-				System.out.println("bitTape: " + numSteps + " " + (char)(HNR1K.getState()+65) + " " + bt.toString());
-				System.out.println("regular: " + numSteps + " " + (char)(_m.getState()+65) + " " + t.toString());
+				if (LOUD) System.out.println("bitTape: " + numSteps + " " + (char)(HNR1K.getState()+65) + " " + bt.toString());
+				if (LOUD) System.out.println("regular: " + numSteps + " " + (char)(_m.getState()+65) + " " + t.toString());
 				if (bt.getIndex() != t.getIndex()) {
 					System.out.println("Unequal indices.");
 					return false;

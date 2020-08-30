@@ -5,6 +5,7 @@ import java.util.List;
 //import complex.FFT;
 
 public class Main {
+	static final boolean LOUD = false;
 		
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -15,9 +16,11 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 		List<Machine> machineList = sk.getMachineList();
-		for (int i=1; i<machineList.size(); i++) {
-			System.out.println("Machine #"+i+":");
-			System.out.println(machineList.get(i));
+		if (LOUD)  {
+			for (int i=1; i<machineList.size(); i++) {
+				System.out.println("Machine #"+i+":");
+				System.out.println(machineList.get(i));
+			}
 		}
 		Tests tests = new Tests(machineList);
 		
@@ -26,6 +29,7 @@ public class Main {
 			allMachines.makeMachines();
 		} catch (Exception e) {
 			System.out.println("AllMachines.makeMachines() exited with "+e.getMessage());
+			if (!e.getMessage().equals("Total number of machines exceeded.")) e.printStackTrace();
 		}
 		
 		MyPanel myPanel = new MyPanel(tests, machineList);

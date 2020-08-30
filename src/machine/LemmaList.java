@@ -7,7 +7,7 @@ import java.util.List;
 public class LemmaList {
 	//This class is (1) to square away having checked
 	//that the Lemmas of a given list all use the same machine,
-	//and (2) for locating the first Lemma applicable to a given term. 
+	//and (2) for locating the first Lemma applicable to a given term.
 	private List<Lemma> _lemlist;
 	private Machine _m;
 	public LemmaList(List<Lemma> lemlist) throws Exception {
@@ -21,6 +21,11 @@ public class LemmaList {
 		}
 		_lemlist=lemlist;
 		_m = firstMachine;
+	}
+	public LemmaList(Lemma lem) {
+		_lemlist = new ArrayList<Lemma>();
+		_lemlist.add(lem);
+		_m = lem.getMachine();
 	}
 	public int size() {return _lemlist.size();}
 	public List<Lemma> getLemList() {return _lemlist;}
@@ -58,5 +63,23 @@ public class LemmaList {
 			if (!wasFound) newLemlist.add(currLem);
 		}
 		_lemlist = newLemlist;
+	}
+	/**Returns a list of arrays consisting of this LemmaList's Lemmas' source Termfigurations' bases.
+	 * Does not include a base more than once.*/
+	public List<int[]> sourcePatternList() {
+		List<int[]> patternList = new ArrayList<int[]>();
+		Iterator<Lemma> lemIterator = _lemlist.iterator();
+		while (lemIterator.hasNext()) {
+			Lemma lem = lemIterator.next();
+			int[] pattern = lem.getSource().getBase();
+			Iterator<int[]> patternIterator = patternList.iterator();
+			boolean wasFound = false;
+			while (patternIterator.hasNext()) {
+				int[] patternToCompare = patternIterator.next();
+				if (Tools.areIdentical(pattern, patternToCompare)) wasFound = true;
+			}
+			if (!wasFound) patternList.add(pattern);
+		}
+		return patternList;
 	}
 }

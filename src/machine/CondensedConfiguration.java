@@ -1,5 +1,6 @@
 package machine;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,5 +61,44 @@ public class CondensedConfiguration extends CondensedTape {
 	}
 	public void glueOutward() {
 		glueExcluding(termNumAndIndex()[0]);
+	}
+	public CondensedConfiguration reverse() {
+		CondensedTape ct = super.reverse();
+		return new CondensedConfiguration(ct, length() - 1 - _index, _state);
+	}
+	
+	/**Combines cc1 and cc2. which indicates which one should have the tape head & state.*/
+	public static CondensedConfiguration combine(CondensedConfiguration cc1, CondensedConfiguration cc2, int which) {
+		if (which != 0 && which != 1) {
+			System.out.println("Invalid which = "+which+" in CondensedConfiguration.combine().");
+			return null;
+		}
+		List<Term> termlist = new ArrayList<Term>();
+		
+		Iterator<Term> it1 = cc1.getTermList().iterator();
+		while (it1.hasNext()) {
+			Term t1 = it1.next();
+			termlist.add(t1);
+		}
+		
+		Iterator<Term> it2 = cc2.getTermList().iterator();
+		while (it2.hasNext()) {
+			Term t2 = it2.next();
+			termlist.add(t2);
+		}
+		
+		if (which == 0) return new CondensedConfiguration(termlist,cc1.getIndex(),cc1.getState());
+		return new CondensedConfiguration(termlist,cc1.length()+cc2.getIndex(),cc2.getState());
+	}
+	
+	/**Generalizes this CondensedConfiguration to a Termfiguration
+	 * only if the following conditions are met:
+	 * index is at the left- hand end of a term if direction is 1,
+	 *       resp. the right-hand end of a term if direction is -1;
+	 * the base of the Term containing the index matches pattern.
+	 * In this case it replaces the exponent of the Term containing the index with N.
+	 * Otherwise, it returns null.*/
+	Termfiguration generalize(int[] pattern, int direction) {
+		return null;
 	}
 }

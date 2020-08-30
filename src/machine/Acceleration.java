@@ -10,7 +10,10 @@ import graph.Digraph;
 import graph.StdOut;
 
 public class Acceleration {
+	static final boolean FIVE_LINE = false;
 	//This class is supposed to have the methods for making a machine act on a CondensedConfiguration using a LemmaList.
+	/**Returns the number of steps done by acting using lemlist.
+	 * Should be 1 whenever none of the Lemmas in lemlist were applicable.*/
 	public static int act(CondensedConfiguration cc, LemmaList lemlist) throws Exception {
 		int[] termNumAndIndex = cc.termNumAndIndex();
 		int termNum = termNumAndIndex[0];
@@ -332,7 +335,7 @@ public class Acceleration {
 			//will have at each index other than 0
 			//an array consisting of bestNumMatches and at.
 			for (int skip = 1; skip < maxPatternLength; skip++) {
-				System.out.print("Finding the best run of perfect matches with skip "+skip+": ");
+				//System.out.print("Finding the best run of perfect matches with skip "+skip+": ");
 				int numMatches = 0;
 				int bestNumMatches = 0;
 				int at = -1;
@@ -349,14 +352,14 @@ public class Acceleration {
 				results[skip][0] = bestNumMatches;
 				results[skip][1] = at;
 				if (at-lower_bound>=bestNumMatches) {
-					System.out.println("Debug code:"
+					/*System.out.println("Debug code:"
 							+ " skip = " + skip
 							+ " at = " + at
 							+ " bestNumMatches = " + bestNumMatches
-							+ " theTapeHead.length = swath = " + swath);
+							+ " theTapeHead.length = swath = " + swath);*/
 					results[skip][2] = theTapeHead[at-lower_bound]-theTapeHead[at-lower_bound-bestNumMatches];
 				}
-				System.out.println("there are "+bestNumMatches+" matches at " + at);
+				//System.out.println("there are "+bestNumMatches+" matches at " + at);
 			}
 			System.out.println(Tools.matrixToString(results, true));
 			return results;
@@ -384,10 +387,10 @@ public class Acceleration {
 		float approxTermLength = (float)displacement/bestSwath*bestSkip;
 		int termLength = Math.round(approxTermLength);
 		float error = termLength - approxTermLength;
-		if (error > .15 || error < -.15) {
-			System.out.println("The signed term length was not close to an integer, so I'm not even going to bother.");
+		/*if (error > .15 || error < -.15) {
+			System.out.println("The signed term length "+approxTermLength+" was not close to an integer, so I'm not even going to bother.");
 			return null;
-		}
+		}*/
 		if (termLength == 0) {
 			System.out.println("The term length was zero, so I'm not even going to bother.");
 			return null;
@@ -477,7 +480,8 @@ public class Acceleration {
 		int[] beginIndexArr = beginLeftIndexArr;
 		if (termLength < 0) beginIndexArr = beginRightIndexArr;
 		Termfiguration a = new Termfiguration(bitSeq, new int[] {0,1}, beginIndexArr, beginState);
-		System.out.println("Begin Termfiguration as string:");
+		System.out.print("Begin Termfiguration as string: ");
+		if (FIVE_LINE) System.out.println();
 		System.out.println(a);
 		for (int i = 0; i < bestSkip; i++) {
 			try {mm.act(t1);}
@@ -499,7 +503,8 @@ public class Acceleration {
 		int[] endIndexArr = endForwardIndexArr;
 		if (termLength < 0) endIndexArr = endBackwardIndexArr;
 		Termfiguration b = new Termfiguration(bitSeq2, new int[] {0,1}, endIndexArr, endState);
-		System.out.println("End Termfiguration as string:");
+		System.out.print("End Termfiguration as string: ");
+		if (FIVE_LINE) System.out.println();
 		System.out.println(b);
 		Lemma lem = null;
 		try {lem = new Lemma(mm, a, b, new int[] {0, bestSkip});}

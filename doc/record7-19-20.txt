@@ -13,11 +13,11 @@ HNR# type  progress
 12   sqrt  proved
 13   sqrt  proved =12
 14   lin   proved
-15   log   
-16
-17         easy
+15   log   proving
+16   sierp easy?
+17         easy?
 18   lin   proved
-19
+19   count easy
 20
 21         proved by univerz
 22
@@ -32,9 +32,9 @@ BL_2
 31   sqrt  proved by univerz; trivial
 32   log   proved by univerz
 33   log   
-34   log   
+34   log   tape like 35, delayed by 2^k steps
 35   log
-36   sqrt
+36   sqrt  proving
 37
 38         shown ~~16
 39         proved$ ==21
@@ -64,6 +64,22 @@ CHANGELOG(7/24/20):
 Added "lin" and "proved" to #14.
 The proof can be found in analysis7-24-20.txt
 Added "?" to "easy" for HNR#7.
+CHANGELOG(8/26/20):
+#3 and #7 were once again observed to have very similar spectra.
+We will likely be able to prove that they have isomorphic state diagrams
+with different start conditions.
+#4 will be very easy to prove:
+it's just counting in binary on the left, and in unary on the right.
+Added "proving" to #15: it's just pushing everything along,
+counting slower and slower, completely regular behavior.
+Added "sierp" to #16: it seems to be a Sierpiński triangle-like fractal maker.
+Added "?" to "easy" for #17: not sure why it should be easy.
+Added "count" and "easy" to #19: it's like a binary counter,
+but with each digit being twice as long as the previous one.
+Added "tape like 35, delayed by 2^k steps" to #34.
+Added "proving" to 36, it will prove to be exceedingly easy.
+CHANGELOG(8/29/20):
+Added "?" to #16.
 --------------------------------
 * 4 has log complexity.
 # 23 has fourth-root complexity.

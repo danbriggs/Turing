@@ -53,4 +53,11 @@ public class StepConfiguration extends Configuration {
 	public String getTrimAsString() {return _numSteps + " " + super.getTrimAsString();}
 	
 	public void printTrim() {System.out.println(getTrimAsString());}
+	
+	public void setData(StepConfiguration sc) {
+		_numSteps = sc.getNumSteps();
+		setState(sc.getState());
+		setIndex(sc.getIndex());
+		setTape(sc.getTape());
+	}
 }

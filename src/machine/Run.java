@@ -284,19 +284,8 @@ public class Run {
 		}
 		System.out.println("Configuration c at step " + top1int + ": ");
 		System.out.println(c.getTrimAsString());
-		List<int[]> patternList = new ArrayList<int[]>();
-		Iterator<Lemma> lemIterator = lemlist.getLemList().iterator();
-		while (lemIterator.hasNext()) {
-			Lemma lem = lemIterator.next();
-			int[] pattern = lem.getSource().getBase();
-			Iterator<int[]> patternIterator = patternList.iterator();
-			boolean wasFound = false;
-			while (patternIterator.hasNext()) {
-				int[] patternToCompare = patternIterator.next();
-				if (Tools.areIdentical(pattern, patternToCompare)) wasFound = true;
-			}
-			if (!wasFound) patternList.add(pattern);
-		}
+		//from here
+		List<int[]> patternList = lemlist.sourcePatternList();
 		patternList.add(new int[] {0});
 		System.out.println("Now condensing the following configuration: ");
 		System.out.println(c.getTrimAsString());
