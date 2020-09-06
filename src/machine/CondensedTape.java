@@ -37,6 +37,11 @@ public class CondensedTape {
 	public int getExponent(int termNum) {
 		return _termlist.get(termNum).getExponent();
 	}
+	/** Returns a 2-tuple consisting of
+    the index of the term _index is in
+    and the index of _index in that term.
+    Returns {-1,_index} if _index is out of bounds.*/
+
 	public void append(Term t) {
 		_termlist.add(t);
 	}

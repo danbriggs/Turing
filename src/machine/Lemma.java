@@ -12,6 +12,7 @@ public class Lemma {
 	private TermfigurationLike _a; //source
 	private TermfigurationLike _b; //target
 	private int[] _numSteps;
+	private int _minN; //I don't know why I didn't have this before
 	
 	public boolean isProved() {return _proved;}
 	public boolean isDisproved() {return _disproved;}
@@ -28,6 +29,7 @@ public class Lemma {
 		_proved = false;
 		_disproved = false;
 		_handedness = 0;
+		_minN = 0;
 	}
 	
 	public Lemma(Machine m, VeryTermfigurationLike a, VeryTermfigurationLike b, int[] numSteps) throws Exception {
@@ -89,6 +91,7 @@ public class Lemma {
 		if (LOUD) System.out.println("minForNumSteps: "+minForNumSteps);
 		int minForAll = Math.max(Math.max(minFora, minForb),minForNumSteps);
 		if (LOUD) System.out.println("minForAll: "+minForAll);
+		_minN = minForAll;
 		Configuration ca = a.toConfigurationAt(minForAll);
 		if (LOUD) System.out.println("Configuration ca: "+ca.toString());
 		Configuration cb = b.toConfigurationAt(minForAll);
@@ -276,16 +279,21 @@ public class Lemma {
 		sb.append(_b);
 		sb.append(" in ");
 		sb.append(Tools.toPolynomialString(_numSteps,'n'));
-		sb.append(" steps: ");
+		sb.append(" steps for n >= " + _minN + ": ");
 		if (_proved) sb.append("Proved.");
 		else if (_disproved) sb.append("Disproved.");
 		else sb.append("Undecided.");
 		return sb.toString();
 	}
 	
+	public int getMinN() {
+		return _minN;
+	}
+	
 	public boolean equals(Lemma lem) {
 		//System.out.println("Reached Lemma.equals().");
 		if (_handedness!=lem.getHandedness()) {/*System.out.println("Reason 1.");*/ return false;}
+		if (_minN != lem.getMinN()) return false;
 		if (!_m.equals(lem.getMachine())) {/*System.out.println("Reason 2.");*/ return false;}
 		if (!_a.equals(lem.getSource())) {/*System.out.println("Reason 3.");*/ return false;}
 		if (!_b.equals(lem.getTarget())) {/*System.out.println("Reason 4.");*/ return false;}

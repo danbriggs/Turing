@@ -15,7 +15,11 @@ public interface TermfigurationLike {
 	means the exponent of the active term. */
 	public int[] getExponent();
 	public int[] getIndex();
-	public int getState() throws Exception;
+	public int getState();
+	public boolean onLeft();
+	public boolean offLeft();
+	public boolean onRight();
+	public boolean offRight();
 	public int[] evalAt(int n) throws Exception;
 	/**For TermfigurationSequences,
 	just does the current term if ornamented,

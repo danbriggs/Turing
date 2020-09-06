@@ -85,6 +85,98 @@ public class Acceleration {
 		return toGo*toGo; //The number of steps it acted for.
 	}
 	
+	/**Aiming for something rather simpler than Act(cc,lemlist).
+	 * Acts only if it's in perfect position to act on the core,
+	 * or if it's in the wings. Otherwise throws an exception.
+	 * Returns a polynomial consisting of the number of steps acted for.*/
+	public static int[] act(ExtendedTermfiguration etf, Lemma lem) throws Exception {
+		if (etf.preciseOutOfBounds()) {
+			actForOneStep(lem.getMachine(), etf);
+			return new int[] {1, 0};
+		}
+		if (!lem.isProved()) throw new Exception("What are you doing, trying to act on an ExtendedTermfiguration with an unproved Lemma");
+		if (lem.getSource().getExponent().length > 2)
+			throw new Exception("Haven't written code for nonlinear lem sources yet");
+		if (lem.getTarget().getExponent().length > 2)
+			throw new Exception("Haven't written code for nonlinear lem targets yet");
+		if (etf.getTerm().getExponent().length > 2)
+			throw new Exception ("Haven't written code for nonlinear ExtendedTermfigurations' Terms yet");
+		//For now, we'll just make it work in the case where lem's source's baselen equals etf's Term's baselen.
+		int baselen = etf.getTerm().getBase().length;
+		if (lem.getSource().getBase().length != baselen) {
+			//Here we split the term that shows up on the tape if it's a mere repetition of the lemma source's term.
+			if (false) ;//TODO: Haven't written the code for that yet.
+			//Thinking of reanalyzing bases upon production instead, to make them as short as possible.
+			else throw new Exception("We've only made it work in the case where etf's Term's baselen equals lem's source's baselen.");
+		}
+		if (lem.getSource().getState() != etf.getState())
+			throw new Exception("State mismatch");
+		//Warning: handedness in Lemmas is opposite of direction in AllMachines!
+		//First, we have to make sure that lem is applicable to etf for all values of etf's Term's variable >= 0. 
+		System.out.println("Another line of debug code: etf.getIndex() = " + Tools.toString(etf.getIndex()));
+		//Remember that a Termfiguration's index may be negative,
+		//but the corresponding ExtendedTermfiguration's index will have the length of the left wing added.
+		if (etf.onLeft() && lem.getHandedness() == -1 || etf.onRight() && lem.getHandedness() == 1) {
+			/*System.out.println("Debug code in Acceleration.act(etf,lem): "
+			+ "etf = " + etf + "\n"
+			+ "lem.getSource() = " + lem.getSource() + "\n"
+			+ "lem.getMinN() = " + lem.getMinN());*/
+			//Make sure that the etf with N=0 is valid for lem's minN.
+			if (etf.getExponent()[0] < lem.getMinN())
+				throw new Exception("Exponent "+Tools.toPolynomialString(etf.getExponent(),'n')+
+						" too small with n=0 for Lemma with source "+lem.getSource());
+			if (!Tools.equal(lem.getTarget().getExponent(), lem.getSource().getExponent()))
+				throw new Exception("We've only made it work when lem's source and target have the same exponent");
+			if (lem.getTarget().getBase().length!=lem.getSource().getBase().length)
+				throw new Exception("We've only made it work when lem's source's baselen equals lem's target's baselen");
+			if (!Tools.areIdentical(lem.getSource().getBase(), etf.getBase()))
+				throw new Exception("We've only made it work when lem's source and etf have the same base");
+			if (lem.getHandedness() == -1 && !lem.getTarget().offRight())
+				throw new Exception("We've only made it work when lem's target is off the right");
+			if (lem.getHandedness() == 1 &&  !lem.getTarget().offLeft())
+				throw new Exception("We've only made it work when lem's target is off the left");
+			if (!Tools.equal(lem.getSource().getExponent(), new int[] {0,1}))
+				throw new Exception("We've only made it work when lem's source's exponent is n");
+			/*if (etf.getExponent()[1]!=1)
+				throw new Exception("Using "+lem+" on "+etf+": We've only made it work when etf's exponent's linear coefficient is 1");
+				//Consider restoring this when you make it work for source & target with different exponents!*/
+			
+			etf.getTerm().setBase(lem.getTarget().getBase());
+			etf.setState(lem.getTarget().getState());
+			if (lem.getHandedness() == -1) etf.getTerm().setIndexOffRight();
+			if (lem.getHandedness() ==  1) etf.getTerm().setIndexOffLeft();
+			int [] lemNumSteps = lem.getNumSteps();
+			etf.getTerm().condense();
+			return new int[] {lemNumSteps[0]+lemNumSteps[1]*etf.getExponent()[0], lemNumSteps[1]};
+		}
+		return new int[] {0,0};
+	}
+	
+	/**It's expected that the calling function's checked that the bit to adapt is precise.
+	 * To discover where to act, we can just set n=0.*/
+	public static int actForOneStep(Machine m, ExtendedTermfiguration etf) throws Exception {
+		//Thus we can use the sign of the constant coefficient of etf's index to determine which side of the Term the tape head's on.
+		int[] index = etf.getTerm().getIndex();
+		int b = index[0];
+		int[] array = null;
+		int pos = 0;
+		if (b < 0) {
+			array = etf.getLeft();
+			pos = array.length + b;
+			m.actOnSide(etf, -1, pos);
+			return 1;
+		}
+		if (b >= 0) {
+			array = etf.getRight();
+			Termfiguration t = etf.getTerm();
+			int d = t.getBase().length * t.getExponent()[0];
+			pos = b - d;
+			m.actOnSide(etf, 1, pos);
+			return 1;
+		}
+		return 0;//unreachable code
+	}
+	
 	/**Attempts to look for a simple state-loop that m can enter while progressing to the left,
 	and a simple state-loop that m can enter while progressing to the right.
 	Returns a LemmaList of length 0, 1, or 2 accordingly.*/

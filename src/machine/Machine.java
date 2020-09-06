@@ -64,6 +64,7 @@ public class Machine {
 		c.setState(_state);
 		_state = stateHolder; //sorry
 	}
+		
 	/**Returns the direction to go afterwards.
 	 * Who knows how that'll need to be used.*/
 	public int actOnTerm(Term t, int index) throws Exception {
@@ -79,6 +80,21 @@ public class Machine {
 		_state = nextState;
 		return direction;
 	}
+	
+	public void actOnSide(ExtendedTermfiguration etf, int side, int pos) throws Exception {
+		if (side != -1 && side != 1) throw new Exception("In Machine.actOnSide(): invalid side");
+		int[] array = null;
+		if (side == -1) array = etf.getLeft();
+		if (side ==  1) array = etf.getRight();
+		int symbol = array[pos];
+		int state = etf.getState();
+		int direction = _transitions[state].getToGo(symbol);
+		int nextState = _transitions[state].getNextState(symbol);
+		array[pos] = _transitions[state].getToWrite(symbol);
+		etf.getTerm().getIndex()[0] += direction;
+		etf.setState(nextState);		
+	}
+	
 	/**Gets the number of states of this Machine.*/
 	public int numStates() {return _transitions.length;}
 	public int getState() {return _state;}

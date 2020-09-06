@@ -115,12 +115,18 @@ public class TermfigurationSequence implements TermfigurationLike {
 		return runningTotal;
 	}
 	
-	public int getState() throws Exception {
-		if (!_ornamented) throw new Exception("Error in getState(): unornamented TermfigurationSequence");
+	public int getState() {
+		if (!_ornamented) return -2;
 		Termfiguration activeTerm = _tList.get(_activeTermIndex);
 		return activeTerm.getState();
 	}
-
+	
+	//TODO: Change these later!
+	public boolean onLeft() {return false;}
+	public boolean offLeft() {return false;}
+	public boolean onRight() {return false;}
+	public boolean offRight() {return false;}
+	
 	public int[] evalAt(int n) throws Exception {
 		int combinedBitSeqLen = 0;
 		int[][] bitSeqs = new int[_tList.size()][];

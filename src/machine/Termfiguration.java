@@ -70,13 +70,27 @@ public class Termfiguration extends VeryTermfigurationLike {
 	public boolean isOrnamented() {return _ornamented;}
 	public int[] getBase() {return _base;}
 	public int[] getExponent() {return _exponent;}
+	public int constCoeff() {return _exponent[0];}
 	public int[] getIndex() {return _index;}
-	public int getState() throws Exception {
-		if (!_ornamented) throw new Exception("Cannot get state of unornamented Termfiguration");
+	public void setIndex(int[] index) {
+		_index = index;
+	}
+	public int getState(){
+		if (!_ornamented) return -2;
 		return _state;
 	}
+	public void setState(int state) {_state = state;}
 	public void setBase(int[] base) {_base=base;}
 	public void setExponent(int[] exponent) {_exponent=exponent;}
+	public boolean onLeft()   {return Tools.equal(_index, new int[] {0, 0});}
+	public boolean offLeft()  {return Tools.equal(_index, new int[] {-1, 0});}
+	public boolean onRight()  {return Tools.equal(_index, new int[] {-1 + _base.length * _exponent[0], _base.length * _exponent[1]});}
+	public boolean offRight() {return Tools.equal(_index, new int[] {_base.length * _exponent[0], _base.length * _exponent[1]});}
+	public void setIndexOnLeft()   {setIndex(new int[] {0, 0});}
+	public void setIndexOffLeft()  {setIndex(new int[] {-1, 0});}
+	public void setIndexOnRight()  {setIndex(new int[] {-1 + _base.length * _exponent[0], _base.length * _exponent[1]});}
+	public void setIndexOffRight() {setIndex(new int[] {_base.length * _exponent[0], _base.length * _exponent[1]});}
+	
 	public int[] evalAt(int n) throws Exception {
 		int numReps = Tools.evalAt(_exponent, n);
 		if (numReps<0) throw new Exception("Termfiguration "+toString()+" has exponent "+numReps+"<0 at n="+n);
@@ -170,5 +184,81 @@ public class Termfiguration extends VeryTermfigurationLike {
 		List<Termfiguration> ts = new ArrayList<Termfiguration>();
 		ts.add(this);
 		return new TermfigurationSequence(ts);
+	}
+	
+	/**Returns whether the array _index is within the bounds of
+	 * the length as indicated by the arrays _base and _exponent.
+	 * Throws an exception if it can't figure it out,
+	 * it's indeterminate, or it's ambiguous which side it's on.
+	 * Useful only when part of an ExtendedTermfiguration.
+	 * We may have to take successors before using this function
+	 * so that indices are never negative for a nonnegative n.*/
+	public boolean inBounds() throws Exception{
+		if (_base.length < 1) throw new Exception("in inBounds(): _base.length < 1");
+		if (_exponent.length > 2) throw new Exception("In inBounds(): Haven't written code for nonlinear Termfiguration exponents yet.");
+		if (_index.length    > 2) throw new Exception("In inBounds(): Haven't written code for nonlinear Termfiguration indices yet.");
+		int[] compExponent = new int[2];
+		int[] compIndex = new int[2];
+		for (int i=0; i<_exponent.length; i++) compExponent[i]=_exponent[i];
+		for (int i=0; i<_index.length; i++) compIndex[i] = _index[i];
+		if (compExponent[1] < 0) throw new Exception("In inBounds(): Haven't written code for exponents of decreasing size yet.");
+		if (compExponent[0] < 0) throw new Exception("In inBounds(): Haven't written code for exponents that start negative yet.");
+		int a = compIndex[1], b = compIndex[0], c = compExponent[1] * _base.length, d = compExponent[0] * _base.length;
+		//We want precisely to see if 0<=ax+b<cx+d for all x>=0.
+		if (a <= 0 && b < 0) return false;
+		if (a > 0 && b < 0) throw new Exception("In inBounds(): ambiguous side");
+		if (b < d && b >= 0) {
+			if (a <= c && a >= 0) return true;
+			throw new Exception("In inBounds(): ambiguous");
+		}
+		if (b>=d) {
+			if (a>=c) return false;
+			throw new Exception("In inBounds(): ambiguous");
+		}
+		throw new Exception("Unreachable code");
+	}
+	
+	/**Returns true only if the bit where the tape head is
+	 * would be known precisely if this Termfiguration were incorporated in an ExtendedTermfiguration,
+	 * and this place is out of bounds of the Term.
+	 * We should really assume that the linear coefficient of _exponent is positive.*/
+	public boolean preciseOutOfBounds() throws Exception{
+		if (_base.length < 1) throw new Exception("in preciseOutOfBounds(): _base.length < 1");
+		if (_exponent.length > 2) throw new Exception("In preciseOutOfBounds(): Haven't written code for nonlinear Termfiguration exponents yet.");
+		if (_index.length    > 2) throw new Exception("In preciseOutOfBounds(): Haven't written code for nonlinear Termfiguration indices yet.");
+		int[] compExponent = new int[2];
+		int[] compIndex = new int[2];
+		for (int i=0; i<_exponent.length; i++) compExponent[i]=_exponent[i];
+		for (int i=0; i<_index.length; i++) compIndex[i] = _index[i];
+		if (compExponent[1] < 0) throw new Exception("In preciseOutOfBounds(): Haven't written code for exponents of decreasing size yet.");
+		if (compExponent[0] < 0) throw new Exception("In preciseOutOfBounds(): Haven't written code for exponents that start negative yet.");
+		int a = compIndex[1], b = compIndex[0], c = compExponent[1] * _base.length, d = compExponent[0] * _base.length;
+		//We want precisely to see if ax+b<0 and constant or (ax+b)-(cx+d)>=0 and constant.
+		if (a==0 && b < 0) return true;
+		if (a==c && b >= d) return true;
+		return false;
+	}
+	
+	/**If the term's base is something repeated,
+	 * replace the base with that, and multiply the exponent by the factor.*/
+	public void condense() {
+		int[] base = this.getBase();
+		int len = base.length;
+		//Shortest to longest, for the most condensation possible
+		for (int i=1; i<=len/2; i++) {
+			if (len % i != 0) continue;
+			if (Tools.isRepeatOfFirst(base, i)) {
+				_base = Arrays.copyOfRange(_base, 0, i);
+				int numRepeats = len/i;
+				for (int k=0; k<_exponent.length; k++)
+					_exponent[k] *= numRepeats;
+				return;
+			}
+		}
+	}
+	public boolean isLinear() {
+		if (Tools.degree(_index) > 1) return false;
+		if (Tools.degree(_exponent) > 1) return false;
+		return true;
 	}
 }

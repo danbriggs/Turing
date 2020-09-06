@@ -1,0 +1,595 @@
+Now trying Acceleration.bestPattern for machine 3858969: C1L A1L  @1L A1R  D1R D1R  B1L E1R  E1L C1R  
+0	0	0	14	0	0	11	0	0	8	0	0	5	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	-1	-1	135	-1	-1	132	-1	-1	129	-1	-1	126	-1	-1	123	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	0	14	0	0	11	0	0	8	0	0	5	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+0	18	17	16	15	14	13	12	11	10	9	8	7	6	5	4	3	2	1	0	0	0	0	0	0	0	0	0	0	0	
+0	159	158	157	156	155	154	153	152	151	150	149	148	147	146	145	144	143	142	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	-16	-15	-14	-13	-12	-11	-10	-9	-8	-7	-6	-5	-4	-3	-2	-1	0	1	0	0	0	0	0	0	0	0	0	0	0	
+
+The best skip was 3 with 14 repetitions ending at step 135 after a displacement of 14.
+The signed term length seems to be 3.0, so I'm going to guess it's 3.
+Tape at start step, then at end step: 
+122 D 1i11111111111111111
+135 E 11111111111111i1111
+Begin Termfiguration as string: D (111)^(n) 0
+End Termfiguration as string: D (111)^(n) 3n
+baseCase: true
+Next up: assuming D (111)^(n) 0 yields D (111)^(n) 3n in 3n steps,
+we prove that D (111)^(1+n) 0 yields D (111)^(1+n) 3+3n in 3+3n steps.
+The best skip was 1 with 18 repetitions ending at step 159 after a displacement of -16.
+The signed term length seems to be -0.8888889, so I'm going to guess it's -1.
+Tape at start step, then at end step: 
+142 A 1111111111111111111i
+159 A 11i11111111111111111
+Begin Termfiguration as string: A (1)^(n) -1+n
+End Termfiguration as string: A (1)^(n) -1
+baseCase: true
+Next up: assuming A (1)^(n) -1+n yields A (1)^(n) -1 in n steps,
+we prove that A (1)^(1+n) n yields A (1)^(1+n) -1 in 1+n steps.
+The Lemmas were proved:
+Lemma: The machine C1L A1L  @1L A1R  D1R D1R  B1L E1R  E1L C1R  transforms D (111)^(n) 0 into D (111)^(n) 3n in 3n steps for n >= 0: Proved.
+Lemma: The machine C1L A1L  @1L A1R  D1R D1R  B1L E1R  E1L C1R  transforms A (1)^(n) -1+n into A (1)^(n) -1 in n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L A1L  @1L A1R  D1R D1R  B1L E1R  E1L C1R  
+109 A 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111111111i11111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+161 A 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i11111111111111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 119 A i1111111111111111 with index 91 has best spot 91 for pattern = 1 1 1  in direction R
+Debug code: cc = D (000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(111)^6(000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 90
+numSteps: 18
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 140 D 1111111111111111111o
+Debug code: in isSweepHelper(): StepConfiguration sc = 140 D 1111111111111111111o with index 108 has best spot 107 for pattern = 1  in direction L
+Debug code: cc = A (00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1(1)^20(00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 108
+numSteps: 20
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 162 A o11111111111111111111
+Debug code: in isSweepHelper(): StepConfiguration sc = 162 A o11111111111111111111 with index 88 has best spot 89 for pattern = 1 1 1  in direction R
+Debug code: etf = D 1>(111)^(7+n)
+Another line of debug code: etf.getIndex() = 88 0 
+More debug code: etf = D 1(111)^(7+n)o
+Now etf = B 1(111)^(7+n)<1
+3858969 C1L A1L  @1L A1R  D1R D1R  B1L E1R  E1L C1R  
+161 A i1111111111111111111
+Now trying Acceleration.bestPattern for machine 3858989: C1L A1L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+0	0	0	14	0	0	11	0	0	8	0	0	5	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	-1	-1	125	-1	-1	122	-1	-1	119	-1	-1	116	-1	-1	113	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	0	14	0	0	11	0	0	8	0	0	5	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+0	16	15	14	13	12	11	10	9	8	7	6	5	4	3	2	1	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	147	146	145	144	143	142	141	140	139	138	137	136	135	134	133	132	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	-16	-15	-14	-13	-12	-11	-10	-9	-8	-7	-6	-5	-4	-3	-2	-1	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+The best skip was 3 with 14 repetitions ending at step 125 after a displacement of 14.
+The signed term length seems to be 3.0, so I'm going to guess it's 3.
+Tape at start step, then at end step: 
+112 D 1i11111111111111111
+125 E 11111111111111i1111
+Begin Termfiguration as string: D (111)^(n) 0
+End Termfiguration as string: D (111)^(n) 3n
+baseCase: true
+Next up: assuming D (111)^(n) 0 yields D (111)^(n) 3n in 3n steps,
+we prove that D (111)^(1+n) 0 yields D (111)^(1+n) 3+3n in 3+3n steps.
+The best skip was 1 with 16 repetitions ending at step 147 after a displacement of -16.
+The signed term length seems to be -1.0, so I'm going to guess it's -1.
+Tape at start step, then at end step: 
+132 A 11111111111111111i11
+147 A 11i11111111111111111
+Begin Termfiguration as string: A (1)^(n) -1+n
+End Termfiguration as string: A (1)^(n) -1
+baseCase: true
+Next up: assuming A (1)^(n) -1+n yields A (1)^(n) -1 in n steps,
+we prove that A (1)^(1+n) n yields A (1)^(1+n) -1 in 1+n steps.
+The Lemmas were proved:
+Lemma: The machine C1L A1L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  transforms D (111)^(n) 0 into D (111)^(n) 3n in 3n steps for n >= 0: Proved.
+Lemma: The machine C1L A1L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  transforms A (1)^(n) -1+n into A (1)^(n) -1 in n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L A1L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+109 A 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i111111111111111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+149 A 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i11111111111111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 110 A o11111111111111111 with index 90 has best spot 91 for pattern = 1 1 1  in direction R
+Debug code: cc = D (000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(111)^6(000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 90
+numSteps: 18
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 130 D 1111111111111111111o
+Debug code: in isSweepHelper(): StepConfiguration sc = 130 D 1111111111111111111o with index 108 has best spot 107 for pattern = 1  in direction L
+Debug code: cc = A (00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1(1)^18(1)^2(00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 106
+numSteps: 18
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 150 A o11111111111111111111
+Debug code: in isSweepHelper(): StepConfiguration sc = 150 A o11111111111111111111 with index 88 has best spot 89 for pattern = 1 1 1  in direction R
+Debug code: etf = D 1>(111)^(7+n)
+Another line of debug code: etf.getIndex() = 88 0 
+More debug code: etf = D 1(111)^(7+n)o
+Now etf = B 1(111)^(7+n)<1
+3858989 C1L A1L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+149 A i1111111111111111111
+Now trying Acceleration.bestPattern for machine 3858995: C1L C0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+0	0	0	13	0	0	10	1	0	7	1	0	4	1	0	1	1	0	0	1	0	0	0	0	0	0	0	0	0	0	
+0	-1	-1	129	-1	-1	126	112	-1	123	112	-1	120	112	-1	117	112	-1	-1	112	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	0	13	0	0	10	0	0	7	0	0	4	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+0	0	0	0	31	0	0	0	27	0	0	0	23	0	0	0	19	0	0	0	15	0	0	0	11	0	0	0	7	0	
+0	-1	-1	-1	165	-1	-1	-1	161	-1	-1	-1	157	-1	-1	-1	153	-1	-1	-1	149	-1	-1	-1	145	-1	-1	-1	141	-1	
+0	0	0	0	-15	0	0	0	-13	0	0	0	-11	0	0	0	-9	0	0	0	-7	0	0	0	-5	0	0	0	-3	0	
+
+The best skip was 3 with 13 repetitions ending at step 129 after a displacement of 13.
+The signed term length seems to be 3.0, so I'm going to guess it's 3.
+Tape at start step, then at end step: 
+117 D 1i1111111111111111
+129 D 1111111111111i1111
+Begin Termfiguration as string: D (111)^(n) 0
+End Termfiguration as string: D (111)^(n) 3n
+baseCase: true
+Next up: assuming D (111)^(n) 0 yields D (111)^(n) 3n in 3n steps,
+we prove that D (111)^(1+n) 0 yields D (111)^(1+n) 3+3n in 3+3n steps.
+The best skip was 4 with 31 repetitions ending at step 165 after a displacement of -15.
+The signed term length seems to be -1.9354838, so I'm going to guess it's -2.
+Tape at start step, then at end step: 
+135 D 1111111111111111111o
+165 A 111i1111111111111111
+Could not find two positions with a displacement of -2 visited only once in the swath
+Begin Termfiguration as string: D (10)^(n) -1+2n
+End Termfiguration as string: D (11)^(n) -1
+baseCase: true
+Next up: assuming D (10)^(n) -1+2n yields D (11)^(n) -1 in 4n steps,
+we prove that D (10)^(1+n) 1+2n yields D (11)^(1+n) -1 in 4+4n steps.
+Linear induction exception: Index -1 makes configuration of length 2 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: B (11)^(n) -1+2n
+End Termfiguration as string: B (11)^(n) -1
+baseCase: true
+Next up: assuming B (11)^(n) -1+2n yields B (11)^(n) -1 in 4n steps,
+we prove that B (11)^(1+n) 1+2n yields B (11)^(1+n) -1 in 4+4n steps.
+Linear induction exception: Index -1 makes configuration of length 2 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: A (11)^(n) -1+2n
+End Termfiguration as string: A (11)^(n) -1
+baseCase: true
+Next up: assuming A (11)^(n) -1+2n yields A (11)^(n) -1 in 4n steps,
+we prove that A (11)^(1+n) 1+2n yields A (11)^(1+n) -1 in 4+4n steps.
+The Lemmas were proved:
+Lemma: The machine C1L C0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  transforms D (111)^(n) 0 into D (111)^(n) 3n in 3n steps for n >= 0: Proved.
+Lemma: The machine C1L C0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  transforms A (11)^(n) -1+2n into A (11)^(n) -1 in 4n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L C0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+109 D 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111o11111111111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+170 C 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i0111111111111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 112 C i011111111111111 with index 92 has best spot 94 for pattern = 1 1 1  in direction R
+Debug code: cc = D (0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(111)^5(11000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 91
+numSteps: 15
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 132 D 1111111111111111i1
+Debug code: in isSweepHelper(): StepConfiguration sc = 132 D 1111111111111111i1 with index 106 has best spot 107 for pattern = 1 1  in direction L
+Debug code: cc = A (000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1(11)^9(110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 107
+numSteps: 36
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 173 A o11111111111111111111
+Debug code: in isSweepHelper(): StepConfiguration sc = 173 A o11111111111111111111 with index 89 has best spot 90 for pattern = 1 1 1  in direction R
+Debug code: etf = D 1>(111)^(7+n)
+Another line of debug code: etf.getIndex() = 89 0 
+More debug code: etf = D 1(111)^(7+n)o
+More debug code: etf = D 1(1)^(21+3n)o [New 9/5: it worked!]
+Now etf = B 1(111)^(7+n)<1
+3858995 C1L C0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+170 C i0111111111111111111
+Now trying Acceleration.bestPattern for machine 3858997: C1L B0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+0	0	0	2	29	0	0	1	25	0	0	1	21	0	0	1	17	0	0	1	13	0	0	1	9	0	0	1	5	0	
+0	-1	-1	148	179	-1	-1	148	175	-1	-1	148	171	-1	-1	148	167	-1	-1	148	163	-1	-1	148	159	-1	-1	148	155	-1	
+0	0	0	0	15	0	0	1	13	0	0	1	11	0	0	1	9	0	0	1	7	0	0	1	5	0	0	1	3	0	
+
+0	0	20	0	18	0	16	0	14	0	12	0	10	0	8	0	6	0	4	0	2	0	0	0	0	0	0	0	0	0	
+0	-1	206	-1	204	-1	202	-1	200	-1	198	-1	196	-1	194	-1	192	-1	190	-1	188	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	-20	0	-18	0	-16	0	-14	0	-12	0	-10	0	-8	0	-6	0	-4	0	-2	0	0	0	0	0	0	0	0	0	
+
+The best skip was 4 with 29 repetitions ending at step 179 after a displacement of 15.
+The signed term length seems to be 2.0689654, so I'm going to guess it's 2.
+Tape at start step, then at end step: 
+151 D 1111i01010101010101011
+179 D 111111111111111111i011
+Could not find two positions with a displacement of 2 visited only once in the swath
+Begin Termfiguration as string: D (10)^(n) 0
+End Termfiguration as string: D (11)^(n) 2n
+baseCase: true
+Next up: assuming D (10)^(n) 0 yields D (11)^(n) 2n in 4n steps,
+we prove that D (10)^(1+n) 0 yields D (11)^(1+n) 2+2n in 4+4n steps.
+The best skip was 2 with 20 repetitions ending at step 206 after a displacement of -20.
+The signed term length seems to be -2.0, so I'm going to guess it's -2.
+Tape at start step, then at end step: 
+187 B 1111111111111111111111i1
+206 A 111i10101010101010101011
+Begin Termfiguration as string: B (11)^(n) -1+2n
+End Termfiguration as string: B (01)^(n) -1
+baseCase: true
+Next up: assuming B (11)^(n) -1+2n yields B (01)^(n) -1 in 2n steps,
+we prove that B (11)^(1+n) 1+2n yields B (01)^(1+n) -1 in 2+2n steps.
+The Lemmas were proved:
+Lemma: The machine C1L B0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  transforms D (10)^(n) 0 into D (11)^(n) 2n in 4n steps for n >= 0: Proved.
+Lemma: The machine C1L B0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  transforms B (11)^(n) -1+2n into B (01)^(n) -1 in 2n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L B0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+109 E 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111i1101010110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+209 B 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i01010101010101010101011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 145 B i0101010101010101011 with index 91 has best spot 91 for pattern = 1 0  in direction R
+Debug code: cc = D (000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111)^1(10)^8(11000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 93
+numSteps: 32
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 183 D 11111111111111111111i1
+Debug code: in isSweepHelper(): StepConfiguration sc = 183 D 11111111111111111111i1 with index 109 has best spot 110 for pattern = 1 1  in direction L
+Debug code: cc = B (000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(11)^11(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 111
+numSteps: 22
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 209 B i01010101010101010101011
+Debug code: in isSweepHelper(): StepConfiguration sc = 209 B i01010101010101010101011 with index 89 has best spot 89 for pattern = 1 0  in direction R
+Debug code: etf = D 1111>(10)^(10+n)11
+Another line of debug code: etf.getIndex() = 91 0 
+More debug code: etf = D 1111(11)^(10+n)i1
+Now etf = A 1111(11)^(10+n)<1011
+3858997 C1L B0L  @1L A1L  D1R D1R  B1L E1R  E1L C1R  
+209 B i01010101010101010101011
+Now trying Acceleration.bestPattern for machine 3859182: C1L D1R  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+0	0	0	10	1	0	7	1	0	4	1	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	-1	-1	141	130	-1	138	130	-1	135	130	-1	132	130	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	0	8	1	0	5	1	0	2	1	0	-1	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+0	0	0	38	0	0	35	0	0	32	0	0	29	0	0	26	0	0	23	0	0	20	0	0	17	0	0	14	0	0	
+0	-1	-1	183	-1	-1	180	-1	-1	177	-1	-1	174	-1	-1	171	-1	-1	168	-1	-1	165	-1	-1	162	-1	-1	159	-1	-1	
+0	0	0	-12	0	0	-11	0	0	-10	0	0	-9	0	0	-8	0	0	-7	0	0	-6	0	0	-5	0	0	-4	0	0	
+
+The best skip was 3 with 10 repetitions ending at step 141 after a displacement of 8.
+The signed term length seems to be 2.4, so I'm going to guess it's 2.
+Tape at start step, then at end step: 
+132 E 1i1111111111111
+141 E 1111111111i1111
+Begin Termfiguration as string: E (11)^(n) 0
+In guessLemmaHelper(), the tape head did not move the expected number of steps:
+targetIndex = 133, termLength = 2, t1.getIndex() = 136
+3859182 C1L D1R  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+187 A i011111111111111
+Now trying Acceleration.bestPattern for machine 3859187: C1L B1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+0	0	0	0	28	0	0	0	24	0	0	0	20	0	0	0	16	0	0	0	12	0	0	0	8	0	0	0	4	0	
+0	-1	-1	-1	141	-1	-1	-1	137	-1	-1	-1	133	-1	-1	-1	129	-1	-1	-1	125	-1	-1	-1	121	-1	-1	-1	117	-1	
+0	0	0	0	14	0	0	0	12	0	0	0	10	0	0	0	8	0	0	0	6	0	0	0	4	0	0	0	2	0	
+
+0	0	16	0	14	0	12	0	10	0	8	0	6	0	4	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	-1	166	-1	164	-1	162	-1	160	-1	158	-1	156	-1	154	-1	152	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	-16	0	-14	0	-12	0	-10	0	-8	0	-6	0	-4	0	-2	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+The best skip was 4 with 28 repetitions ending at step 141 after a displacement of 14.
+The signed term length seems to be 2.0, so I'm going to guess it's 2.
+Tape at start step, then at end step: 
+114 D 1i0101010101010101
+141 C 11111111111111i101
+Could not find two positions with a displacement of 2 visited only once in the swath
+Begin Termfiguration as string: D (10)^(n) 0
+End Termfiguration as string: D (11)^(n) 2n
+baseCase: true
+Next up: assuming D (10)^(n) 0 yields D (11)^(n) 2n in 4n steps,
+we prove that D (10)^(1+n) 0 yields D (11)^(1+n) 2+2n in 4+4n steps.
+The best skip was 2 with 16 repetitions ending at step 166 after a displacement of -16.
+The signed term length seems to be -2.0, so I'm going to guess it's -2.
+Tape at start step, then at end step: 
+151 B 111111111111111111i1
+166 A 111i0101010101010101
+Begin Termfiguration as string: B (11)^(n) -1+2n
+End Termfiguration as string: B (10)^(n) -1
+baseCase: true
+Next up: assuming B (11)^(n) -1+2n yields B (10)^(n) -1 in 2n steps,
+we prove that B (11)^(1+n) 1+2n yields B (10)^(1+n) -1 in 2+2n steps.
+The Lemmas were proved:
+Lemma: The machine C1L B1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  transforms D (10)^(n) 0 into D (11)^(n) 2n in 4n steps for n >= 0: Proved.
+Lemma: The machine C1L B1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  transforms B (11)^(n) -1+2n into B (10)^(n) -1 in 2n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L B1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+109 B 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011i10101010101010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+169 B 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 111 B i101010101010101 with index 93 has best spot 94 for pattern = 1 0  in direction R
+Debug code: cc = D (00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(10)^9(0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 92
+numSteps: 36
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 150 D 1111111111111111111o
+Debug code: in isSweepHelper(): StepConfiguration sc = 150 D 1111111111111111111o with index 110 has best spot 108 for pattern = 1 1  in direction L
+Debug code: cc = B (00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(11)^9(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 109
+numSteps: 18
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 169 B i1010101010101010101
+Debug code: in isSweepHelper(): StepConfiguration sc = 169 B i1010101010101010101 with index 91 has best spot 92 for pattern = 1 0  in direction R
+Debug code: etf = D 1>(10)^(11+n)
+Another line of debug code: etf.getIndex() = 90 0 
+More debug code: etf = D 1(11)^(11+n)o
+Now etf = B 1(11)^(11+n)<1
+Another line of debug code: etf.getIndex() = 111 2 
+After 2nd Lem used: etf = B i(10)^(11+n)1
+originalEtf = D 1>(10)^(11+n)
+compare etf = D 111>(10)^(11+n)1
+3859187 C1L B1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+169 B i1010101010101010101
+Now trying Acceleration.bestPattern for machine 3859189: C1L A1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+0	0	0	13	3	0	10	3	0	7	3	0	4	3	0	1	3	0	0	1	0	0	0	0	0	0	0	0	0	0	
+0	-1	-1	146	149	-1	143	146	-1	140	143	-1	137	140	-1	134	137	-1	-1	134	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	0	13	3	0	10	3	0	7	3	0	4	3	0	1	3	0	0	1	0	0	0	0	0	0	0	0	0	0	
+
+0	18	17	16	15	14	13	12	11	10	9	8	7	6	5	4	3	2	1	0	0	0	0	0	0	0	0	0	0	0	
+0	175	174	173	172	171	170	169	168	167	166	165	164	163	162	161	160	159	158	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	-18	-17	-16	-15	-14	-13	-12	-11	-10	-9	-8	-7	-6	-5	-4	-3	-2	-1	0	0	0	0	0	0	0	0	0	0	0	
+
+The best skip was 3 with 13 repetitions ending at step 146 after a displacement of 13.
+The signed term length seems to be 3.0, so I'm going to guess it's 3.
+Tape at start step, then at end step: 
+134 D 1i111111111111111011
+146 D 1111111111111i111011
+Begin Termfiguration as string: D (111)^(n) 0
+End Termfiguration as string: D (111)^(n) 3n
+baseCase: true
+Next up: assuming D (111)^(n) 0 yields D (111)^(n) 3n in 3n steps,
+we prove that D (111)^(1+n) 0 yields D (111)^(1+n) 3+3n in 3+3n steps.
+The best skip was 1 with 18 repetitions ending at step 175 after a displacement of -18.
+The signed term length seems to be -1.0, so I'm going to guess it's -1.
+Tape at start step, then at end step: 
+158 A 1111111111111111111i01
+175 A 11i1111111111111111101
+Begin Termfiguration as string: A (1)^(n) -1+n
+End Termfiguration as string: A (1)^(n) -1
+baseCase: true
+Next up: assuming A (1)^(n) -1+n yields A (1)^(n) -1 in n steps,
+we prove that A (1)^(1+n) n yields A (1)^(1+n) -1 in 1+n steps.
+The Lemmas were proved:
+Lemma: The machine C1L A1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  transforms D (111)^(n) 0 into D (111)^(n) 3n in 3n steps for n >= 0: Proved.
+Lemma: The machine C1L A1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  transforms A (1)^(n) -1+n into A (1)^(n) -1 in n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L A1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+109 D 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111111111i1111101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+177 A 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i1111111111111111111010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 131 A i11111111111111011 with index 89 has best spot 89 for pattern = 1 1 1  in direction R
+Debug code: cc = D (0000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(111)^5(10110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 88
+numSteps: 15
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 149 D 1111111111111111i011
+Debug code: in isSweepHelper(): StepConfiguration sc = 149 D 1111111111111111i011 with index 103 has best spot 103 for pattern = 1  in direction L
+Debug code: cc = A (000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1(1)^20(0100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 106
+numSteps: 20
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 178 A o1111111111111111111101
+Debug code: in isSweepHelper(): StepConfiguration sc = 178 A o1111111111111111111101 with index 86 has best spot 87 for pattern = 1 1 1  in direction R
+Debug code: etf = D 1>(111)^(7+n)01
+Another line of debug code: etf.getIndex() = 86 0 
+More debug code: etf = D 1(111)^(7+n)o1
+Now etf = B 1(111)^(7+n)<11
+3859189 C1L A1L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+177 A i111111111111111111101
+Now trying Acceleration.bestPattern for machine 3859195: C1L C0L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+0	0	0	0	28	0	0	0	24	0	0	0	20	0	0	0	16	0	0	0	12	0	0	0	8	0	0	0	4	0	
+0	-1	-1	-1	173	-1	-1	-1	169	-1	-1	-1	165	-1	-1	-1	161	-1	-1	-1	157	-1	-1	-1	153	-1	-1	-1	149	-1	
+0	0	0	0	14	0	0	0	12	0	0	0	10	0	0	0	8	0	0	0	6	0	0	0	4	0	0	0	2	0	
+
+0	0	0	0	32	0	0	0	28	0	0	0	24	0	0	0	20	0	0	0	16	0	0	0	12	0	0	0	8	0	
+0	-1	-1	-1	212	-1	-1	-1	208	-1	-1	-1	204	-1	-1	-1	200	-1	-1	-1	196	-1	-1	-1	192	-1	-1	-1	188	-1	
+0	0	0	0	-14	0	0	0	-12	0	0	0	-10	0	0	0	-8	0	0	0	-6	0	0	0	-4	0	0	0	-2	0	
+
+The best skip was 4 with 28 repetitions ending at step 173 after a displacement of 14.
+The signed term length seems to be 2.0, so I'm going to guess it's 2.
+Tape at start step, then at end step: 
+146 D 1i0101010101010101
+173 C 11111111111111i101
+Could not find two positions with a displacement of 2 visited only once in the swath
+Begin Termfiguration as string: D (10)^(n) 0
+End Termfiguration as string: D (11)^(n) 2n
+baseCase: true
+Next up: assuming D (10)^(n) 0 yields D (11)^(n) 2n in 4n steps,
+we prove that D (10)^(1+n) 0 yields D (11)^(1+n) 2+2n in 4+4n steps.
+The best skip was 4 with 32 repetitions ending at step 212 after a displacement of -14.
+The signed term length seems to be -1.75, so I'm going to guess it's -2.
+Tape at start step, then at end step: 
+181 C 111111111111111111i
+212 A 111i0101010101010101
+Could not find two positions with a displacement of -2 visited only once in the swath
+Begin Termfiguration as string: C (11)^(n) -1+2n
+End Termfiguration as string: C (00)^(n) -1
+baseCase: true
+Next up: assuming C (11)^(n) -1+2n yields C (00)^(n) -1 in 4n steps,
+we prove that C (11)^(1+n) 1+2n yields C (00)^(1+n) -1 in 4+4n steps.
+Linear induction exception: Index 2 makes configuration of length 2 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: D (10)^(n) -1+2n
+End Termfiguration as string: D (01)^(n) -1
+baseCase: true
+Next up: assuming D (10)^(n) -1+2n yields D (01)^(n) -1 in 4n steps,
+we prove that D (10)^(1+n) 1+2n yields D (01)^(1+n) -1 in 4+4n steps.
+Linear induction exception: Index -1 makes configuration of length 2 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: B (11)^(n) -1+2n
+End Termfiguration as string: B (10)^(n) -1
+baseCase: true
+Next up: assuming B (11)^(n) -1+2n yields B (10)^(n) -1 in 4n steps,
+we prove that B (11)^(1+n) 1+2n yields B (10)^(1+n) -1 in 4+4n steps.
+Linear induction exception: Index -1 makes configuration of length 2 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: A (11)^(n) -1+2n
+End Termfiguration as string: A (01)^(n) -1
+baseCase: true
+Next up: assuming A (11)^(n) -1+2n yields A (01)^(n) -1 in 4n steps,
+we prove that A (11)^(1+n) 1+2n yields A (01)^(1+n) -1 in 4+4n steps.
+The Lemmas were proved:
+Lemma: The machine C1L C0L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  transforms D (10)^(n) 0 into D (11)^(n) 2n in 4n steps for n >= 0: Proved.
+Lemma: The machine C1L C0L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  transforms A (11)^(n) -1+2n into A (01)^(n) -1 in 4n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L C0L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+109 C 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111i1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+217 C 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i001010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 141 C i001010101010101 with index 93 has best spot 96 for pattern = 1 0  in direction R
+Debug code: cc = D (00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(10)^9(0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 92
+numSteps: 36
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 182 D 1111111111111111111o
+Debug code: in isSweepHelper(): StepConfiguration sc = 182 D 1111111111111111111o with index 110 has best spot 108 for pattern = 1 1  in direction L
+Debug code: cc = A (0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1(11)^9(01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 108
+numSteps: 36
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 220 A o01010101010101010101
+Debug code: in isSweepHelper(): StepConfiguration sc = 220 A o01010101010101010101 with index 90 has best spot 92 for pattern = 1 0  in direction R
+Debug code: etf = D 1>(10)^(11+n)
+Another line of debug code: etf.getIndex() = 90 0 
+More debug code: etf = D 1(11)^(11+n)o
+Now etf = B 1(11)^(11+n)<1
+3859195 C1L C0L  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+217 C i0010101010101010101
+Now trying Acceleration.bestPattern for machine 3859923: C1L B0R  @1L D1L  D1R D1R  A1L E1R  E1L C1R  
+0	0	0	11	0	0	8	0	0	5	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	-1	-1	154	-1	-1	151	-1	-1	148	-1	-1	145	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	0	11	0	0	8	0	0	5	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+0	0	0	43	0	0	40	0	0	37	0	0	34	0	0	31	0	0	28	0	0	25	0	0	22	0	0	19	0	0	
+0	-1	-1	201	-1	-1	198	-1	-1	195	-1	-1	192	-1	-1	189	-1	-1	186	-1	-1	183	-1	-1	180	-1	-1	177	-1	-1	
+0	0	0	-13	0	0	-12	0	0	-11	0	0	-10	0	0	-9	0	0	-8	0	0	-7	0	0	-6	0	0	-5	0	0	
+
+The best skip was 3 with 11 repetitions ending at step 154 after a displacement of 11.
+The signed term length seems to be 3.0, so I'm going to guess it's 3.
+Tape at start step, then at end step: 
+144 D 1i11111111111111
+154 E 11111111111i1111
+Begin Termfiguration as string: D (111)^(n) 0
+End Termfiguration as string: D (111)^(n) 3n
+baseCase: true
+Next up: assuming D (111)^(n) 0 yields D (111)^(n) 3n in 3n steps,
+we prove that D (111)^(1+n) 0 yields D (111)^(1+n) 3+3n in 3+3n steps.
+The best skip was 3 with 43 repetitions ending at step 201 after a displacement of -13.
+The signed term length seems to be -0.9069767, so I'm going to guess it's -1.
+Tape at start step, then at end step: 
+159 D 1111111111111111o
+201 D 11o11111111111111
+Could not find two positions with a displacement of -1 visited only once in the swath
+Begin Termfiguration as string: D (0)^(n) -1+n
+End Termfiguration as string: D (1)^(n) -1
+baseCase: true
+Next up: assuming D (0)^(n) -1+n yields D (1)^(n) -1 in 3n steps,
+we prove that D (0)^(1+n) n yields D (1)^(1+n) -1 in 3+3n steps.
+Linear induction exception: Index -1 makes configuration of length 1 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: A (1)^(n) -1+n
+End Termfiguration as string: A (1)^(n) -1
+baseCase: true
+Next up: assuming A (1)^(n) -1+n yields A (1)^(n) -1 in 3n steps,
+we prove that A (1)^(1+n) n yields A (1)^(1+n) -1 in 3+3n steps.
+Linear induction exception: Index 1 makes configuration of length 1 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: B (1)^(n) -1+n
+End Termfiguration as string: B (1)^(n) -1
+baseCase: true
+Next up: assuming B (1)^(n) -1+n yields B (1)^(n) -1 in 3n steps,
+we prove that B (1)^(1+n) n yields B (1)^(1+n) -1 in 3+3n steps.
+Linear induction exception: Index -1 makes configuration of length 1 dead
+Perhaps the lemma is not true?
+3859923 C1L B0R  @1L D1L  D1R D1R  A1L E1R  E1L C1R  
+205 A i1111111111111111
+Now trying Acceleration.bestPattern for machine 3862989: C1L A1L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  
+0	0	0	12	0	0	9	0	0	6	0	0	3	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	-1	-1	123	-1	-1	120	-1	-1	117	-1	-1	114	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	0	0	12	0	0	9	0	0	6	0	0	3	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+0	15	14	13	12	11	10	9	8	7	6	5	4	3	2	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	147	146	145	144	143	142	141	140	139	138	137	136	135	134	133	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	
+0	-15	-14	-13	-12	-11	-10	-9	-8	-7	-6	-5	-4	-3	-2	-1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+
+The best skip was 3 with 12 repetitions ending at step 123 after a displacement of 12.
+The signed term length seems to be 3.0, so I'm going to guess it's 3.
+Tape at start step, then at end step: 
+112 D 1i1111111111111110
+123 C 111111111111i11110
+Begin Termfiguration as string: D (111)^(n) 0
+End Termfiguration as string: D (111)^(n) 3n
+baseCase: true
+Next up: assuming D (111)^(n) 0 yields D (111)^(n) 3n in 3n steps,
+we prove that D (111)^(1+n) 0 yields D (111)^(1+n) 3+3n in 3+3n steps.
+The best skip was 1 with 15 repetitions ending at step 147 after a displacement of -15.
+The signed term length seems to be -1.0, so I'm going to guess it's -1.
+Tape at start step, then at end step: 
+133 A 1111111111111111i10
+147 A 11i1111111111111110
+Begin Termfiguration as string: A (1)^(n) -1+n
+End Termfiguration as string: A (1)^(n) -1
+baseCase: true
+Next up: assuming A (1)^(n) -1+n yields A (1)^(n) -1 in n steps,
+we prove that A (1)^(1+n) n yields A (1)^(1+n) -1 in 1+n steps.
+The Lemmas were proved:
+Lemma: The machine C1L A1L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  transforms D (111)^(n) 0 into D (111)^(n) 3n in 3n steps for n >= 0: Proved.
+Lemma: The machine C1L A1L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  transforms A (1)^(n) -1+n into A (1)^(n) -1 in n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L A1L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  
+109 A 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i111111111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+149 A 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i11111111111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 110 A o111111111111111 with index 90 has best spot 91 for pattern = 1 1 1  in direction R
+Debug code: cc = D (000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(111)^5(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 90
+numSteps: 15
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 127 D 1111111111111111i
+Debug code: in isSweepHelper(): StepConfiguration sc = 127 D 1111111111111111i with index 105 has best spot 105 for pattern = 1  in direction L
+Debug code: cc = A (00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1(1)^17(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 105
+numSteps: 17
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 150 A o111111111111111111
+Debug code: in isSweepHelper(): StepConfiguration sc = 150 A o111111111111111111 with index 88 has best spot 89 for pattern = 1 1 1  in direction R
+Debug code: etf = D 1>(111)^(6+n)1
+Another line of debug code: etf.getIndex() = 88 0 
+More debug code: etf = D 1(111)^(6+n)i
+Now etf = A 1(111)^(6+n)<11
+3862989 C1L A1L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  
+149 A i11111111111111111
+Now trying Acceleration.bestPattern for machine 3862995: C1L C0L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  
+0	0	0	2	20	0	0	1	16	0	0	1	12	0	0	1	8	0	0	1	4	0	0	1	1	0	0	0	0	0	
+0	-1	-1	131	153	-1	-1	126	149	-1	-1	131	145	-1	-1	131	141	-1	-1	131	137	-1	-1	131	132	-1	-1	-1	-1	-1	
+0	0	0	0	10	0	0	-1	8	0	0	1	6	0	0	1	4	0	0	1	2	0	0	1	1	0	0	0	0	0	
+
+0	0	0	0	31	0	0	0	27	0	0	0	23	0	0	0	19	0	0	0	15	0	0	0	11	0	0	0	7	0	
+0	-1	-1	-1	191	-1	-1	-1	187	-1	-1	-1	183	-1	-1	-1	179	-1	-1	-1	175	-1	-1	-1	171	-1	-1	-1	167	-1	
+0	0	0	0	-13	0	0	0	-11	0	0	0	-9	0	0	0	-7	0	0	0	-5	0	0	0	-3	0	0	0	-1	0	
+
+The best skip was 4 with 20 repetitions ending at step 153 after a displacement of 10.
+The signed term length seems to be 2.0, so I'm going to guess it's 2.
+Tape at start step, then at end step: 
+134 D 1111i0101010101010
+153 C 1111111111111i1010
+Could not find two positions with a displacement of 2 visited only once in the swath
+Begin Termfiguration as string: D (10)^(n) 0
+End Termfiguration as string: D (11)^(n) 2n
+baseCase: true
+Next up: assuming D (10)^(n) 0 yields D (11)^(n) 2n in 4n steps,
+we prove that D (10)^(1+n) 0 yields D (11)^(1+n) 2+2n in 4+4n steps.
+The best skip was 4 with 31 repetitions ending at step 191 after a displacement of -13.
+The signed term length seems to be -1.6774193, so I'm going to guess it's -2.
+Tape at start step, then at end step: 
+161 C 11111111111111111i
+191 B 111i010101010101010
+Could not find two positions with a displacement of -2 visited only once in the swath
+Begin Termfiguration as string: C (11)^(n) -1+2n
+End Termfiguration as string: C (01)^(n) -1
+baseCase: true
+Next up: assuming C (11)^(n) -1+2n yields C (01)^(n) -1 in 4n steps,
+we prove that C (11)^(1+n) 1+2n yields C (01)^(1+n) -1 in 4+4n steps.
+Linear induction exception: Index 2 makes configuration of length 2 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: D (10)^(n) -1+2n
+End Termfiguration as string: D (10)^(n) -1
+baseCase: true
+Next up: assuming D (10)^(n) -1+2n yields D (10)^(n) -1 in 4n steps,
+we prove that D (10)^(1+n) 1+2n yields D (10)^(1+n) -1 in 4+4n steps.
+Linear induction exception: Index -1 makes configuration of length 2 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: B (11)^(n) -1+2n
+End Termfiguration as string: B (01)^(n) -1
+baseCase: true
+Next up: assuming B (11)^(n) -1+2n yields B (01)^(n) -1 in 4n steps,
+we prove that B (11)^(1+n) 1+2n yields B (01)^(1+n) -1 in 4+4n steps.
+Linear induction exception: Index -1 makes configuration of length 2 dead
+Perhaps the lemma is not true?
+Begin Termfiguration as string: A (11)^(n) -1+2n
+End Termfiguration as string: A (10)^(n) -1
+baseCase: true
+Next up: assuming A (11)^(n) -1+2n yields A (10)^(n) -1 in 4n steps,
+we prove that A (11)^(1+n) 1+2n yields A (10)^(1+n) -1 in 4+4n steps.
+The Lemmas were proved:
+Lemma: The machine C1L C0L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  transforms D (10)^(n) 0 into D (11)^(n) 2n in 4n steps for n >= 0: Proved.
+Lemma: The machine C1L C0L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  transforms A (11)^(n) -1+2n into A (10)^(n) -1 in 4n steps for n >= 0: Proved.
+Can we use them? Machine, workConfig, tempConfig:
+C1L C0L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  
+109 A 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111i1010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+196 A 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i101010101010101010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Debug code: in isSweepHelper(): StepConfiguration sc = 125 A i1010101010101 with index 91 has best spot 92 for pattern = 1 0  in direction R
+Debug code: cc = D (00000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111)^1(10)^7(00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 92
+numSteps: 28
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 162 D 111111111111111111o
+Debug code: in isSweepHelper(): StepConfiguration sc = 162 D 111111111111111111o with index 106 has best spot 105 for pattern = 1 1  in direction L
+Debug code: cc = A (00000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)^1(11)^8(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)^1 104
+numSteps: 32
+Debug code: in isSweepHelper(): StepConfiguration sc2 = 196 A i10101010101010101
+Debug code: in isSweepHelper(): StepConfiguration sc = 196 A i10101010101010101 with index 88 has best spot 89 for pattern = 1 0  in direction R
+Debug code: etf = D 1111>(10)^(9+n)
+Another line of debug code: etf.getIndex() = 89 0 
+More debug code: etf = D 1111(11)^(9+n)o
+Now etf = B 1111(11)^(9+n)<
+3862995 C1L C0L  @1L A1L  D1R D1R  B0L E1R  E1L C1R  
+196 A i10101010101010101
+Now trying Acceleration.bestPattern for machine 3863187: AllMachines.makeMachines() exited with Total number of machines exceeded.

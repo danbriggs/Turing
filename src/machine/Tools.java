@@ -149,6 +149,14 @@ public class Tools {
 		for (int i=0; i<=lastNonzeroIndex; i++) retVal[i]=arr[i];
 		return retVal;
 	}
+	public static int[] trimBeginning(int[] arr) {
+		int firstNonzeroIndex = 0;
+		while (firstNonzeroIndex<arr.length && arr[firstNonzeroIndex]==0) firstNonzeroIndex++;
+		int[] retVal = new int[arr.length - firstNonzeroIndex];
+		//retVal is thus length 0 when arr is any zero array
+		for (int i=firstNonzeroIndex; i<arr.length; i++) retVal[i-firstNonzeroIndex]=arr[i];
+		return retVal;
+	}
 	public static int[] add(int[] a, int[] b) {
 		int length = Math.max(a.length, b.length);
 		int[] c = new int[length];
@@ -251,5 +259,48 @@ public class Tools {
 			ret[i] = array[array.length - 1 - i];
 		}
 		return ret;
+	}
+	
+	public static String ignore(String s, char c, int side) {
+		if (side != -1 && side != 1) return null;
+		int i=0;
+		if (side == -1) {
+			for (i=0; i<s.length(); i++) {
+				if (s.charAt(i)!=c) break;
+			}
+			if (i>=s.length()) return "";
+			return s.substring(i);
+		}
+		if (side == 1) {
+			for (i=s.length()-1; i>=0; i--) {
+				if (s.charAt(i)!=c) break;
+			}
+			if (i<0) return "";
+			return s.substring(0,i+1);
+		}
+		return null;
+	}
+	
+	/**Determines whether base is a repetition of its first n terms.*/
+	public static boolean isRepeatOfFirst(int[] base, int n) {
+		int len = base.length;
+		if (n <= 0 || n > len) return false;
+		if (len % n != 0) return false;
+		int numChunks = len / n;
+		for (int i=0; i<n; i++) {
+			int bit = base[i];
+			for (int j=1; j<numChunks; j++) {
+				if (base[i + n * j] != bit) return false;
+			}
+		}
+		return true;
+	}
+	
+	/**CoeffList should be given in increasing order of power of the variable.*/
+	public static int degree (int[] coeffList) {
+		if (coeffList == null) return -1;
+		int degree = coeffList.length - 1;
+		while (degree >= 0 && coeffList[degree] == 0) degree --;
+		return degree;
 	}
 }

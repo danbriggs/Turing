@@ -57,7 +57,7 @@ public abstract class VeryTermfigurationLike implements TermfigurationLike {
 	}
 
 	@Override
-	public int getState() throws Exception {
+	public int getState(){
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -113,6 +113,14 @@ public abstract class VeryTermfigurationLike implements TermfigurationLike {
 	@Override
 	public boolean equals(TermfigurationLike tl) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	public int constCoeff() {
+		return 0;
+	}
+	
+	public boolean isLinear() {
 		return false;
 	}
 

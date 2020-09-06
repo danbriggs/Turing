@@ -18,9 +18,10 @@ public class AllMachines {
 	static final int MAX_OUTPUT_SIZE = 11; //Was 1000
 	static final int SHIFT_NUM_STEPS = 50;
 	static final int HOW_FAR_AWAY_ALLOWED = 5;
-	//The next two are for isSweepHelper()
+	//The next three are for isSweepHelper()
 	static final int SWEEPCATCH_DURATION = 100; //how many steps to go checking whether the tape head is in bestSpot in bestState
 	static final int MAX_NUM_TRIES = 5; //the number of times we'll try to condense and apply a lemma
+	static final int MAX_WANDERING = 1000; //while it's precisely out of bounds between lemma use
 	int[][][] _states;
 	boolean[][] _transitionFilled;
 	List<Point> _usedTransitions; //To keep track of the order in which they were filled.
@@ -425,38 +426,191 @@ public class AllMachines {
 				return false;
 			}
 		}
-		if (!isSweepHelper(m, sc, lem1, R, false)) return false;
-		if (!isSweepHelper(m, sc, lem2, L, false)) return false;
+		if (!isSweepHelper(m, sc, lem1, lem2, R, false)) return false;
+		if (!isSweepHelper(m, sc, lem2, lem1, L, false)) return false;
+		if (!isSweepHelper(m, sc, lem1, lem2, R, true )) return false;
 		return false;
 	}
 	
 	/**Rewrites in terms of a variable N if generalize is true.*/
-	boolean isSweepHelper(Machine m, StepConfiguration sc, Lemma lem, int direction, boolean generalize) {
+	boolean isSweepHelper(Machine m, StepConfiguration sc, Lemma lem, Lemma otherLem, int direction, boolean generalize) {
 		//TODO: fix for multiple possible entry points.
-		LemmaList lemlist = new LemmaList(lem);
-		int[] pattern = null;
-		try {pattern = lemlist.sourcePatternList().get(0);}
-		catch (Exception e) {
-			System.out.println("Error 1 in isSweepHelper(): " + e.getMessage());
-			return false;
-		}
-		int bestState = -2;
-		try {bestState = lem.getSource().getState();}
-		catch (Exception e) {
-			System.out.println("Error 2 in isSweepHelper: "+e.getMessage());
-			return false;
-		}
+		int[] pattern = lem.getSource().getBase();
+		int bestState = lem.getSource().getState();
 		int bestSpot = sc.bestSpot(pattern, direction);
 		//TODO: Address the case when lem's source is actually repeating 0s
+		printEverything(sc, bestSpot, pattern, direction); //For debugging
+		//Next, we go at most SWEEPCATCH_DURATION steps checking whether the tape head links up with bestSpot in bestState.
+		if (!advanceTo(m, sc, bestState, bestSpot, pattern, direction, SWEEPCATCH_DURATION)) return false;
+		//Now, we can mark the best step number at what sc's at now, accelerate using the lemma,
+		//and putz around on the right until it links up with the best spot for going backwards
+		int bestStepNumber = sc.getNumSteps();
+		int currStepNumber = bestStepNumber; //Will have to update manually from here, because we'll be using cc
+		StepConfiguration sc2 = sc;
+		CondensedConfiguration cc = sc2.condenseAndSplitUsing(direction, pattern);
+		if (generalize) {
+			ExtendedTermfiguration etf = cc.generalize(pattern, direction);
+			try {
+				return generalIsSweepHelper(etf, lem, otherLem);
+			} catch (Exception e) {
+				System.out.println("Error 4 in isSweepHelper: "+e.getMessage());
+				return false;
+			}
+		}
+		int numStepsPassed = 0;
+		try {
+			System.out.println("Debug code: cc = " + cc);
+			numStepsPassed = Acceleration.act(cc, new LemmaList(lem));
+			currStepNumber += numStepsPassed;
+			if (numStepsPassed < 2) throw new Exception("Only " + numStepsPassed + " steps passed");
+		} catch (Exception e) {
+			System.out.println("Error 9 in isSweepHelper: "+e.getMessage());
+			return false;
+		}
+		try {
+			Configuration c2 = cc.toConfiguration();
+			sc2 = c2.toStepConfigurationAt(currStepNumber);
+		} catch (Exception e) {
+			System.out.println("Error 10 in isSweepHelper: "+e.getMessage());
+			return false;
+		}
+		System.out.println("Debug code: in isSweepHelper():"
+				+ " StepConfiguration sc2 = " + sc2.getTrimAsString());
+		sc.setData(sc2); //To update appropriately!
+		return true;
+	}
+	
+	private boolean generalIsSweepHelper(ExtendedTermfiguration etf, Lemma lem, Lemma otherLem) throws Exception {
+		if (etf == null) return false;
+		ExtendedTermfiguration successorEtf = etf.successor(); //saving to compare for later
+		successorEtf.condense(); //Easier to compare
+		System.out.println("Debug code: etf = " + etf);
+		int[] stepsPassed1 = new int[] {0,0};
+		stepsPassed1 = Acceleration.act(etf, lem);
+		System.out.println("More debug code: etf = " + etf);
+		//Now we continue to act until the tape head runs into the core again.
+		//TODO: Consider splitting a copy of the term off, maybe here, maybe later.
+		int[] stepsPassed2 = walkAroundWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING);
+		if (stepsPassed2 == null) return false;
+		int[] stepsPassed = Tools.add(stepsPassed1, stepsPassed2);
+		//Now we gotta see if what we've landed on is of the correct form for the other lemma.
+		//If not, some major reanalysis is due.
+		System.out.println("Now etf = "+etf);
+		int otherBestState = otherLem.getSource().getState();
+		int[] otherBestPattern = otherLem.getSource().getBase();
+		//ExtendedTermfiguration etfNew = etf;
+		/*while (!Tools.areIdentical(etf.getTerm().getBase(), otherBestPattern)) {
+			//etfNew = etf.reanalyze(otherBestPattern);
+			//TODO: Write code for this!
+			break;
+		}*/
+		if (Tools.areIdentical(etf.getTerm().getBase(), otherBestPattern)) {
+			while (etf.getState() != otherBestState) {
+				if (etf.constCoeff() <= 0) return false;
+				//Split off a term from the core on etf's current side;
+				//run until it reaches the core again.
+				if (etf.onRight()) etf.split(R); //This should always happen the first time around
+				else if (etf.onLeft()) etf.split(L);
+				else throw new Exception("Tape head not at boundary of term!");
+				int[] stepsPassedNow = walkAroundWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING);
+				stepsPassed = Tools.add(stepsPassed, stepsPassedNow);
+				break;
+			}
+			stepsPassed = Acceleration.act(etf, otherLem);
+			//Now if the opposite wing sizes differ but not by a multiple of the base length,
+			//it would be too hard to try to reconcile;
+			//but if they differ by a multiple of the base length, we might as well attempt to swallow,
+			//returning false if the patterns don't match.
+			int etfOppositeWingSize, successorEtfOppositeWingSize, oppositeWingSizeDifference, currSide;
+			if (etf.getIndex()[1]==0) {
+				etfOppositeWingSize = Tools.trimEnd(etf.getRight()).length;
+				successorEtfOppositeWingSize = Tools.trimEnd(successorEtf.getRight()).length;
+				currSide = L;
+			}	
+			else {
+				etfOppositeWingSize = Tools.trimBeginning(etf.getLeft()).length;
+				successorEtfOppositeWingSize = Tools.trimBeginning(successorEtf.getLeft()).length;
+				currSide = R;
+			}
+			oppositeWingSizeDifference = etfOppositeWingSize - successorEtfOppositeWingSize;
+			System.out.println("Here etf = "+etf+" and oppositeWingSizeDifference = " + oppositeWingSizeDifference);
+			if (oppositeWingSizeDifference % etf.getBase().length != 0)
+				return false;
+			boolean wereSwallowed = true; //Default is it's OK
+			if (oppositeWingSizeDifference > 0) {
+				int numTermsToSwallow = oppositeWingSizeDifference / etf.getBase().length;
+				wereSwallowed = etf.trySwallow(-currSide, numTermsToSwallow);
+			}
+			else if (oppositeWingSizeDifference < 0) {
+				int numTermsToSwallow = -oppositeWingSizeDifference / etf.getBase().length;
+				wereSwallowed = successorEtf.trySwallow(-currSide, numTermsToSwallow);
+			}
+			if (!wereSwallowed)
+				return false;
+			System.out.println("After 2nd Lem used: etf = " + etf);
+			int[] stepsPassed3 = walkAroundSwallowingWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING,
+					successorEtf.getExponent()[0] - etf.getExponent()[0]);
+			if (stepsPassed3 == null) return false;
+			stepsPassed = Tools.add(stepsPassed, stepsPassed3);
+			System.out.println("successorEtf= " + successorEtf);
+			System.out.println("compare etf = " + etf);
+			if (etf.essentiallyEquals(successorEtf)) {
+				System.out.println("Sweep proved!!");
+				return true;
+			}
+		}
+		return false;//change this / add code
+	}
+	
+	/**Returns the array representing T+0n where T is the number of steps it took to get back to the core,
+	 * or null if it doesn't get there in maxIterations iterations or the tape head goes out of bounds.*/
+	private int[] walkAroundWhileOutOfBounds(Machine m, ExtendedTermfiguration etf, int maxIterations) {
+		return walkAroundSwallowingWhileOutOfBounds(m, etf, maxIterations, 0);
+	}
+	
+	/**Just like the above function, but attempts to swallow towards the tape head at most maxNumTermsToSwallow times.
+	 * A negative value of maxNumTermsToSwallow will be treated like zero.
+	 * Depending on the choice of moment to swallow, this function may have better or worse performance for the matching.*/
+	private int[] walkAroundSwallowingWhileOutOfBounds(Machine m, ExtendedTermfiguration etf, int maxIterations,
+			int maxNumTermsToSwallow) {
+		int side = R;
+		if (etf.getIndex()[1]==0) side = L;
+		int iterations = 0;
+		int numTermsSwallowed = 0;
+		try {
+			while (etf.preciseOutOfBounds()) {
+				if (numTermsSwallowed < maxNumTermsToSwallow)
+					etf.trySwallow(side, 1);
+				System.out.println("In walkAroundSwallowingWhileOutOfBounds: was etf = "+etf);
+				iterations += Acceleration.actForOneStep(m, etf);
+				System.out.println("In walkAroundSwallowingWhileOutOfBounds: now etf = "+etf);
+				if (iterations>=maxIterations) {
+					System.out.println(maxIterations+" iterations passed.");
+					return null;
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("In walkAroundWhileOutOfBounds(): "+e.getMessage());
+			return null;
+		}
+		return new int[] {iterations, 0};
+	}
+	
+	/**Good for helping debug*/
+	private void printEverything(StepConfiguration sc, int bestSpot, int[] pattern, int direction) {
 		System.out.println("Debug code: in isSweepHelper():"
 				+ " StepConfiguration sc = " + sc.getTrimAsString()
 				+ " with index " + sc.getIndex()
 				+ " has best spot " + bestSpot
 				+ " for pattern = " + Tools.toString(pattern)
 				+ " in direction " + Tools.asLR(direction));
-		//Next, we go at most SWEEPCATCH_DURATION steps checking whether the tape head links up with bestSpot in bestState.
+	}
+
+	/**Go at most SWEEPCATCH_DURATION steps checking whether the tape head links up with bestSpot in bestState.
+	 * This method modifies sc, and returns whether a spot like this was reached.*/
+	private boolean advanceTo(Machine m, StepConfiguration sc, int bestState, int bestSpot, int[] pattern, int direction, int numSteps) {
 		boolean found = false;
-		for (int i=0; i<SWEEPCATCH_DURATION; i++) {
+		for (int i=0; i<numSteps; i++) {
 			try {
 				if (sc.getState()==bestState) {
 					if (sc.getIndex()==bestSpot || sc.matches(pattern, direction)) {
@@ -466,46 +620,13 @@ public class AllMachines {
 				}
 				m.actOnConfig(sc);
 			} catch (Exception e) {
-				System.out.println("Error 3 in isSweepHelper: "+e.getMessage());
+				System.out.println("In AllMachines.advanceTo(): "+e.getMessage());
 				return false;
 			}
 		}
-		if (!found) return false;
-		//Now, we can mark the best step number at what c's at now,
-		//accelerate using the lemma,
-		//and putz around on the right until it links up with the best spot for going backwards
-		int bestStepNumber = sc.getNumSteps();
-		int currStepNumber = bestStepNumber; //Will have to update manually from here, because we'll be using cc
-		StepConfiguration sc2 = sc;
-		CondensedConfiguration cc = sc2.condenseAndSplitUsing(direction, pattern);
-		Termfiguration tf = null;
-		if (generalize) {
-			tf = cc.generalize(pattern, direction);
-			if (tf == null) return false;
-		}
-		int numStepsPassed = 0;
-		try {
-			System.out.println("Debug code: cc = " + cc);
-			numStepsPassed = Acceleration.act(cc, lemlist);
-			currStepNumber += numStepsPassed;
-			if (numStepsPassed < 2) throw new Exception("Only " + numStepsPassed + " steps passed");
-		} catch (Exception e) {
-			System.out.println("Error 4 in isSweepHelper: "+e.getMessage());
-			return false;
-		}
-		try {
-			Configuration c2 = cc.toConfiguration();
-			sc2 = c2.toStepConfigurationAt(currStepNumber);
-		} catch (Exception e) {
-			System.out.println("Error 5 in isSweepHelper: "+e.getMessage());
-			return false;
-		}
-		System.out.println("Debug code: in isSweepHelper():"
-				+ " StepConfiguration sc2 = " + sc2.getTrimAsString());
-		sc.setData(sc2); //To update appropriately!
-		return true;
+		return found;
 	}
-	
+
 	/**Note: Also returns true if the machine just halts!*/
 	boolean isShiftRecurrent(StepConfiguration workConfig, int dir) throws Exception {
 		return isShiftRecurrent(workConfig, dir, SHIFT_NUM_STEPS);
