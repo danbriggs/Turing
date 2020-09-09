@@ -88,7 +88,11 @@ public class Configuration extends Tape {
 		Tape t = super.subtape(begin, sup);
 		return new Configuration(t,_state);
 	}
-
+	
+	public Configuration trimmed() {
+		return subcon(left(), right()+1);
+	}
+	
 	/**returns a configuration consisting of everything from begin up to but not including sup
 	 * with new index newIndex.*/
 	public Configuration subcon(int begin, int sup, int newIndex) {

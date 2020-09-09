@@ -94,6 +94,24 @@ public class BitTape implements TapeLike {
 		return retVal;
 	}
 	
+	public int left() {
+		int[] tape = getTape();
+		int i;
+		int index = getIndex();
+		for (i = 0; i < index && i < tape.length; i++)
+			if (tape[i]!=0) return i;
+		return i;
+	}
+	
+	public int right() {
+		int[] tape = getTape();
+		int i;
+		int index = getIndex();
+		for (i = tape.length - 1; i > index && i >= 0; i--)
+			if (tape[i]!=0) return i;
+		return i;
+	}	
+	
 	public int length() {return getTape().length;}
 	public int getIndex() {return _byteIndex*8;}
 	public int getByteIndex() {return _byteIndex;}
@@ -114,6 +132,8 @@ public class BitTape implements TapeLike {
 		}
 		return true;
 	}
+	public boolean offLeft() {return onLeft() && getSymbol()==0;}
+	public boolean offRight() {return onRight() && getSymbol() == 0;}
 	public void setIndex(int index) {
 		if (index%8!=0) {
 			System.out.println("In BitTape.setIndex(): index "+index+" is not divisible by 8.");

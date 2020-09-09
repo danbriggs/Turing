@@ -256,6 +256,23 @@ public class Termfiguration extends VeryTermfigurationLike {
 			}
 		}
 	}
+	
+	Termfiguration refactoredShorter(int newBaselen) {
+		int[] currBase = getBase();
+		int currBaselen = currBase.length;
+		if (newBaselen > currBaselen) return null;
+		if (newBaselen == currBaselen) return deepCopy();
+		if (currBaselen % newBaselen != 0) return null;
+		int factor = currBaselen / newBaselen;
+		if (!Tools.isRepeatOfFirst(currBase, newBaselen)) return null;
+		int[] currExponent = getExponent();
+		int explen = currExponent.length;
+		int[] newExponent = new int[explen];
+		for (int i=0; i<explen; i++) newExponent[i] = currExponent[i] * factor;
+		int[] newBase = Arrays.copyOfRange(currBase, 0, newBaselen);
+		return new Termfiguration(newBase, newExponent, getIndex(), getState());
+	}
+	
 	public boolean isLinear() {
 		if (Tools.degree(_index) > 1) return false;
 		if (Tools.degree(_exponent) > 1) return false;

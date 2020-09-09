@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class AllMachines {
 	static final int L=-1, R=1;
 	static final int TO_WRITE=0, TO_GO=1, NEXT_STATE=2;
 	static final boolean ADD_TO_STACK = true;
-	static final int MAX_OUTPUT_SIZE = 11; //Was 1000
+	static final int MAX_OUTPUT_SIZE = 5; //Was 1000
 	static final int SHIFT_NUM_STEPS = 50;
 	static final int HOW_FAR_AWAY_ALLOWED = 5;
 	//The next three are for isSweepHelper()
@@ -422,14 +423,20 @@ public class AllMachines {
 			try {
 				m.actOnConfig(sc);
 			} catch (Exception e) {
-				System.out.println("Error 2 in isSweep: "+e.getMessage());
+				System.out.println("Error in isSweep: "+e.getMessage());
 				return false;
 			}
 		}
+		
+		Sweep.isSweepUsing(m, lem1, lem2); //New revision
+		
 		if (!isSweepHelper(m, sc, lem1, lem2, R, false)) return false;
 		if (!isSweepHelper(m, sc, lem2, lem1, L, false)) return false;
+		//if (!isSweepHelper(m, sc, lem1, lem2, R, false)) return false; //Testing
+		//if (!isSweepHelper(m, sc, lem2, lem1, L, false)) return false; //Testing
 		if (!isSweepHelper(m, sc, lem1, lem2, R, true )) return false;
-		return false;
+		//More code goes here for other types of machines
+		return true;
 	}
 	
 	/**Rewrites in terms of a variable N if generalize is true.*/
@@ -439,9 +446,13 @@ public class AllMachines {
 		int bestState = lem.getSource().getState();
 		int bestSpot = sc.bestSpot(pattern, direction);
 		//TODO: Address the case when lem's source is actually repeating 0s
-		printEverything(sc, bestSpot, pattern, direction); //For debugging
+		System.out.print("1. ");printEverything(sc, bestState, bestSpot, pattern, direction); //For debugging
 		//Next, we go at most SWEEPCATCH_DURATION steps checking whether the tape head links up with bestSpot in bestState.
-		if (!advanceTo(m, sc, bestState, bestSpot, pattern, direction, SWEEPCATCH_DURATION)) return false;
+		if (!advanceTo(m, sc, bestState, bestSpot, pattern, direction, SWEEPCATCH_DURATION)) {
+			System.out.print("Next, ");
+			printEverything(sc, bestState, bestSpot, pattern, direction);
+			return false;
+		}
 		//Now, we can mark the best step number at what sc's at now, accelerate using the lemma,
 		//and putz around on the right until it links up with the best spot for going backwards
 		int bestStepNumber = sc.getNumSteps();
@@ -449,11 +460,18 @@ public class AllMachines {
 		StepConfiguration sc2 = sc;
 		CondensedConfiguration cc = sc2.condenseAndSplitUsing(direction, pattern);
 		if (generalize) {
-			ExtendedTermfiguration etf = cc.generalize(pattern, direction);
+			int linCoeff = 1;
+			int a = lem.getSource().getBase().length;
+			int b = otherLem.getSource().getBase().length;
+			int lcm = Tools.lcm(a, b);
+			int aBumpUp = lcm / a, bBumpUp = lcm / b;
+			if (a > 1 && b > 1) linCoeff = aBumpUp;
+			int numTimesWorthTrying = Math.max(aBumpUp, bBumpUp);
+			ExtendedTermfiguration etf = cc.generalize(pattern, direction, linCoeff);
 			try {
-				return generalIsSweepHelper(etf, lem, otherLem);
+				return generalIsSweepHelper(etf, lem, otherLem, numTimesWorthTrying);
 			} catch (Exception e) {
-				System.out.println("Error 4 in isSweepHelper: "+e.getMessage());
+				System.out.println("Error 1 in isSweepHelper: "+e.getMessage());
 				return false;
 			}
 		}
@@ -464,14 +482,14 @@ public class AllMachines {
 			currStepNumber += numStepsPassed;
 			if (numStepsPassed < 2) throw new Exception("Only " + numStepsPassed + " steps passed");
 		} catch (Exception e) {
-			System.out.println("Error 9 in isSweepHelper: "+e.getMessage());
+			System.out.println("Error 2 in isSweepHelper: "+e.getMessage());
 			return false;
 		}
 		try {
 			Configuration c2 = cc.toConfiguration();
 			sc2 = c2.toStepConfigurationAt(currStepNumber);
 		} catch (Exception e) {
-			System.out.println("Error 10 in isSweepHelper: "+e.getMessage());
+			System.out.println("Error 3 in isSweepHelper: "+e.getMessage());
 			return false;
 		}
 		System.out.println("Debug code: in isSweepHelper():"
@@ -480,83 +498,152 @@ public class AllMachines {
 		return true;
 	}
 	
-	private boolean generalIsSweepHelper(ExtendedTermfiguration etf, Lemma lem, Lemma otherLem) throws Exception {
-		if (etf == null) return false;
+	private boolean generalIsSweepHelper(ExtendedTermfiguration etf, Lemma lem0, Lemma lem1, int numTimesWorthTrying)
+			throws Exception {
+		if (etf == null) {
+			System.out.println("null etf. Maybe it didn't generalize.");
+			return false;
+		}
 		ExtendedTermfiguration successorEtf = etf.successor(); //saving to compare for later
 		successorEtf.condense(); //Easier to compare
+		System.out.println("Goal: successorEtf = "+successorEtf);
 		System.out.println("Debug code: etf = " + etf);
-		int[] stepsPassed1 = new int[] {0,0};
-		stepsPassed1 = Acceleration.act(etf, lem);
+		
 		System.out.println("More debug code: etf = " + etf);
-		//Now we continue to act until the tape head runs into the core again.
-		//TODO: Consider splitting a copy of the term off, maybe here, maybe later.
-		int[] stepsPassed2 = walkAroundWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING);
-		if (stepsPassed2 == null) return false;
-		int[] stepsPassed = Tools.add(stepsPassed1, stepsPassed2);
-		//Now we gotta see if what we've landed on is of the correct form for the other lemma.
-		//If not, some major reanalysis is due.
-		System.out.println("Now etf = "+etf);
-		int otherBestState = otherLem.getSource().getState();
-		int[] otherBestPattern = otherLem.getSource().getBase();
-		//ExtendedTermfiguration etfNew = etf;
-		/*while (!Tools.areIdentical(etf.getTerm().getBase(), otherBestPattern)) {
-			//etfNew = etf.reanalyze(otherBestPattern);
-			//TODO: Write code for this!
-			break;
-		}*/
-		if (Tools.areIdentical(etf.getTerm().getBase(), otherBestPattern)) {
-			while (etf.getState() != otherBestState) {
-				if (etf.constCoeff() <= 0) return false;
-				//Split off a term from the core on etf's current side;
-				//run until it reaches the core again.
-				if (etf.onRight()) etf.split(R); //This should always happen the first time around
-				else if (etf.onLeft()) etf.split(L);
-				else throw new Exception("Tape head not at boundary of term!");
-				int[] stepsPassedNow = walkAroundWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING);
-				stepsPassed = Tools.add(stepsPassed, stepsPassedNow);
-				break;
-			}
-			stepsPassed = Acceleration.act(etf, otherLem);
-			//Now if the opposite wing sizes differ but not by a multiple of the base length,
-			//it would be too hard to try to reconcile;
-			//but if they differ by a multiple of the base length, we might as well attempt to swallow,
-			//returning false if the patterns don't match.
-			int etfOppositeWingSize, successorEtfOppositeWingSize, oppositeWingSizeDifference, currSide;
-			if (etf.getIndex()[1]==0) {
-				etfOppositeWingSize = Tools.trimEnd(etf.getRight()).length;
-				successorEtfOppositeWingSize = Tools.trimEnd(successorEtf.getRight()).length;
-				currSide = L;
-			}	
-			else {
-				etfOppositeWingSize = Tools.trimBeginning(etf.getLeft()).length;
-				successorEtfOppositeWingSize = Tools.trimBeginning(successorEtf.getLeft()).length;
-				currSide = R;
-			}
-			oppositeWingSizeDifference = etfOppositeWingSize - successorEtfOppositeWingSize;
-			System.out.println("Here etf = "+etf+" and oppositeWingSizeDifference = " + oppositeWingSizeDifference);
-			if (oppositeWingSizeDifference % etf.getBase().length != 0)
-				return false;
-			boolean wereSwallowed = true; //Default is it's OK
-			if (oppositeWingSizeDifference > 0) {
-				int numTermsToSwallow = oppositeWingSizeDifference / etf.getBase().length;
-				wereSwallowed = etf.trySwallow(-currSide, numTermsToSwallow);
-			}
-			else if (oppositeWingSizeDifference < 0) {
-				int numTermsToSwallow = -oppositeWingSizeDifference / etf.getBase().length;
-				wereSwallowed = successorEtf.trySwallow(-currSide, numTermsToSwallow);
-			}
-			if (!wereSwallowed)
-				return false;
-			System.out.println("After 2nd Lem used: etf = " + etf);
-			int[] stepsPassed3 = walkAroundSwallowingWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING,
-					successorEtf.getExponent()[0] - etf.getExponent()[0]);
-			if (stepsPassed3 == null) return false;
-			stepsPassed = Tools.add(stepsPassed, stepsPassed3);
-			System.out.println("successorEtf= " + successorEtf);
-			System.out.println("compare etf = " + etf);
-			if (etf.essentiallyEquals(successorEtf)) {
-				System.out.println("Sweep proved!!");
-				return true;
+
+		int[] stepsPassed1 =  Acceleration.act(etf, lem0);
+		
+		Lemma lem, otherLem;
+		for (int numTimes = 0; numTimes < numTimesWorthTrying * 2; numTimes++) {
+			if (numTimes % 2 == 0) {lem = lem0; otherLem = lem1;}
+			else {lem = lem1; otherLem = lem0;}
+			/**Here we should refactor —change base length as needed—
+			 * then we should reanalyze— shift base as needed.
+			 * But coeff. of N high enough to be divisible should be present first.*/
+			etf = etf.refactored(otherLem.getSource().getBase().length, lem.getHandedness()); //who knows which side's better?
+			if (etf == null) return false;
+			
+			System.out.println("Yet more debug: etf = " + etf);
+			
+			//Now we continue to act until the tape head runs into the core again.
+			//TODO: Consider splitting a copy of the term off, maybe here, maybe later.
+			int[] stepsPassed2 = walkAroundWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING);
+			if (stepsPassed2 == null) return false;
+			int[] stepsPassed = Tools.add(stepsPassed1, stepsPassed2);
+			//Now we gotta see if what we've landed on is of the correct form for the other lemma.
+			//If not, some major reanalysis is due.
+			System.out.println("Now etf = "+etf);
+			int otherBestState = otherLem.getSource().getState();
+			int[] otherBestPattern = otherLem.getSource().getBase();
+			
+			int side;
+			if (etf.onRight()) side = R;
+			else if (etf.onLeft()) side = L;
+			else throw new Exception("Tape head not at boundary of term!");
+			
+			if (Tools.areIdentical(etf.getTerm().getBase(), otherBestPattern)) {
+				int numIters = 0;
+				while (etf.getState() != otherBestState) {
+					numIters++;
+					if (numIters > 5) break;
+					
+					//TODO: put code here about "will strike again."
+					//      meaning the bit will be left as it is, and the tape head moved off the term,
+					//      so we can just act for one step and wait till that happens.
+					//OR: Add code to the walking around methods to have them continue overtime
+					//    if a given target state isn't reached.
+									
+					//TODO: for now, we only unfurl at most once;
+					//      in the future, consider unfurling more than once
+					
+					try {
+						System.out.println("Debug code: Commencing unfurl for etf = "+etf+" with index "+
+					                       Tools.toPolynomialString(etf.getIndex(),'n') +
+					                       " and term with index " +
+					                       Tools.toPolynomialString(etf.getTerm().getIndex(),'n'));
+						boolean didUnfurl =	etf.unfurl(side);
+						if (!didUnfurl) etf.split(side);
+						System.out.println("Debug code: after "+didUnfurl+", etf = "+etf+" with index "+
+								           Tools.toPolynomialString(etf.getIndex(),'n') +
+					                       " and term with index " +
+					                       Tools.toPolynomialString(etf.getTerm().getIndex(),'n'));
+					} catch (Exception e) {
+						e.printStackTrace();
+						return false;
+					}
+					
+					//if (etf.constCoeff() <= 0) return false;
+					
+					//Split off a term from the core on etf's current side;
+					//run until it reaches the core again.
+					
+					//if (etf.onRight()) etf.split(R); //This should always happen the first time this method is run
+					//else if (etf.onLeft()) etf.split(L);
+					
+					int[] stepsPassedNow = walkAroundWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING);
+					stepsPassed = Tools.add(stepsPassed, stepsPassedNow);
+					if (etf.nonzeroSwathLengthAt(0) > successorEtf.nonzeroSwathLengthAt(0)) //maybe change to if greater by 2 or more
+						successorEtf = successorEtf.successor();
+				}
+				
+				stepsPassed = Acceleration.act(etf, otherLem); //The key moment!
+								
+				//Now if the opposite wing sizes differ but not by a multiple of the base length,
+				//it would be too hard to try to reconcile;
+				//but if they differ by a multiple of the base length, we might as well attempt to swallow,
+				//returning false if the patterns don't match.
+				int etfOppositeWingSize, successorEtfOppositeWingSize, oppositeWingSizeDifference, currSide;
+				if (etf.getIndex()[1]==0) {
+					etfOppositeWingSize = Tools.trimEnd(etf.getRight()).length;
+					successorEtfOppositeWingSize = Tools.trimEnd(successorEtf.getRight()).length;
+					currSide = L;
+				}	
+				else {
+					etfOppositeWingSize = Tools.trimBeginning(etf.getLeft()).length;
+					successorEtfOppositeWingSize = Tools.trimBeginning(successorEtf.getLeft()).length;
+					currSide = R;
+				}
+				oppositeWingSizeDifference = etfOppositeWingSize - successorEtfOppositeWingSize;
+				System.out.println("Here etf = "+etf+" and oppositeWingSizeDifference = " + oppositeWingSizeDifference);
+				
+				/*Now if etf's base doesn't match lem's source's base,
+				 *hopefully that's because it just needs to be shifted over.
+				 *Try shifting in the opposite direction of the tape head.*/
+				if (etf.getBase().length == lem.getSource().getBase().length &&
+						!Arrays.equals(etf.getBase(), lem.getSource().getBase())) {
+					if(oppositeWingSizeDifference > 0)
+						etf.tryShiftAway(lem.getSource().getBase(), oppositeWingSizeDifference);
+					else if (oppositeWingSizeDifference == -1)
+						etf.tryShiftToward(lem.getSource().getBase(), 1);	
+				}
+				
+				/*if (oppositeWingSizeDifference % etf.getBase().length != 0)
+					return false;*/
+				boolean wereSwallowed = true; //Default is it's OK
+				if (oppositeWingSizeDifference > 0) {
+					int numTermsToSwallow = oppositeWingSizeDifference / etf.getBase().length;
+					wereSwallowed = etf.trySwallow(-currSide, numTermsToSwallow);
+				}
+				else if (oppositeWingSizeDifference < 0) {
+					int numTermsToSwallow = -oppositeWingSizeDifference / etf.getBase().length;
+					wereSwallowed = successorEtf.trySwallow(-currSide, numTermsToSwallow);
+				}
+				if (!wereSwallowed)
+					return false;
+				System.out.println("After 2nd Lem used: etf = " + etf);
+								
+				int[] stepsPassed3 = walkAroundSwallowingWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING,
+						successorEtf.getExponent()[0] - etf.getExponent()[0]);
+				if (stepsPassed3 == null) return false;
+				stepsPassed = Tools.add(stepsPassed, stepsPassed3);
+				System.out.println("successorEtf= " + successorEtf);
+				System.out.println("compare etf = " + etf);
+				if (etf.essentiallyEquals(successorEtf)) {
+					System.out.println("Sweep proved!!");
+					return true;
+				}
+				if (etf.nonzeroSwathLengthAt(0) >= successorEtf.nonzeroSwathLengthAt(0))
+					successorEtf = successorEtf.successor();
 			}
 		}
 		return false;//change this / add code
@@ -581,29 +668,33 @@ public class AllMachines {
 			while (etf.preciseOutOfBounds()) {
 				if (numTermsSwallowed < maxNumTermsToSwallow)
 					etf.trySwallow(side, 1);
-				System.out.println("In walkAroundSwallowingWhileOutOfBounds: was etf = "+etf);
+				//I've experimented with unlimited swallowing. It's not that great.
+				System.out.println("In walkAroundSwallowingWhileOutOfBounds "+Tools.asLR(side)+" "+maxNumTermsToSwallow+": was etf = "+etf);
 				iterations += Acceleration.actForOneStep(m, etf);
-				System.out.println("In walkAroundSwallowingWhileOutOfBounds: now etf = "+etf);
+				System.out.println("In walkAroundSwallowingWhileOutOfBounds "+Tools.asLR(side)+" "+maxNumTermsToSwallow+": now etf = "+etf);
 				if (iterations>=maxIterations) {
 					System.out.println(maxIterations+" iterations passed.");
 					return null;
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("In walkAroundWhileOutOfBounds(): "+e.getMessage());
+			System.out.println("In walkAroundSwallowingWhileOutOfBounds(): "+e.getMessage() + " with etf = "+ etf +
+					", getIndex() = "+Tools.toPolynomialString(etf.getIndex(),'n')+
+					", and term's index = "+Tools.toPolynomialString(etf.getTerm().getIndex(),'n'));
 			return null;
 		}
 		return new int[] {iterations, 0};
 	}
 	
 	/**Good for helping debug*/
-	private void printEverything(StepConfiguration sc, int bestSpot, int[] pattern, int direction) {
-		System.out.println("Debug code: in isSweepHelper():"
+	private void printEverything(StepConfiguration sc, int bestState, int bestSpot, int[] pattern, int direction) {
+		System.out.println("Debug code: in printEverything():"
 				+ " StepConfiguration sc = " + sc.getTrimAsString()
 				+ " with index " + sc.getIndex()
 				+ " has best spot " + bestSpot
 				+ " for pattern = " + Tools.toString(pattern)
-				+ " in direction " + Tools.asLR(direction));
+				+ " in direction " + Tools.asLR(direction)
+				+ " targeting state " + Tools.asLetter(bestState));
 	}
 
 	/**Go at most SWEEPCATCH_DURATION steps checking whether the tape head links up with bestSpot in bestState.
@@ -613,7 +704,10 @@ public class AllMachines {
 		for (int i=0; i<numSteps; i++) {
 			try {
 				if (sc.getState()==bestState) {
+					System.out.println("Debug code: checking to see if sc at symbol "+sc.getSymbol()+" matches pattern "+Tools.toString(pattern));
+					//Insanely, the following clause works better with || than &&. ??
 					if (sc.getIndex()==bestSpot || sc.matches(pattern, direction)) {
+						System.out.println("Yes it does.");
 						found = true;
 						break;
 					}

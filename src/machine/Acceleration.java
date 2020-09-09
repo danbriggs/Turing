@@ -477,7 +477,15 @@ public class Acceleration {
 		int displacement = patternArray[bestSkip][2];
 		System.out.println("The best skip was "+bestSkip+" with "+bestSwath+" repetitions ending at step "+endStep+" after a displacement of "+displacement+".");
 		float approxTermLength = (float)displacement/bestSwath*bestSkip;
-		int termLength = Math.round(approxTermLength);
+		int termLength;
+		if (bestSkip % 2 == 0)
+			termLength = Math.round(approxTermLength);
+		else {
+			//round to the nearest odd integer;
+			//odd skip can't traverse even length term.
+			//So subtract 1; round to the nearest even integer by dividing by 2, rounding, and multiplying by 2; then add 1.
+			termLength = Math.round((approxTermLength - 1)/2)*2+1;
+		}
 		float error = termLength - approxTermLength;
 		/*if (error > .15 || error < -.15) {
 			System.out.println("The signed term length "+approxTermLength+" was not close to an integer, so I'm not even going to bother.");

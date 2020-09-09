@@ -119,6 +119,8 @@ public class StretchTape implements TapeLike{
 	public int getTotalPadding() {return _totalPadding;}
 	public boolean onLeft() {return _index==_min;}
 	public boolean onRight() {return _index==_max;}
+	public boolean offLeft() {return onLeft() && getSymbol()==0;}
+	public boolean offRight() {return onRight() && getSymbol() == 0;}
 	private void setTape(int[] tape) {this._tape=tape; _borked = true;}
 	private void setTape(Integer[] tape) {
 		_tape = new int[tape.length];
@@ -190,5 +192,13 @@ public class StretchTape implements TapeLike{
 		for (int i=0; i<_tape.length; i++)
 			tape2[i]=_tape[i];
 		_tape=tape2;
+	}
+	
+	public int left() {
+		return _min;
+	}
+	
+	public int right() {
+		return _max;
 	}
 }

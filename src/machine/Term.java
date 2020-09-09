@@ -20,6 +20,17 @@ public class Term {
 			}
 		return ret;
 	}
+	/**As above, but using the primitive.*/
+	public int[] toIntArray() {
+		int[] ret = new int[_base.length*_exponent];
+		int i=0;
+		for (int j=0; j<_exponent; j++)
+			for (int k=0; k<_base.length; k++) {
+				ret[i]=_base[k];
+				i++;
+			}
+		return ret;
+	}
 	public Tape toTape() throws Exception {
 		return new Tape(toArray());//Automatically puts head at 0
 	}

@@ -1,0 +1,46 @@
+THIRD MACHINE
+
+0000000000000000000000
+0000000000000000000000
+0000000000000000000000
+0000000000000000000001
+
+FOURTH MACHINE
+
+Goal: successorEtf = D 1111>(10)^(11+n)11
+Debug code:    etf = D 1111>(10)^(10+n)11
+Yet more debug:etf = D 1111(11)^(10+n)i1
+           Now etf = A 1111(11)^(10+n)<1011
+		   now etf = B 111(11)^(10+n)<01011
+		  Here etf = B 11i(01)^(10+n)01011 and oppositeWingSizeDifference = 3
+		  
+FIFTH MACHINE
+ 
+The best skip was 3 with 10 repetitions ending at step 141 after a displacement of 8.
+The signed term length seems to be 2.4, so I'm going to guess it's 2.
+Tape at start step, then at end step: 
+132 E 1i1111111111111
+141 E 1111111111i1111
+Begin Termfiguration as string: E (11)^(n) 0
+In guessLemmaHelper(), the tape head did not move the expected number of steps:
+targetIndex = 133, termLength = 2, t1.getIndex() = 136
+3859182 C1L D1R  @1L A0L  D1R D1R  B1L E1R  E1L C1R  
+187 A i011111111111111
+
+----------
+
+Plan for redoing isSweep stuff:
+
+Have the program do machine analysis by looking at a step when the tape head was to the left of all 1 bits,
+the next time the tape head was to the right of all 1 bits, the next time it was to the left...
+In this way it shall generate a list of step numbers, say, times when it hit the left side.
+Have it see if the second difference of this sequence is nearly constant.
+If so, generate an ExtendedTermfiguration based on the pattern in the first lemma's source,
+and run on that *until it hits the right.*
+
+Then reanalyze the base in terms of the other lemma's source, etc. This will be much easier.
+
+----------
+
+Remember invariant theory! Try to have the computer infer invariants of configurations (e.g., multilinear functions)
+to divide blank tape in state A from configurations that can lead to halt.

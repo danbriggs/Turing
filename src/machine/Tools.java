@@ -172,9 +172,15 @@ public class Tools {
 		for (int i=0; i<arr.length; i++) retVal[i]=scalar*arr[i];
 		return retVal;
 	}
-	public static int[] iterate(int[] arr, int numTimes) throws Exception {
-		if (arr==null) throw new Exception("Cannot iterate null array "+numTimes+" times.");
-		if (numTimes<0) throw new Exception("Cannot iterate "+arr.toString()+" "+numTimes+" times.");
+	public static int[] iterate(int[] arr, int numTimes) {
+		if (arr==null) {
+			System.out.println("Cannot iterate null array "+numTimes+" times.");
+			return null;
+		}
+		if (numTimes<0) {
+			System.out.println("Cannot iterate "+arr.toString()+" "+numTimes+" times.");
+			return null;
+		}
 		int[] retVal = new int[arr.length*numTimes];
 		for (int i=0; i<numTimes; i++) for (int j=0; j<arr.length; j++) retVal[i*arr.length+j]=arr[j];
 		return retVal;
@@ -226,8 +232,8 @@ public class Tools {
 		List<Integer> b = new ArrayList<Integer>();
 		for (int i=0; i<a.size()-1; i++) b.add(a.get(i+1)-a.get(i));
 		return b;
-		
 	}
+	
 	public static int[] differences(int[] a) {
 		if (a.length==0) return null;
 		if (a.length==1) return new int[0];
@@ -235,6 +241,59 @@ public class Tools {
 		for (int i=0; i<a.length-1; i++) b[i]=a[i+1]-a[i];
 		return b;
 	}
+	
+	public static CondensedConfiguration[] skipArray(CondensedConfiguration[] arr, int skip, int start) {
+		if (arr == null) {System.out.println("In Tools.skipArray(): arr is null"); return null;}
+		if (skip <= 0) {System.out.println("In Tools.skipArray(): skip "+skip+" <= 0"); return null;}
+		if (start < 0) {System.out.println("In Tools.skipArray(): start "+start+" < 0"); return null;}
+		if (start >= arr.length) {System.out.println("In Tools.skipArray(): start "+start+" >= arr.length = "+arr.length); return null;}
+		int retlen;
+		try {retlen = Tools.ceilingDivide(arr.length - start, skip);} catch (Exception e) {return null;}
+		CondensedConfiguration[] ret = new CondensedConfiguration[retlen];
+		for (int i=0; i<retlen; i++) ret[i] = arr[start + i*skip];
+		return ret;
+	}
+
+
+	public static int[] skipArray(int[] arr, int skip, int start) {
+		if (arr == null) {System.out.println("In Tools.skipArray(): arr is null"); return null;}
+		if (skip <= 0) {System.out.println("In Tools.skipArray(): skip "+skip+" <= 0"); return null;}
+		if (start < 0) {System.out.println("In Tools.skipArray(): start "+start+" < 0"); return null;}
+		if (start >= arr.length) {System.out.println("In Tools.skipArray(): start "+start+" >= arr.length = "+arr.length); return null;}
+		int retlen;
+		try {retlen = Tools.ceilingDivide(arr.length - start, skip);} catch (Exception e) {return null;}
+		int[] ret = new int[retlen];
+		for (int i=0; i<retlen; i++) ret[i] = arr[start + i*skip];
+		return ret;
+	}
+	
+	/**Returns a (possibly jagged) 2D array consisting of the first differences of a with skip skip.
+	 * Its first array will have it for the sequence starting with index 0, and so on.*/
+	public static int[][] firstDifferenceArraysWithSkip(int[] a, int skip) {
+		if (a == null) {System.out.println("In Tools.firstDifferenceArraysWithSkip(): a is null"); return null;}
+		if (skip <= 0) {System.out.println("In Tools.firstDifferenceArraysWithSkip(): skip "+skip+" <= 0"); return null;}
+		int[][] ret = new int[skip][];
+		for (int res = 0; res < skip; res++) {
+			ret[res] = Tools.differences(Tools.skipArray(a, skip, res));
+		}
+		return ret;
+	}
+	
+	/**Returns a (possibly jagged) 2D array consisting of the degth differences of a with skip skip.
+	 * Its first array will have it for the sequence starting with index 0, and so on.*/
+	public static int[][] secondDifferenceArraysWithSkip(int[] a, int skip) {
+		if (a == null) {System.out.println("In Tools.secondDifferenceArraysWithSkip(): a is null"); return null;}
+		if (skip <= 0) {System.out.println("In Tools.secondDifferenceArraysWithSkip(): skip "+skip+" <= 0"); return null;}
+		int[][] firstDifferenceArrays = firstDifferenceArraysWithSkip(a, skip);
+		int[][] ret = new int[skip][];
+		for (int i=0; i<skip; i++) {
+			ret[i] = Tools.differences(firstDifferenceArrays[i]);
+			if (ret[i] == null) System.out.println("Warning: in Tools.secondDifferenceArraysWithSkip(): "
+					+ "ret["+i+"] is null (a = "+Tools.toString(a)+" too short)");
+		}
+		return ret;
+	}
+	
 	public static int[] concatenate(int[] first, int[] second) {
 		int[] result = Arrays.copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
@@ -296,11 +355,151 @@ public class Tools {
 		return true;
 	}
 	
+	/**Determines whether base is a repetition of its last n terms.*/
+	public static boolean isRepeatOfLast(int[] base, int n) {
+		int len = base.length;
+		if (n <= 0 || n > len) return false;
+		if (len % n != 0) return false;
+		int numChunks = len / n;
+		for (int i=0; i<n; i++) {
+			int bit = base[len - 1 - i];
+			for (int j=1; j<numChunks; j++) {
+				if (base[len - 1 - i - n * j] != bit) return false;
+			}
+		}
+		return true;		
+	}
+	
 	/**CoeffList should be given in increasing order of power of the variable.*/
 	public static int degree (int[] coeffList) {
 		if (coeffList == null) return -1;
 		int degree = coeffList.length - 1;
 		while (degree >= 0 && coeffList[degree] == 0) degree --;
 		return degree;
+	}
+	
+	/**Naive implementation*/
+	public static int gcf(int a, int b) {
+		int aa = Math.abs(a), bb = Math.abs(b);
+		if (aa == 0 && bb == 0) {
+			System.out.println("Warning: gcf(0,0)");
+			return 0;
+		}
+		if (aa == 0) return bb;
+		if (bb == 0) return aa;
+		int max = 1;
+		int cc = Math.min(aa, bb);
+		for (int i = 1; i <= cc; i++) {
+			if (aa % i == 0 && bb % i == 0) max = i;
+		}
+		return max;
+	}
+	
+	public static int lcm(int a, int b) {
+		if (a == 0 || b == 0) {
+			System.out.println("Warning: lcm with 0");
+			return 0;
+		}
+		return a * b / gcf(a, b);
+	}
+	
+	/**Shifts all elements of arr by disp.
+	 * Puts 0s in the new places,
+	 * and returns an array consisting of what fell off the edge.*/
+	public static int[] shiftAllByAndReturnFallen(int[] arr, int disp) {
+		if (disp == 0) return new int[0];
+		else if (disp > arr.length || disp < -arr.length) {
+			System.out.println("In Tools.shiftAllByAndReturnFallen(): |disp| too large");
+			return null; 
+		}
+		else if (disp > 0) {
+			int[] ret = new int[disp];
+			System.arraycopy(arr, arr.length - disp, ret, 0, disp);
+			int i;
+			for (i = arr.length - 1; i>=disp; i--) 
+				arr[i] = arr[i - disp];
+			for (; i>=0; i--)
+				arr[i] = 0;
+			return ret;
+		}
+		else { //disp < 0
+			int[] ret = new int[-disp];
+			System.arraycopy(arr, 0, ret, 0, -disp);
+			int i;
+			for (i = 0; i<arr.length + disp; i++) 
+				arr[i] = arr[i - disp];
+			for (; i<arr.length; i++)
+				arr[i] = 0;
+			return ret;
+		}
+	}
+	
+	public static int[] rotated(int[] arr, int disp) {
+		disp %= arr.length;
+		int[] arrClone = arr.clone();
+		if (disp == 0) return arrClone;
+		int[] fragment = shiftAllByAndReturnFallen(arrClone, disp);
+		if (disp > 0)
+			System.arraycopy(fragment, 0, arrClone, 0, disp);
+		else
+			System.arraycopy(fragment, 0, arrClone, arrClone.length + disp, -disp);
+		return arrClone;
+	}
+	
+	public static boolean areNonnegative(int[] arr) {
+		if (arr==null) {
+			System.out.println("In Tools.areNonnegative(): arr is null");
+			return false;
+		}
+		for (int i=0; i<arr.length; i++) {
+			if (arr[i]<0) return false;
+		}
+		return true;
+	}
+	
+	public static boolean arePositive(int[] arr) {
+		if (arr==null) {
+			System.out.println("In Tools.arePositive(): arr is null");
+			return false;
+		}
+		for (int i=0; i<arr.length; i++) {
+			if (arr[i]<=0) return false;
+		}
+		return true;
+	}
+	
+	public static boolean isIncreasing(int[] arr) {
+		if (arr==null) {
+			System.out.println("In Tools.isIncreasing(): arr is null");
+			return false;
+		}
+		int[] diff = Tools.differences(arr);
+		return arePositive(diff);
+	}
+	
+	public static boolean isConstant(int[] arr) {
+		if (arr == null) {
+			System.out.println("In Tools.isConstant(): arr is null");
+			return false;
+		}
+		if (arr.length == 0) return true;
+		int val = arr[0];
+		for (int i = 1; i < arr.length; i++) if (arr[i] != val) return false;
+		return true;
+	}
+	
+	public static boolean areConstant(int[][] mat) {
+		if (mat == null) {
+			System.out.println("In Tools.areConstant(): mat is null");
+			return false;
+		}
+		for (int i = 0; i < mat.length; i++) {
+			if (mat[i] == null) {
+				System.out.println("In Tools.areConstant(): mat[" + i + "] is null");
+				return false;				
+			}
+			if (!isConstant(mat[i])) return false;
+		}
+		return true;
 	}
 }

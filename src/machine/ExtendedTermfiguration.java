@@ -127,8 +127,10 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 	
 	/**Here 0s beyond the written tape are allowed.
 	 * Revise to check for other ways in which they could be equal!*/
-	public boolean essentiallyEquals(ExtendedTermfiguration et) {
+	public boolean essentiallyEquals(ExtendedTermfiguration et) throws Exception{
+		if (!(preciseOutOfBounds()||onLeft()||onRight())) throw new Exception("Haven't written code for that yet");
 		return toString().equals(et.toString()); //Lazy!!!
+		//This is awful code, because it won't be valid whenever the index isn't precisely out of bounds!
 	}
 	
 	public ExtendedTermfiguration toExtendedTermfiguration() {
@@ -208,10 +210,59 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 		}
 	}
 	
-	/**Tries to recompose the core so that base is pattern.
+	
+	/**Tries to rewrite the core with the new base length.
 	 * Returns null if it can't do it.*/
-	ExtendedTermfiguration reanalyze(int[] pattern) {
+	ExtendedTermfiguration refactored(int newBaselen) {return refactored(newBaselen, R);}
+	
+	ExtendedTermfiguration refactored(int newBaselen, int sidePreference) {
+		int currBaselen = getBase().length;
+		if (newBaselen > currBaselen) return refactoredLonger(newBaselen, sidePreference);
+		if (newBaselen == currBaselen) return deepCopy();
+		if (newBaselen > 0 && newBaselen < currBaselen) return refactoredShorter(newBaselen);
 		return null;
+	}
+	
+	ExtendedTermfiguration refactoredShorter(int newBaselen) {
+		return new ExtendedTermfiguration(_l.clone(), _t.refactoredShorter(newBaselen), _r.clone());
+	}
+	
+	/** Leaks extra partial repetitions onto the sidePreference side.*/
+	ExtendedTermfiguration refactoredLonger(int newBaselen, int sidePreference) {
+		int[] currBase = getBase();
+		int currBaselen = currBase.length;
+		if (newBaselen < currBaselen) return null;
+		if (newBaselen == currBaselen) return deepCopy();
+		if (newBaselen % currBaselen != 0) return null; //TODO: write code for trickier cases later
+		int factor = newBaselen / currBaselen;
+		int[] currExponent = getExponent();
+		int numTerms = currExponent.length; //Number of terms in the exponent
+		int[] newExponent = new int[numTerms];
+		for (int deg = 1; deg < numTerms; deg++) {
+			if (currExponent[deg] % factor != 0) return null; //Because it would be too complicated
+			newExponent[deg] = currExponent[deg] / factor;
+		}
+		//Still have to do the degree 0 one
+		int constCoeff = currExponent[0];
+		int q = constCoeff / factor;
+		int r = constCoeff % factor;
+		newExponent[0] = q;
+		int[] newBase = Tools.iterate(currBase, factor);
+		int[] newL, newR;
+		int toShiftIndexLeft = 0;
+		if (sidePreference == L) {
+			newL = Tools.concatenate(_l, Tools.iterate(currBase, r));
+			toShiftIndexLeft = currBaselen * r;
+			newR = _r.clone();
+		}
+		else { //So I guess no side preference defaults to R
+			newL = _l.clone();
+			newR = Tools.concatenate(Tools.iterate(currBase, r), _r);
+		}
+		//Careful of how Termfigurations view their index vs. how ExtendedTermfigurations do!
+		int[] newTIndex = Tools.add(_t.getIndex(), new int[] {-toShiftIndexLeft});
+		Termfiguration newT = new Termfiguration(newBase, newExponent, newTIndex, getState());
+		return new ExtendedTermfiguration(newL, newT, newR);
 	}
 	
 	/**Splits off one copy of the Term to the given side if the constant coefficient of its exponent is positive.
@@ -223,6 +274,80 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 		if (direction == R) _r = Tools.concatenate(getBase(), _r);
 		if (direction == L) _l = Tools.concatenate(_l, getBase());
 		return true;
+	}
+	
+	/**Attempts to unfurl by a fractional number of copies of the base if possible.
+	 * Fractional numbers of copies are possible only when the base is a repeated sequence.
+	 * Returns false if the constant coefficient of the exponent is not positive
+	 * and it couldn't unfurl by a fractional number of copies of the base.
+	 * See tryShiftAway() & tryShiftTowards() instead if you'd like to allow the base to change.*/
+	public boolean unfurl(int side) {
+		int baselen = getBase().length;
+		//A valid bit shift is one where base is a mere repetition of that sequence.
+		if (side == R) {
+			for (int i=1; i<=baselen/2; i++) {
+				if (!Tools.isRepeatOfLast(getBase(), i)) continue;
+				//Now we try to shift it out if either
+				// (1) terms can be collected from the opposite wing or
+				// (2) the constant coefficient of the exponent is positive.
+				try {
+					int[] lastiOfBase = Arrays.copyOfRange(getBase(),baselen - i,baselen);
+					int[] lastiOfl    = Arrays.copyOfRange(_l, _l.length - i, _l.length);
+					if (Arrays.equals(lastiOfBase, lastiOfl)) {
+						int[] piece = Tools.shiftAllByAndReturnFallen(_l, i);
+						_r = Tools.concatenate(piece, _r);
+						_t.getIndex()[0] += i;
+						//Because from _t's point of view, 0 has shifted
+						return true;
+					}
+				} catch (Exception e) {}
+				//_l doesn't have the same pattern (possibly because the piece was longer than _l).
+				//So we decrease the constant coefficient of the exponent,
+				//tack on the end to _r, the beginning to _l, and adjust the
+				//internal representation of the index accordingly.
+				if (getExponent()[0] <= 0) return false;
+				getExponent()[0] -= 1;
+				int[] lPiece = Arrays.copyOfRange(getBase(), 0, baselen - i);
+				int[] rPiece = Arrays.copyOfRange(getBase(), baselen - i, baselen);
+				_l = Tools.concatenate(_l, lPiece);
+				_r = Tools.concatenate(rPiece, _r);
+				getIndex()[0] -= baselen - i;
+				return true;
+			}
+		}
+		else if (side == L) {
+			for (int i=1; i<=baselen/2; i++) {
+				if (!Tools.isRepeatOfFirst(getBase(), i)) continue;
+				try {
+					int[] firstiOfBase = Arrays.copyOfRange(getBase(),0,i);
+					int[] firstiOfr    = Arrays.copyOfRange(_r, 0, i);
+					if (Arrays.equals(firstiOfBase, firstiOfr)) {
+						int[] piece = Tools.shiftAllByAndReturnFallen(_r, -i);
+						_l = Tools.concatenate(_l, piece);
+						_t.getIndex()[0] -= i;
+						//Because from _t's point of view, 0 has shifted
+						return true;
+					}
+				} catch (Exception e) {}
+				//_l doesn't have the same pattern (possibly because the piece was longer than _l).
+				//So we decrease the constant coefficient of the exponent,
+				//tack on the end to _r, the beginning to _l, and adjust the
+				//internal representation of the index accordingly.
+				if (getExponent()[0] <= 0) return false;
+				getExponent()[0] -= 1;
+				int[] lPiece = Arrays.copyOfRange(getBase(), 0, i);
+				int[] rPiece = Arrays.copyOfRange(getBase(), i, baselen);
+				_l = Tools.concatenate(_l, lPiece);
+				_r = Tools.concatenate(rPiece, _r);
+				getIndex()[0] -= i;
+				return true;
+			}
+		}
+		else {
+			System.out.println("Invalid side for unfurl");
+			return false;
+		}
+		return false;
 	}
 	
 	public void condense() {_t.condense();}
@@ -301,12 +426,13 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 		if (side == R) {
 			int tapeHeadRindex;
 			if (getIndex()[1] == getExponent()[1] * getBase().length)
-				tapeHeadRindex = getIndex()[0] - _l.length - getBase().length;
+				tapeHeadRindex = getIndex()[0] - _l.length - getBase().length * getExponent()[0];
 			else
 				tapeHeadRindex = -1; //In other words, don't use it
 			for (int i=0; i<numTerms; i++) {
 				for (int j=0; j<baselen; j++) {
 					int rindex = baselen * i + j;
+					System.out.println("Debug code: tapeHeadRindex = " + tapeHeadRindex + " and rindex = "+rindex);
 					if (rindex >= _r.length || _r[rindex] != getBase()[j] || rindex == tapeHeadRindex)
 						return false;
 				}
@@ -325,6 +451,7 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 			for (int i=0; i<numTerms; i++) {
 				for (int j=0; j<baselen; j++) {
 					int lindex = llen - 1 - (baselen * i + j);
+					System.out.println("Debug code: tapeHeadLindex = " + tapeHeadLindex + " and lindex = "+lindex);
 					if (lindex < 0 || _l[lindex] != getBase()[baselen - 1 - j] || lindex == tapeHeadLindex)
 						return false;
 				}
@@ -338,6 +465,40 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 		return false;
 	}
 	
+	public int nonzeroSwathLengthAt(int n) {
+		int llen = Tools.trimBeginning(_l).length;
+		int rlen = Tools.trimEnd(_r).length;
+		int blen = getBase().length * Tools.evalAt(getExponent(), n);
+		return llen + rlen + blen;
+	}
 	
+	/**Attempts to shift the Term over so that it matches base.*/
+	public void tryShiftAway(int[] target, int maxShift) {
+		if (getBase().length != target.length) return;
+		if (Arrays.equals(getBase(), target)) return;
+		if (offLeft()) {
+			System.out.println("Got here 1");
+			for (int i = 1; i < getBase().length && i <= maxShift && i < _r.length; i++) {
+				int[] rotatedBase = Tools.rotated(getBase(), -i);
+				if (Arrays.equals(rotatedBase, target)) {
+					System.out.println("Got here 2");
+					//We check if the opposite wing's nearest i bits match
+					int[] oppBits = Arrays.copyOfRange(_r, 0, i);
+					int[] baseBits = Arrays.copyOfRange(getBase(), 0, i);
+					if (Arrays.equals(oppBits, baseBits)) {
+						int[] ret = Tools.shiftAllByAndReturnFallen(_r, -i);
+						_l = Tools.concatenate(_l, ret);
+						_t.setBase(rotatedBase);
+						_t.getIndex()[0] -= i;
+					}
+				}
+			}
+		}
+		
+	}
 
+	public void tryShiftToward(int[] target, int maxShift) {
+		// TODO Auto-generated method stub
+		
+	}
 }

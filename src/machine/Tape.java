@@ -86,6 +86,8 @@ public class Tape implements TapeLike{
 	public int getNormalizedIndex() {return _index;}
 	public boolean onLeft() {return nearLeft(0);}
 	public boolean onRight() {return nearRight(0);}
+	public boolean offLeft() {return onLeft() && getSymbol()==0;}
+	public boolean offRight() {return onRight() && getSymbol() == 0;}
 	/**Returns whether the tape head is within dist of the left  edge of the 1 bits.*/
 	public boolean nearLeft(int dist) {
 		for (int i=_index-1-dist; i>=0; i--) {
@@ -195,6 +197,10 @@ public class Tape implements TapeLike{
 		}
 	}
 	
+	public Tape trimmed() {
+		return subtape(left(), right()+1);
+	}
+	
 	/**Returns whether the tape matches the array pattern
 	   going in the direction direction from the tape head.
 	   Returns false if it goes out of bounds.*/
@@ -210,5 +216,19 @@ public class Tape implements TapeLike{
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	
+	public int left() {
+		int i;
+		for (i = 0; i < _index && i < _tape.length; i++)
+			if (_tape[i]!=0) return i;
+		return i;
+	}
+	
+	public int right() {
+		int i;
+		for (i = _tape.length - 1; i > _index && i >= 0; i--)
+			if (_tape[i]!=0) return i;
+		return i;
 	}
 }

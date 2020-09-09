@@ -52,6 +52,16 @@ public class StepConfiguration extends Configuration {
 	
 	public String getTrimAsString() {return _numSteps + " " + super.getTrimAsString();}
 	
+	public StepConfiguration subcon(int begin, int sup) {
+		Configuration c = super.subcon(begin, sup);
+		try {return new StepConfiguration(c.getTape(), c.getIndex(), c.getState(), _numSteps);}
+		catch (Exception e) {return null;}
+	}
+
+	public StepConfiguration trimmed() {
+		return subcon(left(), right()+1);
+	}
+	
 	public void printTrim() {System.out.println(getTrimAsString());}
 	
 	public void setData(StepConfiguration sc) {

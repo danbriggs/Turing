@@ -22,7 +22,7 @@ public class CondensedTape {
 		return sum;
 		
 	}
-	public int numTerms() {return _termlist.size();}
+	public int numTerms() {return _termlist.size();} //synonymous with size
 	public void setTermList(List<Term> termlist) {_termlist = termlist;}
 	/**Returns -1 if it doesn't work out.*/
 	public int getBit(int termNum, int indexInTerm) {
@@ -70,6 +70,7 @@ public class CondensedTape {
 		}
 		return a;
 	}
+	
 	public int[] expandToArray() {
 		Iterator<Term> i=_termlist.iterator();
 		int length = 0;
@@ -90,9 +91,34 @@ public class CondensedTape {
 				}
 			}
 		}
-		
 		return arr;
 	}
+	
+	/**Expands the terms from begin up to but not including sup to an array.*/
+	public int[] expandToArray(int begin, int sup) {
+		int size = size();
+		if (begin < 0 || begin > sup || begin >= size || sup > size) {
+			System.out.println("In CondensedTape.expandToArray(begin, size): invalid arguments begin="+begin+", size="+size);
+			return null;
+		}
+		int totallen = 0;
+		for (int i = begin; i < sup; i++) {
+			Term t = get(i);
+			int currlen = t.length();
+			totallen += currlen;
+		}
+		int[] ret = new int[totallen];
+		int currPos = 0;
+		for (int i = begin; i < sup; i++) {
+			Term t = get(i);
+			int[] termAsArray = t.toIntArray();
+			int currlen = termAsArray.length;
+			System.arraycopy(termAsArray, 0, ret, currPos, currlen);
+			currPos += currlen;
+		}
+		return ret;
+	}
+	
 	/**Splits an exponent 1 copy of the termNumth term's base off at whatever copy of the base indexInTerm indexes into,
 	 * as long as its exponent is greater than 1.
 	 * Thus the number of terms increases by 1 if at the first or last copy of the base, and 2 otherwise.
@@ -161,5 +187,55 @@ public class CondensedTape {
 			termlist.add(0,t.reverse());
 		}
 		return new CondensedTape(termlist);
+	}
+	
+	int[] termsAsArray(int begin, int sup) {
+		int length = 0;
+		for (int i=begin; i<sup; i++) length += get(i).length();
+		int[] ret = new int[length];
+		int baseIndex = 0;
+		for (int i=begin; i<sup; i++) {
+			Term t = get(i);
+			int[] base = t.getBase();
+			int baselen = base.length;
+			for (int it = 0; it < t.getExponent(); it++) {
+				for (int j = 0; j < baselen; j++) {
+					ret[baseIndex + it * baselen + j] = base[j];
+				}
+			}
+			baseIndex += t.length();
+		}
+		return ret;
+	}
+	
+	/**Returns the earliest in the case of a tie.*/
+	public int termNumWithMaxExponent() {
+		List<Term> termList = getTermList();
+		if (termList == null) return -1;
+		int size = size();
+		if (size == 0) return -1;
+		int indexOfMax = 0;
+		int maxExp = get(0).getExponent();
+		for (int i = 1; i < size; i++) {
+			Term currTerm = get(i);
+			int currExp = currTerm.getExponent();
+			if (currExp > maxExp) {
+				indexOfMax = i;
+				maxExp = currExp;
+			}
+		}
+		return indexOfMax;
+	}
+	
+	public Term termWithMaxExponent() {
+		int termNum = termNumWithMaxExponent();
+		if (termNum < 0) return null;
+		return get(termNum);
+	}
+	
+	public int maxExponent() {
+		int termNum = termNumWithMaxExponent();
+		if (termNum < 0) return -1;
+		return get(termNum).getExponent();		
 	}
 }
