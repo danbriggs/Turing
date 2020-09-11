@@ -81,6 +81,7 @@ public class Sweep {
 	public static boolean isSweepUsing(Machine m, Lemma lem, Lemma otherLem) {
 		//TODO: Add checking: unproved lemmas, wrong handedness
 		//TODO: Test for compatibility of lem's target's base with otherLem's source's base
+		//TODO: Add code dealing with numbers of steps here and in CondensedConfiguration and/or ExtendedTermfiguration
 		int[] arr = Sweep.lrStepNums(m, 30);
 		System.out.println("Sweep.lrStepNums says: "+Tools.toString(arr));
 		System.out.println("     with differences: "+Tools.toString(Tools.differences(arr)));
@@ -102,13 +103,23 @@ public class Sweep {
 		}
 		if (Tools.areConstant(secondDifferences)) {
 			//We're likely in the easiest case for sweeps; let's check the condensed configurations to see
-			boolean simple = CondensedConfiguration.simpleIncreasingPatterns(ccArray, 2);
-			System.out.println("simple: "+simple);
-			/*for (int i = 0; i < ccArray.length; i++) {
-				CondensedConfiguration cc = ccArray[i];
-				Term highRepTerm = cc.termWithMaxExponent();
-				
-			}*/
+			int[] increases = CondensedConfiguration.simpleIncreasingPatterns(ccArray, 2);
+			System.out.println("increases: "+Tools.toString(increases));
+			if (Tools.arePositive(increases)) {
+				ExtendedTermfiguration[] etfs = new ExtendedTermfiguration[2];
+				for (int i=0; i<2; i++) {
+					System.out.println("Generalizing ccArray["+i+"]="+ccArray[i]+": ");
+					if (i%2 == 0) {direction = R; pattern = lem.getSource().getBase();}
+					else {direction = L; pattern = otherLem.getSource().getBase();}
+					ExtendedTermfiguration etf = ccArray[i].generalizeFromEnd(pattern, direction, increases[i]);
+					etfs[i] = etf;
+					System.out.println(etf);
+				}
+				if (etfs[0] != null && etfs[1] != null) {
+					//Here we should write the algorithm for proving that etfs[0] becomes etfs[1] and vice versa with the increase increases[i].
+					//Now make the SweepTheorem
+				}
+			}
 		}
 		return false;
 	}

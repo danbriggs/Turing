@@ -132,15 +132,17 @@ public class CondensedConfiguration extends CondensedTape {
 		return new ExtendedTermfiguration(l, tf, r);
 	}
 	
-	/**Returns true only if the array of Condensed Configurations has the very simplest of increasing patterns.
-	 * Doesn't do much reanalysis at all.*/
-	public static boolean simpleIncreasingPattern(CondensedConfiguration[] arr) {
+	/**Returns a positive int difference in exponent only if the array of Condensed Configurations has the very simplest of increasing patterns.
+	 * Also returns the difference if it's a constant difference in exponent less than or equal to 0.
+	 * Returns -1 if the array is null or there is no constant difference, or bases or wings change, and 0 if the array is of length less than 2.
+	 * The only reanalysis done is flattening the wings into arrays.*/
+	public static int simpleIncreasingPattern(CondensedConfiguration[] arr) {
 		if (arr == null) {
 			System.out.println("In CondensedConfiguration.simpleIncreasingPattern: arr is null");
-			return false;
+			return -1;
 		}
 		int len = arr.length;
-		if (len == 0 || len == 1) return true;
+		if (len == 0 || len == 1) return 0;
 		CondensedConfiguration cc = arr[0];
 		int termNum = cc.termNumWithMaxExponent();
 		int[] lWing = cc.expandToArray(0, termNum);
@@ -154,7 +156,7 @@ public class CondensedConfiguration extends CondensedTape {
 		int side = 0;
 		if (cc.onLeft()) side = L;
 		else if (cc.onRight()) side = R;
-		else return false;
+		else return -1;
 		for (int i = 1; i < len; i++) {
 			CondensedConfiguration cc2 = arr[i];
 			int currTermNum = cc2.termNumWithMaxExponent();
@@ -164,35 +166,38 @@ public class CondensedConfiguration extends CondensedTape {
 			int[] currBase = currTerm.getBase();
 			int currExponent = currTerm.getExponent();
 			int currState = cc2.getState();
-			if (i == 1) {
-				diff = currExponent - initialExponent;
-				if (diff <= 0) return false;
-			}
+			if (i == 1) diff = currExponent - initialExponent;
 			int currDiff = currExponent - prevExponent;
 			System.out.println("Debug code: left wings / bases / right wings:");
 			System.out.println(Tools.toString(currLWing)+','+Tools.toString(lWing)+'/'
 					          +Tools.toString(currBase) +','+Tools.toString(base) +'/'
 					          +Tools.toString(currRWing)+','+Tools.toString(rWing));
 			if (!Arrays.equals(currLWing, lWing) || !Arrays.equals(currRWing, rWing) || !Arrays.equals(currBase, base))
-				return false;
+				return -1;
 			System.out.println("Debug code: states / exponents / diffs:");
 			System.out.println(currState + "," + state + "/"
 					          + currExponent + "," + prevExponent + "/"
 			                  + currDiff + "," + diff);
 			if (currState != state || currDiff != diff)
-				return false;
-			if (side == L && !cc2.onLeft() || side == R && !cc2.onRight()) return false;
+				return -1;
+			if (side == L && !cc2.onLeft() || side == R && !cc2.onRight()) {
+				System.out.println("In simpleIncreasingPattern(): side alternation did not occur");
+				return -1;
+			}
 			prevExponent = currExponent;
 		}
-		return true;
+		return diff;
 	}
 	
-	public static boolean simpleIncreasingPatterns(CondensedConfiguration[] arr, int skip) {
+	public static int[] simpleIncreasingPatterns(CondensedConfiguration[] arr, int skip) {
+		if (arr == null) return null;
+		if (skip <= 0) return null;
+		int[] ret = new int[skip];
 		for (int i = 0; i < skip; i++) {
 			CondensedConfiguration[] ccs = Tools.skipArray(arr, skip, i);
-			if (!CondensedConfiguration.simpleIncreasingPattern(ccs)) return false;
+			ret[i] = simpleIncreasingPattern(ccs);
 		}
-		return true;
+		return ret;
 	}
 	
 	public int[] termNumAndIndex() {
