@@ -146,8 +146,10 @@ public class Acceleration {
 			if (lem.getHandedness() == -1) etf.getTerm().setIndexOffRight();
 			if (lem.getHandedness() ==  1) etf.getTerm().setIndexOffLeft();
 			int [] lemNumSteps = lem.getNumSteps();
+			int[] ret = new int[] {lemNumSteps[0]+lemNumSteps[1]*etf.getExponent()[0], lemNumSteps[1]*etf.getExponent()[1]};
+			//added *etf.getExponent()[1], 9/11/20. Also switched place with the line below. Important!
 			etf.getTerm().condense();
-			return new int[] {lemNumSteps[0]+lemNumSteps[1]*etf.getExponent()[0], lemNumSteps[1]};
+			return ret;
 		}
 		return new int[] {0,0};
 	}
@@ -166,15 +168,17 @@ public class Acceleration {
 			m.actOnSide(etf, -1, pos);
 			return 1;
 		}
-		if (b >= 0) {
+		Termfiguration t = etf.getTerm();
+		int d = t.getBase().length * t.getExponent()[0];
+		if (b >= d){
 			array = etf.getRight();
-			Termfiguration t = etf.getTerm();
-			int d = t.getBase().length * t.getExponent()[0];
 			pos = b - d;
 			m.actOnSide(etf, 1, pos);
 			return 1;
 		}
-		return 0;//unreachable code
+		if (b == 0) {m.tryActOnFirstBit(t); return 1;}
+		if (b == d - 1) {m.tryActOnLastBit(t); return 1;}
+		return 0;
 	}
 	
 	/**Attempts to look for a simple state-loop that m can enter while progressing to the left,
@@ -459,6 +463,21 @@ public class Acceleration {
 		catch(Exception e) {System.out.println("Error in bestPattern: "+e.getMessage());
 		e.printStackTrace();
 		return null;}
+	}
+	
+	public static int bestStartStep(int[][] patternArray) {
+		int bestSkip = 0;
+		int bestSwath = 0;
+		for (int i=1; i<patternArray.length; i++) {
+			int currSwath = patternArray[i][0];
+			if (currSwath > bestSwath) {
+				bestSkip = i;
+				bestSwath = currSwath;
+			}
+		}
+		int endStep = patternArray[bestSkip][1];
+		int startStep = endStep - bestSwath + 1;
+		return startStep;
 	}
 	
 	/**Attempts to formulate and prove a Lemma about the action of m based on the patternArray passed in.

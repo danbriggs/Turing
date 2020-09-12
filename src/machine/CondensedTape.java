@@ -97,8 +97,11 @@ public class CondensedTape {
 	/**Expands the terms from begin up to but not including sup to an array.*/
 	public int[] expandToArray(int begin, int sup) {
 		int size = size();
+		if (begin == size && sup == size) return new int[0];
 		if (begin < 0 || begin > sup || begin >= size || sup > size) {
-			System.out.println("In CondensedTape.expandToArray(begin, size): invalid arguments begin="+begin+", size="+size);
+			System.out.println("In CondensedTape.expandToArray("+begin+", "+sup+"): invalid arguments for CT "+this+" of size "+size);
+			StackTraceElement[] stes = Thread.currentThread().getStackTrace();
+			for (int i=0; i<stes.length; i++) System.out.println(stes[i]);			
 			return null;
 		}
 		int totallen = 0;

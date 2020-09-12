@@ -70,4 +70,12 @@ public class StepConfiguration extends Configuration {
 		setIndex(sc.getIndex());
 		setTape(sc.getTape());
 	}
+	
+	public Configuration toConfiguration() {
+		try {return new Configuration(getTape(), getIndex(), getState());}
+		catch (Exception e) {
+			System.out.println("In StepConfiguration.toConfiguration(): "+e.getMessage());
+			return null;
+		}
+	}
 }

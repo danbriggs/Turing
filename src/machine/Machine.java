@@ -2,6 +2,7 @@ package machine;
 
 public class Machine {
 	static final boolean FIVE_LINE = false;
+	static final int L = -1, R = 1;
 	private Transition[] _transitions;
 	private int _state;
 	private int _id;//for keeping track of Skelet's IDs
@@ -81,6 +82,7 @@ public class Machine {
 		return direction;
 	}
 	
+	/**Calls etf.padLeft(), etf.padRight() as necessary.*/
 	public void actOnSide(ExtendedTermfiguration etf, int side, int pos) throws Exception {
 		if (side != -1 && side != 1) throw new Exception("In Machine.actOnSide(): invalid side");
 		int[] array = null;
@@ -144,5 +146,33 @@ public class Machine {
 			return;
 		}
 		_speedup = m16;
+	}
+	
+	/**These only succeed if they bounce it out with no change to the bit.*/
+	public void tryActOnFirstBit(Termfiguration t) throws Exception{
+		if (!t.onLeft()) throw new Exception ("t is not on left");
+		int symbol = t.getBase()[0];
+		int state = t.getState();
+		int direction = _transitions[state].getToGo(symbol);
+		if (direction != L) throw new Exception("Sorry, would advance further into the base.");
+		int toWrite = _transitions[state].getToWrite(symbol);
+		if (toWrite != symbol) throw new Exception("Sorry, would modify the base.");
+		int nextState = _transitions[state].getNextState(symbol);
+		t.getIndex()[0] += direction;
+		t.setState(nextState);
+		//No need to write when they match
+	}
+	public void tryActOnLastBit(Termfiguration t) throws Exception{
+		if (!t.onRight()) throw new Exception ("t is not on right");
+		int symbol = t.getBase()[0];
+		int state = t.getState();
+		int direction = _transitions[state].getToGo(symbol);
+		if (direction != R) throw new Exception("Sorry, would advance further into the base.");
+		int toWrite = _transitions[state].getToWrite(symbol);
+		if (toWrite != symbol) throw new Exception("Sorry, would modify the base.");
+		int nextState = _transitions[state].getNextState(symbol);
+		t.getIndex()[0] += direction;
+		t.setState(nextState);
+		//No need to write when they match
 	}
 }

@@ -8,6 +8,7 @@ import java.util.List;
  * Important: the Termfiguration may have to have been constructed with an index beyond its bounds.*/
 public class ExtendedTermfiguration extends VeryTermfigurationLike {
 	static final int L = -1, R = 1;
+	static final int STANDARD_PADDING = 12; //How much to add when the tape head went out of bounds
 	
 	/**What's left of _t*/
 	private int[] _l;
@@ -75,8 +76,51 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 	
 	public boolean onLeft() {return getTerm().onLeft();}
 	public boolean offLeft() {return getTerm().offLeft();}
+	public boolean on(int side) {
+		if (side < 0) return onLeft();
+		if (side > 0) return onRight();
+		System.out.println("Invalid input to ExtendedTermfiguration.on()");
+		return false;
+	}
 	public boolean onRight() {return getTerm().onRight();}
 	public boolean offRight() {return getTerm().offRight();}
+	
+	/**Returns whether the tape head is past the last 1 bit going left.
+	 * Useful for SweepTheorems.*/
+	public boolean offLeftWing() {
+		int[] index = getIndex(); //from the point of view of THIS etf
+		for (int i = 1; i < index.length; i++) if (index[i] != 0) return false;
+		int spot = 0;
+		if (index.length > 0) spot = index[0];
+		int i;
+		for (i = 0; i <= spot; i++) if (i >= _l.length || _l[i] != 0) return false;
+		return true;
+	}
+	public boolean offRightWing() {
+		int[] index = getIndex(); //from the point of view of THIS etf
+		for (int i = 2; i < index.length; i++) if (index[i] != 0) {
+			System.out.println("ExtendedTermfiguration.offRightWing() only implemented for linear indices so far.");
+			return false;
+		}
+		int[] length = length();
+		for (int i = 2; i < length.length; i++) if (index[i] != 0) {
+			System.out.println("ExtendedTermfiguration.offRightWing() only implemented for linear lengths so far.");
+			return false;
+		}
+		int[] indexBack = Tools.subtract(length, index);
+		if (indexBack.length > 1 && indexBack[1] != 0) return false;
+		int spotBack = indexBack[0];
+		for (int i = 1; i <= spotBack; i++) {
+			int rIndex = _r.length - i;
+			if (rIndex < 0 || _r[rIndex] != 0) return false;
+		}
+		return true;
+	}
+	public int extremeSide() {
+		if (offLeftWing()) return L;
+		if (offRightWing()) return R;
+		return 0;
+	}
 	
 	public int[] evalAt(int n) throws Exception {
 		int[] term = _t.evalAt(n);
@@ -416,6 +460,22 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 		return _t.isLinear();
 	}
 	
+	/**Returns the number of times swallowing was successful.*/
+	public int swallowAll() {
+		int numTimes = 0;
+		while (trySwallow(L)) numTimes++;
+		while (trySwallow(R)) numTimes++;
+		return numTimes;
+	}
+	
+	public int swallowAll(int side) {
+		int numTimes = 0;
+		while (trySwallow(side)) numTimes++;
+		return numTimes;		
+	}
+	
+	public boolean trySwallow(int side) {return trySwallow(side, 1);}
+	
 	/**Attempts to swallow numTerms copies of the base from the wing on side side,
 	 * and does so only if the pattern matches the base's pattern that number of times,
 	 * and this sequence does not include the tape head.
@@ -472,33 +532,110 @@ public class ExtendedTermfiguration extends VeryTermfigurationLike {
 		return llen + rlen + blen;
 	}
 	
-	/**Attempts to shift the Term over so that it matches base.*/
+	/** Quick hack; only works for linear Termfiguration bases.
+	 *  Assumes preciseOutOfBounds() works correctly.*/
+	int side() {
+		try {
+			if (preciseOutOfBounds()) {
+				if (getIndex()[1] == 0) return L;
+				if (getIndex()[1] > 0) return R;
+			}
+			return 0;
+		} catch (Exception e) {
+			System.out.println("In ExtendedTermfiguration.side(): "+e.getMessage());
+			return 0;
+		}
+	}
+	
+	/**Attempts to shift the Term over so that it matches target.
+	 * TODO: write the code for when side() > 0.*/
 	public void tryShiftAway(int[] target, int maxShift) {
 		if (getBase().length != target.length) return;
 		if (Arrays.equals(getBase(), target)) return;
-		if (offLeft()) {
+		if (side() < 0) {
 			System.out.println("Got here 1");
 			for (int i = 1; i < getBase().length && i <= maxShift && i < _r.length; i++) {
 				int[] rotatedBase = Tools.rotated(getBase(), -i);
 				if (Arrays.equals(rotatedBase, target)) {
 					System.out.println("Got here 2");
-					//We check if the opposite wing's nearest i bits match
-					int[] oppBits = Arrays.copyOfRange(_r, 0, i);
-					int[] baseBits = Arrays.copyOfRange(getBase(), 0, i);
-					if (Arrays.equals(oppBits, baseBits)) {
-						int[] ret = Tools.shiftAllByAndReturnFallen(_r, -i);
-						_l = Tools.concatenate(_l, ret);
-						_t.setBase(rotatedBase);
-						_t.getIndex()[0] -= i;
-					}
+					boolean moved = move(i);
 				}
 			}
 		}
-		
+	}
+	
+	public boolean move(int i) {
+		if (i > 0) {
+			int[] rotatedBase = Tools.rotated(getBase(), -i);
+			//We check if the opposite wing's nearest i bits match
+			int[] oppBits = Arrays.copyOfRange(_r, 0, i);
+			int[] baseBits = Arrays.copyOfRange(getBase(), 0, i);
+			if (Arrays.equals(oppBits, baseBits)) {
+				int[] ret = Tools.shiftAllByAndReturnFallen(_r, -i);
+				_l = Tools.concatenate(_l, ret);
+				_t.setBase(rotatedBase);
+				_t.getIndex()[0] -= i;
+				return true;
+			}
+			return false;
+		}
+		else if (i < 0) {
+			i *= -1; //Now it's a positive left shift
+			int[] rotatedBase = Tools.rotated(getBase(), i);
+			//We check if the opposite wing's nearest i bits match
+			int[] oppBits = Arrays.copyOfRange(_l, _l.length - i, _l.length);
+			int[] baseBits = Arrays.copyOfRange(getBase(), getBase().length - 1, getBase().length);
+			if (Arrays.equals(oppBits, baseBits)) {
+				int[] ret = Tools.shiftAllByAndReturnFallen(_l, i);
+				_r = Tools.concatenate(ret, _r);
+				_t.setBase(rotatedBase);
+				_t.getIndex()[0] += i;
+				return true;
+			}
+			return false;
+		}
+		else return true;
 	}
 
 	public void tryShiftToward(int[] target, int maxShift) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**Don't need to worry about the index for these,
+	 * since the only instance variable is in Termfiguration,
+	 * and from its point of view, nothing's changed!*/
+	public void padLeft()  {_l = Tools.concatenate(new int[STANDARD_PADDING], _l);}
+	public void padRight() {_r = Tools.concatenate(_r, new int[STANDARD_PADDING]);}
+	public void padBothSides() {padLeft(); padRight();}
+	
+	int wingSize(int side) {
+		if (side == L) {
+			int[] lReduced = Tools.trimBeginning(_l);
+			int firstIndex = _l.length - lReduced.length;
+			if (side() == L) firstIndex = Math.min(firstIndex, getIndex()[0]);
+			return _l.length - firstIndex;
+		}
+		else if (side == R) {
+			int[] rReduced = Tools.trimEnd(_r);
+			int length = rReduced.length;
+			if (side() == R) length = Math.max(length, Tools.subtract(getIndex(), _t.length())[0] - _l.length + 1);
+			return length;
+		}
+		else return -1;
+	}
+	
+	public boolean matchWingSize(ExtendedTermfiguration other) {
+		if (side() != L && side() != R) return false;
+		if (other.side() != side()) return false;
+		int myWingSize    = wingSize(side());
+		int otherWingSize = other.wingSize(other.side());
+		if (side() == L) {
+			return move(otherWingSize - myWingSize);
+		}
+		else if (side() == R) {
+			return move(myWingSize - otherWingSize);
+		}
+		return false;
 	}
 }

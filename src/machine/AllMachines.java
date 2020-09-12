@@ -389,7 +389,18 @@ public class AllMachines {
 			System.out.println(workConfig);
 			System.out.println(tempConfig);
 			//Try to use lem1 and lem2 to show the machine never halts
-			if (isSweep(m, leftStep, rightStep, leftStep2, lem1, lem2)) return;
+			int bestStartStep1 = Acceleration.bestStartStep(patternArray1);
+			int bestStartStep2 = Acceleration.bestStartStep(patternArray2);
+			StepConfiguration sc1 = new StepConfiguration(new Tape(bestStartStep1));
+			while (sc1.getNumSteps() < bestStartStep1) m.actOnConfig(sc1);
+			StepConfiguration sc2 = new StepConfiguration(new Tape(bestStartStep2));
+			while (sc2.getNumSteps() < bestStartStep2) m.actOnConfig(sc2);
+			System.out.println("In AllMachines.completeFromHereHelper():");
+			System.out.println("sc1.getNumSteps() = "+sc1.getNumSteps()+", sc1.getState() = "+Tools.asLetter(sc1.getState()) + ", " +
+					"and lem1.getSource().getState() = "+Tools.asLetter(lem1.getSource().getState()));
+			System.out.println("sc2.getNumSteps() = "+sc2.getNumSteps()+", sc2.getState() = "+Tools.asLetter(sc2.getState()) +
+					" and lem2.getSource().getState() = "+Tools.asLetter(lem2.getSource().getState()));
+			if (isSweep(m, leftStep, rightStep, leftStep2, lem1, lem2, bestStartStep1, bestStartStep2)) return;
 			//TODO: What happens if not all transitions of m have been filled?
 		}
 		
@@ -411,8 +422,10 @@ public class AllMachines {
 	 * But the onus of isSweep() is to prove that even when the exponent in
 	 * the condensedConfiguration constructed at lem1begin is replaced with a variable N,
 	 * a number of steps—depending on N—later, we are left with the exact same termfigurationSequence,
-	 * with N replaced by N+c for some positive number c.*/
-	boolean isSweep(Machine m, int leftStep, int rightStep, int leftStep2, Lemma lem1, Lemma lem2) {
+	 * with N replaced by N+c for some positive number c.
+	 * 
+	 * The reason we pass something1 and something2 in is to keep track of the best index for condensing in each direction.*/
+	boolean isSweep(Machine m, int leftStep, int rightStep, int leftStep2, Lemma lem1, Lemma lem2, int bestStartStep1, int bestStartStep2) {
 		//We have to determine when is the best moment to use lem1.
 		//bestSpot() will tell us where the tape head should be;
 		//lem1.getSource().getState() what state m should be in.
@@ -428,7 +441,8 @@ public class AllMachines {
 			}
 		}
 		
-		Sweep.isSweepUsing(m, lem1, lem2); //New revision
+		boolean doneEarly = Sweep.isSweepUsing(m, lem1, lem2, bestStartStep1, bestStartStep2); //New revision
+		if (doneEarly) return true;
 		
 		if (!isSweepHelper(m, sc, lem1, lem2, R, false)) return false;
 		if (!isSweepHelper(m, sc, lem2, lem1, L, false)) return false;

@@ -141,6 +141,9 @@ public class Tools {
 		for (int i=0; i<a.length; i++) if (a[i]!=b[i]) return false;
 		return true;
 	}
+	
+	/**Returns an equivalent array with 0s trimmed off the end.
+	 * Does not mutate the array passed in.*/
 	public static int[] trimEnd(int[] arr) {
 		int lastNonzeroIndex = arr.length-1;
 		while (lastNonzeroIndex>=0 && arr[lastNonzeroIndex]==0) lastNonzeroIndex--;
@@ -149,6 +152,9 @@ public class Tools {
 		for (int i=0; i<=lastNonzeroIndex; i++) retVal[i]=arr[i];
 		return retVal;
 	}
+	
+	/**Returns an equivalent array with 0s trimmed off the beginning.
+	 * Does not mutate the array passed in.*/
 	public static int[] trimBeginning(int[] arr) {
 		int firstNonzeroIndex = 0;
 		while (firstNonzeroIndex<arr.length && arr[firstNonzeroIndex]==0) firstNonzeroIndex++;
@@ -157,7 +163,9 @@ public class Tools {
 		for (int i=firstNonzeroIndex; i<arr.length; i++) retVal[i-firstNonzeroIndex]=arr[i];
 		return retVal;
 	}
+	
 	public static int[] add(int[] a, int[] b) {
+		if (a == null || b == null) return null;
 		int length = Math.max(a.length, b.length);
 		int[] c = new int[length];
 		for (int i=0; i<length; i++) {
@@ -167,6 +175,29 @@ public class Tools {
 		}
 		return c;
 	}
+	
+	public static int[] subtract(int[] a, int[] b) {
+		if (a == null || b == null) return null;
+		int length = Math.max(a.length, b.length);
+		int[] c = new int[length];
+		for (int i=0; i<length; i++) {
+			if (i>=a.length) c[i]=-b[i];
+			else if (i>=b.length) c[i]=a[i];
+			else c[i]=a[i]-b[i];
+		}
+		return c;
+	}
+	
+	public static int[] negative(int[] a) {
+		if (a == null) return null;
+		int length = a.length;
+		int[] c = new int[length];
+		for (int i=0; i<length; i++) {
+			c[i] = -a[i];
+		}
+		return c;
+	}
+	
 	public static int[] multiply(int scalar, int[] arr) {
 		int[] retVal = new int[arr.length];
 		for (int i=0; i<arr.length; i++) retVal[i]=scalar*arr[i];

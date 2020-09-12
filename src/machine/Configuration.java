@@ -67,20 +67,32 @@ public class Configuration extends Tape {
 	}
 	public Configuration copy() throws Exception {return new Configuration(getTape().clone(),getIndex(),getState());}
 	
-	/**Condenses it, splitting it from the index going in direction direction.*/
-	public CondensedConfiguration condenseAndSplitUsing(int direction, int[] pattern) {
+	/**Condenses it, splitting it from the provided index going in direction direction.*/
+	public CondensedConfiguration condenseAndSplitUsing(int direction, int[] pattern, int index) {
+		System.out.println("In Configuration.condenseAndSplitUsing("+Tools.asLR(direction)+","+Tools.toString(pattern)+","+index+"): "
+				+ "Configuration is of length "+length());
 		if (direction ==0) return null;
-		if (direction > 0) return condenseAndSplitUsing(pattern);
-		return reverse().condenseAndSplitUsing(Tools.reverse(pattern)).reverse();
+		if (direction > 0) return condenseAndSplitUsing(pattern, index);
+		Configuration reverse = reverse();
+		return reverse.condenseAndSplitUsing(Tools.reverse(pattern), length() - 1 - index).reverse();
 	}
 	
-	public CondensedConfiguration condenseAndSplitUsing(int[] pattern) {
-		Configuration c1 = subcon(0,getIndex(),0);
-		//0's a dummy value for the index of the first configuration
-		Configuration c2 = subcon(getIndex(),length());
+	/**Condenses it, splitting it from the provided index going in direction direction.*/
+	public CondensedConfiguration condenseAndSplitUsing(int direction, int[] pattern) {
+		return condenseAndSplitUsing(direction, pattern, getIndex());
+	}
+
+	public CondensedConfiguration condenseAndSplitUsing(int[] pattern, int index) {
+		System.out.println("In "+this+".condenseAndSplitUsing("+Tools.toString(pattern)+","+index+")");
+		int which;
+		if (getIndex() < index) which = 0;
+		else which = 1;
+		Configuration c1 = subcon(0,index, getIndex() * (1 - which));
+		Configuration c2 = subcon(index,length(), (getIndex() - index) * which);
+		//In this way 0's a dummy value for the index of the configuration without the tape head
 		CondensedConfiguration cc1 = c1.condenseUsing(pattern);
 		CondensedConfiguration cc2 = c2.condenseUsing(pattern);
-		return CondensedConfiguration.combine(cc1,cc2,1);
+		return CondensedConfiguration.combine(cc1,cc2,which);
 	}
 	
 	/**returns a configuration consisting of everything from begin up to but not including sup.*/

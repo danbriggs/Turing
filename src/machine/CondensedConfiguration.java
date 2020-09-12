@@ -115,21 +115,35 @@ public class CondensedConfiguration extends CondensedTape {
 	}
 	/**As above, but gives N a coefficient of linCoeff.*/
 	ExtendedTermfiguration generalizeFromEnd(int[] pattern, int direction, int linCoeff) {
-		if (direction == 0) return null;
+		if (direction == 0) {
+			System.out.println("CondensedConfiguration.generalizeFromEnd() failed at 1");
+			return null;
+		}
 		int termNum = termNumWithMaxExponent();
 		Term term = get(termNum);
 		int[] base = term.getBase();
 		int exponent = term.getExponent();
-		if (!Tools.areIdentical(base, pattern)) return null;
-		if (direction > 0 && !onLeft()) return null;
-		if (direction < 0 && !onRight()) return null;
+		if (!Tools.areIdentical(base, pattern)) {
+			System.out.println("CondensedConfiguration.generalizeFromEnd() failed at 2");
+			return null;
+		}
+		if (direction > 0 && !onLeft()) {
+			System.out.println("CondensedConfiguration.generalizeFromEnd() failed at 3");
+			return null;
+		}
+		if (direction < 0 && !onRight()) {
+			System.out.println("CondensedConfiguration.generalizeFromEnd() failed at 4");
+			return null;
+		}
 		int[] l = termsAsArray(0,termNum);
 		int[] r = termsAsArray(termNum+1,size());
 		int[] abstractIndex = null;
 		if (direction > 0) abstractIndex = new int[] {-l.length, 0};
 		else if (direction < 0) abstractIndex = new int[] {-1 + exponent * base.length + r.length, linCoeff * base.length};
 		Termfiguration tf = new Termfiguration(base, new int[] {exponent, linCoeff}, abstractIndex, _state);
-		return new ExtendedTermfiguration(l, tf, r);
+		ExtendedTermfiguration etf = new ExtendedTermfiguration(l, tf, r);
+		etf.padBothSides(); //In case we're going to use it later, easier to avoid OutOfBoundsExceptions
+		return etf;
 	}
 	
 	/**Returns a positive int difference in exponent only if the array of Condensed Configurations has the very simplest of increasing patterns.
@@ -168,16 +182,20 @@ public class CondensedConfiguration extends CondensedTape {
 			int currState = cc2.getState();
 			if (i == 1) diff = currExponent - initialExponent;
 			int currDiff = currExponent - prevExponent;
-			System.out.println("Debug code: left wings / bases / right wings:");
+			if (i < 3) {
+			System.out.println("In CC.simpleIncreasingPattern(): left wings / bases / right wings:");
 			System.out.println(Tools.toString(currLWing)+','+Tools.toString(lWing)+'/'
 					          +Tools.toString(currBase) +','+Tools.toString(base) +'/'
 					          +Tools.toString(currRWing)+','+Tools.toString(rWing));
+			}
 			if (!Arrays.equals(currLWing, lWing) || !Arrays.equals(currRWing, rWing) || !Arrays.equals(currBase, base))
 				return -1;
-			System.out.println("Debug code: states / exponents / diffs:");
+			if (i < 3) {
+			System.out.println("states / exponents / diffs:");
 			System.out.println(currState + "," + state + "/"
 					          + currExponent + "," + prevExponent + "/"
 			                  + currDiff + "," + diff);
+			}
 			if (currState != state || currDiff != diff)
 				return -1;
 			if (side == L && !cc2.onLeft() || side == R && !cc2.onRight()) {
