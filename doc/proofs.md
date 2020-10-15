@@ -88,4 +88,4 @@ So far, this method has not yielded results for any of the HNRs. But it has been
 They're at the bottom of [record7-19-20.txt](record7-19-20.txt).  
 They were taken from [Skelet's nonregular machines page](https://skelet.ludost.net/bb/nreg.html).
 
-## [Next page: How to knock out all 39,160,000,000 machines](allmachines.md)
+## [Next page: How to knock out all 40,960,000,000 machines](allmachines.md)
