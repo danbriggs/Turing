@@ -7,7 +7,7 @@ There are two ways to prove that an HNR (or any other Turing machine) doesn't ha
 The most effective methods at the moment, however, seem to be somewhere in between the two.
 
 Back in 2010, I would go through the output of my C-subset C++ program and analyze it to write proofs by hand.  
-But [they](https://github.com/danbriggs/Turing2010/proofs) were nearly unreadable, and so was [the program code](https://github.com/danbriggs/Turing2010).
+But [they](https://github.com/danbriggs/Turing2010/tree/master/proofs) were nearly unreadable, and so was [the program code](https://github.com/danbriggs/Turing2010).
 
 ## Linear machines
 
@@ -50,7 +50,7 @@ in 596+80N steps.
 But depending on how many times the machine has to pass over the variable-length portion,  
 a proof by hand of a statement like this gets longer and longer.
 
-[Proof of non-halting for machine 8, using old program, rtf format, 2010](https://github.com/danbriggs/Turing2010/proofs/8/proof%20for%208th.rtf)
+[Proof of non-halting for machine 8, using old program, rtf format, 2010](https://github.com/danbriggs/Turing2010/tree/master/proofs/8/proof%20for%208th.rtf)
 
 There may be more machines in the list that have precisely square-root growth;  
 then there are machines like 12&13 that have square-root growth, but it may not be precise.
