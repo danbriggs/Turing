@@ -1,9 +1,10 @@
 package machine;
 
 import java.awt.Point;
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,11 +13,12 @@ import java.util.List;
 /**Class for repeating the work Skelet did by 2003.
  * Start by enumerating machines.*/
 public class AllMachines {
+	static final double VOLUME = .4;
 	static final int A=0, B=1, C=2, D=3, E=4, H=-1;
 	static final int L=-1, R=1;
 	static final int TO_WRITE=0, TO_GO=1, NEXT_STATE=2;
 	static final boolean ADD_TO_STACK = true;
-	static final int MAX_OUTPUT_SIZE = 5; //Was 1000
+	static final int MAX_OUTPUT_SIZE = 10; //Was 1000
 	static final int SHIFT_NUM_STEPS = 50;
 	static final int HOW_FAR_AWAY_ALLOWED = 5;
 	//The next three are for isSweepHelper()
@@ -39,7 +41,7 @@ public class AllMachines {
 			FileWriter myWriter = new FileWriter("sweepmachines.txt", false);
 			myWriter.close();
 		} catch (IOException e) {
-			System.out.println("Error in AllMachines.AllMachines(): "+e.getMessage());
+			Tools.printIfAtLeast(VOLUME, .1, "Error in AllMachines.AllMachines(): "+e.getMessage());
 		}
 	}
 	
@@ -52,6 +54,10 @@ public class AllMachines {
 	 * We fill them in the order Skelet seems to have. */
 	void makeMachines() throws Exception {
 		
+		PrintStream printStream = new PrintStream(new FileOutputStream("sweepmachines_output.txt", false));
+		System.setOut(printStream);
+		System.setErr(printStream);
+				
 		//Class B0:H1L
 		fill(A,0,C,1,L);
 		fill(B,0,H,1,L);
@@ -271,7 +277,7 @@ public class AllMachines {
 		int leftStep = -1;
 		if (leftStepFound) leftStep = tempConfig.getNumSteps();
 		else {
-			System.out.print(baseMachineIndex + " ");
+			Tools.printIfAtLeast(VOLUME, .3, baseMachineIndex + " ");
 			outputPartialMachine(true);
 			tempConfig.printTrim();
 			return;
@@ -297,7 +303,7 @@ public class AllMachines {
 		int rightStep = -1;
 		if (rightStepFound) rightStep = tempConfig.getNumSteps();
 		else {
-			System.out.print(baseMachineIndex + " ");
+			Tools.printIfAtLeast(VOLUME, .3, baseMachineIndex + " ");
 			outputPartialMachine(true);
 			tempConfig.printTrim();
 			return;
@@ -323,7 +329,7 @@ public class AllMachines {
 		int leftStep2 = -1;
 		if (leftStep2Found) leftStep2 = tempConfig.getNumSteps();
 		else {
-			System.out.print(baseMachineIndex + " ");
+			Tools.printIfAtLeast(VOLUME, .3, baseMachineIndex + " ");
 			outputPartialMachine(true);
 			tempConfig.printTrim();
 			return;
@@ -337,20 +343,27 @@ public class AllMachines {
 		//Skip Machine creation if _usedTransitions.size() < 9.
 		
 		if (_usedTransitions.size() < 9) {
-			System.out.print(baseMachineIndex + " ");
+			Tools.printIfAtLeast(VOLUME, .3, baseMachineIndex + " ");
 			outputPartialMachine(true);
 			tempConfig.printTrim();
 			return;			
 		}
-		
-		System.out.print("Now trying Acceleration.bestPattern for machine "+baseMachineIndex+": ");
+		Tools.printIfAtLeast(VOLUME, .4, "For machine "+baseMachineIndex+": ");
 		outputPartialMachine(false);
 		
 		Machine m = new Machine(Tools.threeDeepCopy(_states));
+		Backtracking.printBacktracks(m, 0, 10);
+		
+		if (Backtracking.numBacktracks(m, 15, 15) == 0) {
+			Tools.printIfAtLeast(VOLUME, .3, "Halt state unreachable!");
+			return;
+		}
+		
+		Tools.printIfAtLeast(VOLUME, .5, "Now trying Acceleration.bestPattern()");
 		
 		int[][] patternArray1 = Acceleration.bestPattern(m, leftStep, rightStep, 30);
 		if (patternArray1 == null) {
-			System.out.print(baseMachineIndex + " ");
+			Tools.printIfAtLeast(VOLUME, .7, baseMachineIndex + " ");
 			outputPartialMachine(true);
 			tempConfig.printTrim();
 			return;			
@@ -358,7 +371,7 @@ public class AllMachines {
 		
 		int[][] patternArray2 = Acceleration.bestPattern(m, rightStep, leftStep2, 30);
 		if (patternArray2 == null) {
-			System.out.print(baseMachineIndex + " ");
+			Tools.printIfAtLeast(VOLUME, .3, baseMachineIndex + " ");
 			outputPartialMachine(true);
 			tempConfig.printTrim();
 			return;			
@@ -366,7 +379,7 @@ public class AllMachines {
 		
 		Lemma lem1 = Acceleration.guessLemma(m, patternArray1);
 		if (lem1 == null || !lem1.isProved()) {
-			System.out.print(baseMachineIndex + " ");
+			Tools.printIfAtLeast(VOLUME, .3, baseMachineIndex + " ");
 			outputPartialMachine(true);
 			tempConfig.printTrim();
 			return;			
@@ -374,20 +387,20 @@ public class AllMachines {
 
 		Lemma lem2 = Acceleration.guessLemma(m, patternArray2);
 		if (lem2 == null || !lem2.isProved()) {
-			System.out.print(baseMachineIndex + " ");
+			Tools.printIfAtLeast(VOLUME, .3, baseMachineIndex + " ");
 			outputPartialMachine(true);
 			tempConfig.printTrim();
 			return;			
 		}
 
 		if (lem1.isProved() && lem2.isProved()) {
-			System.out.println("The Lemmas were proved:");
-			System.out.println(lem1);
-			System.out.println(lem2);
-			System.out.println("Can we use them? Machine, workConfig, tempConfig:");
+			Tools.printIfAtLeast(VOLUME, .7, "The Lemmas were proved:");
+			Tools.printIfAtLeast(VOLUME, .7, ""+lem1);
+			Tools.printIfAtLeast(VOLUME, .7, ""+lem2);
+			Tools.printIfAtLeast(VOLUME, .7, "Can we use them? Machine, workConfig, tempConfig:");
 			outputPartialMachine(false);
-			System.out.println(workConfig);
-			System.out.println(tempConfig);
+			Tools.printIfAtLeast(VOLUME, .7, ""+workConfig);
+			Tools.printIfAtLeast(VOLUME, .7, ""+tempConfig);
 			//Try to use lem1 and lem2 to show the machine never halts
 			int bestStartStep1 = Acceleration.bestStartStep(patternArray1);
 			int bestStartStep2 = Acceleration.bestStartStep(patternArray2);
@@ -395,10 +408,10 @@ public class AllMachines {
 			while (sc1.getNumSteps() < bestStartStep1) m.actOnConfig(sc1);
 			StepConfiguration sc2 = new StepConfiguration(new Tape(bestStartStep2));
 			while (sc2.getNumSteps() < bestStartStep2) m.actOnConfig(sc2);
-			System.out.println("In AllMachines.completeFromHereHelper():");
-			System.out.println("sc1.getNumSteps() = "+sc1.getNumSteps()+", sc1.getState() = "+Tools.asLetter(sc1.getState()) + ", " +
+			Tools.printIfAtLeast(VOLUME, .7, "In AllMachines.completeFromHereHelper():");
+			Tools.printIfAtLeast(VOLUME, .7, "sc1.getNumSteps() = "+sc1.getNumSteps()+", sc1.getState() = "+Tools.asLetter(sc1.getState()) + ", " +
 					"and lem1.getSource().getState() = "+Tools.asLetter(lem1.getSource().getState()));
-			System.out.println("sc2.getNumSteps() = "+sc2.getNumSteps()+", sc2.getState() = "+Tools.asLetter(sc2.getState()) +
+			Tools.printIfAtLeast(VOLUME, .7, "sc2.getNumSteps() = "+sc2.getNumSteps()+", sc2.getState() = "+Tools.asLetter(sc2.getState()) +
 					" and lem2.getSource().getState() = "+Tools.asLetter(lem2.getSource().getState()));
 			if (isSweep(m, leftStep, rightStep, leftStep2, lem1, lem2, bestStartStep1, bestStartStep2)) return;
 			//TODO: What happens if not all transitions of m have been filled?
@@ -436,7 +449,7 @@ public class AllMachines {
 			try {
 				m.actOnConfig(sc);
 			} catch (Exception e) {
-				System.out.println("Error in isSweep: "+e.getMessage());
+				Tools.printIfAtLeast(VOLUME, .1, "Error in isSweep: "+e.getMessage());
 				return false;
 			}
 		}
@@ -485,28 +498,28 @@ public class AllMachines {
 			try {
 				return generalIsSweepHelper(etf, lem, otherLem, numTimesWorthTrying);
 			} catch (Exception e) {
-				System.out.println("Error 1 in isSweepHelper: "+e.getMessage());
+				Tools.printIfAtLeast(VOLUME, .1, "Error 1 in isSweepHelper: "+e.getMessage());
 				return false;
 			}
 		}
 		int numStepsPassed = 0;
 		try {
-			System.out.println("Debug code: cc = " + cc);
+			Tools.printIfAtLeast(VOLUME, .7, "Debug code: cc = " + cc);
 			numStepsPassed = Acceleration.act(cc, new LemmaList(lem));
 			currStepNumber += numStepsPassed;
 			if (numStepsPassed < 2) throw new Exception("Only " + numStepsPassed + " steps passed");
 		} catch (Exception e) {
-			System.out.println("Error 2 in isSweepHelper: "+e.getMessage());
+			Tools.printIfAtLeast(VOLUME, .1, "Error 2 in isSweepHelper: "+e.getMessage());
 			return false;
 		}
 		try {
 			Configuration c2 = cc.toConfiguration();
 			sc2 = c2.toStepConfigurationAt(currStepNumber);
 		} catch (Exception e) {
-			System.out.println("Error 3 in isSweepHelper: "+e.getMessage());
+			Tools.printIfAtLeast(VOLUME, .1, "Error 3 in isSweepHelper: "+e.getMessage());
 			return false;
 		}
-		System.out.println("Debug code: in isSweepHelper():"
+		Tools.printIfAtLeast(VOLUME, .7, "Debug code: in isSweepHelper():"
 				+ " StepConfiguration sc2 = " + sc2.getTrimAsString());
 		sc.setData(sc2); //To update appropriately!
 		return true;
@@ -515,16 +528,13 @@ public class AllMachines {
 	private boolean generalIsSweepHelper(ExtendedTermfiguration etf, Lemma lem0, Lemma lem1, int numTimesWorthTrying)
 			throws Exception {
 		if (etf == null) {
-			System.out.println("null etf. Maybe it didn't generalize.");
+			Tools.printIfAtLeast(VOLUME, .2, "null etf. Maybe it didn't generalize.");
 			return false;
 		}
 		ExtendedTermfiguration successorEtf = etf.successor(); //saving to compare for later
 		successorEtf.condense(); //Easier to compare
-		System.out.println("Goal: successorEtf = "+successorEtf);
-		System.out.println("Debug code: etf = " + etf);
-		
-		System.out.println("More debug code: etf = " + etf);
-
+		Tools.printIfAtLeast(VOLUME, .5, "Goal: successorEtf = "+successorEtf);
+		Tools.printIfAtLeast(VOLUME, .5, "Debug code: etf = " + etf);
 		int[] stepsPassed1 =  Acceleration.act(etf, lem0);
 		
 		Lemma lem, otherLem;
@@ -537,7 +547,7 @@ public class AllMachines {
 			etf = etf.refactored(otherLem.getSource().getBase().length, lem.getHandedness()); //who knows which side's better?
 			if (etf == null) return false;
 			
-			System.out.println("Yet more debug: etf = " + etf);
+			Tools.printIfAtLeast(VOLUME, .5, "Yet more debug: etf = " + etf);
 			
 			//Now we continue to act until the tape head runs into the core again.
 			//TODO: Consider splitting a copy of the term off, maybe here, maybe later.
@@ -546,7 +556,7 @@ public class AllMachines {
 			int[] stepsPassed = Tools.add(stepsPassed1, stepsPassed2);
 			//Now we gotta see if what we've landed on is of the correct form for the other lemma.
 			//If not, some major reanalysis is due.
-			System.out.println("Now etf = "+etf);
+			Tools.printIfAtLeast(VOLUME, .5, "Now etf = "+etf);
 			int otherBestState = otherLem.getSource().getState();
 			int[] otherBestPattern = otherLem.getSource().getBase();
 			
@@ -571,13 +581,13 @@ public class AllMachines {
 					//      in the future, consider unfurling more than once
 					
 					try {
-						System.out.println("Debug code: Commencing unfurl for etf = "+etf+" with index "+
+						Tools.printIfAtLeast(VOLUME, .7, "Debug code: Commencing unfurl for etf = "+etf+" with index "+
 					                       Tools.toPolynomialString(etf.getIndex(),'n') +
 					                       " and term with index " +
 					                       Tools.toPolynomialString(etf.getTerm().getIndex(),'n'));
 						boolean didUnfurl =	etf.unfurl(side);
 						if (!didUnfurl) etf.split(side);
-						System.out.println("Debug code: after "+didUnfurl+", etf = "+etf+" with index "+
+						Tools.printIfAtLeast(VOLUME, .7, "Debug code: after "+didUnfurl+", etf = "+etf+" with index "+
 								           Tools.toPolynomialString(etf.getIndex(),'n') +
 					                       " and term with index " +
 					                       Tools.toPolynomialString(etf.getTerm().getIndex(),'n'));
@@ -618,7 +628,7 @@ public class AllMachines {
 					currSide = R;
 				}
 				oppositeWingSizeDifference = etfOppositeWingSize - successorEtfOppositeWingSize;
-				System.out.println("Here etf = "+etf+" and oppositeWingSizeDifference = " + oppositeWingSizeDifference);
+				Tools.printIfAtLeast(VOLUME, .7, "Here etf = "+etf+" and oppositeWingSizeDifference = " + oppositeWingSizeDifference);
 				
 				/*Now if etf's base doesn't match lem's source's base,
 				 *hopefully that's because it just needs to be shifted over.
@@ -644,16 +654,16 @@ public class AllMachines {
 				}
 				if (!wereSwallowed)
 					return false;
-				System.out.println("After 2nd Lem used: etf = " + etf);
+				Tools.printIfAtLeast(VOLUME, .5, "After 2nd Lem used: etf = " + etf);
 								
 				int[] stepsPassed3 = walkAroundSwallowingWhileOutOfBounds(lem.getMachine(), etf, MAX_WANDERING,
 						successorEtf.getExponent()[0] - etf.getExponent()[0]);
 				if (stepsPassed3 == null) return false;
 				stepsPassed = Tools.add(stepsPassed, stepsPassed3);
-				System.out.println("successorEtf= " + successorEtf);
-				System.out.println("compare etf = " + etf);
+				Tools.printIfAtLeast(VOLUME, .5, "successorEtf= " + successorEtf);
+				Tools.printIfAtLeast(VOLUME, .5, "compare etf = " + etf);
 				if (etf.essentiallyEquals(successorEtf)) {
-					System.out.println("Sweep proved!!");
+					Tools.printIfAtLeast(VOLUME, .35, "Sweep proved!!");
 					return true;
 				}
 				if (etf.nonzeroSwathLengthAt(0) >= successorEtf.nonzeroSwathLengthAt(0))
@@ -683,16 +693,16 @@ public class AllMachines {
 				if (numTermsSwallowed < maxNumTermsToSwallow)
 					etf.trySwallow(side, 1);
 				//I've experimented with unlimited swallowing. It's not that great.
-				System.out.println("In walkAroundSwallowingWhileOutOfBounds "+Tools.asLR(side)+" "+maxNumTermsToSwallow+": was etf = "+etf);
+				Tools.printIfAtLeast(VOLUME, .7, "In walkAroundSwallowingWhileOutOfBounds "+Tools.asLR(side)+" "+maxNumTermsToSwallow+": was etf = "+etf);
 				iterations += Acceleration.actForOneStep(m, etf);
-				System.out.println("In walkAroundSwallowingWhileOutOfBounds "+Tools.asLR(side)+" "+maxNumTermsToSwallow+": now etf = "+etf);
+				Tools.printIfAtLeast(VOLUME, .7, "In walkAroundSwallowingWhileOutOfBounds "+Tools.asLR(side)+" "+maxNumTermsToSwallow+": now etf = "+etf);
 				if (iterations>=maxIterations) {
-					System.out.println(maxIterations+" iterations passed.");
+					Tools.printIfAtLeast(VOLUME, .6, maxIterations+" iterations passed.");
 					return null;
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("In walkAroundSwallowingWhileOutOfBounds(): "+e.getMessage() + " with etf = "+ etf +
+			Tools.printIfAtLeast(VOLUME, .7, "In walkAroundSwallowingWhileOutOfBounds(): "+e.getMessage() + " with etf = "+ etf +
 					", getIndex() = "+Tools.toPolynomialString(etf.getIndex(),'n')+
 					", and term's index = "+Tools.toPolynomialString(etf.getTerm().getIndex(),'n'));
 			return null;
@@ -718,17 +728,17 @@ public class AllMachines {
 		for (int i=0; i<numSteps; i++) {
 			try {
 				if (sc.getState()==bestState) {
-					System.out.println("Debug code: checking to see if sc at symbol "+sc.getSymbol()+" matches pattern "+Tools.toString(pattern));
+					Tools.printIfAtLeast(VOLUME, .5, "Debug code: checking to see if sc at symbol "+sc.getSymbol()+" matches pattern "+Tools.toString(pattern));
 					//Insanely, the following clause works better with || than &&. ??
 					if (sc.getIndex()==bestSpot || sc.matches(pattern, direction)) {
-						System.out.println("Yes it does.");
+						Tools.printIfAtLeast(VOLUME, .5, "Yes it does.");
 						found = true;
 						break;
 					}
 				}
 				m.actOnConfig(sc);
 			} catch (Exception e) {
-				System.out.println("In AllMachines.advanceTo(): "+e.getMessage());
+				Tools.printIfAtLeast(VOLUME, .1, "In AllMachines.advanceTo(): "+e.getMessage());
 				return false;
 			}
 		}
@@ -874,11 +884,12 @@ public class AllMachines {
 			    myWriter.write(sb.toString());
 			    myWriter.close();
 			} catch (Exception e) {
-			    System.out.println("Error in AllMachines.outputPartialMachine(): "+e.getMessage());
+			    Tools.printIfAtLeast(VOLUME, .1, "Error in AllMachines.outputPartialMachine(): "+e.getMessage());
 			}
 			_outputSize++;
 		}
 	}
+	
 	
 	int numStatesUsed() {
 		boolean[] used = new boolean[5];

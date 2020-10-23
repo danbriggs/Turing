@@ -533,4 +533,8 @@ public class Tools {
 		}
 		return true;
 	}
+	
+	public static void printIfAtLeast(double volumelevel, double cutoff, String string) {
+		if (volumelevel >= cutoff) System.out.println(string);
+	}
 }

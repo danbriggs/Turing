@@ -37,6 +37,7 @@ public class MyPanel extends JPanel {
 	private JButton bigStretchTapeTest2;
 	private JButton allProvedTest;
 	private JButton machineSpecific;
+	private JButton backtrack;
 	//private JCheckBox jcomp10;
 	//private JCheckBox jcomp11;
     private JLabel machineNoLabel;
@@ -210,7 +211,7 @@ public class MyPanel extends JPanel {
         run = new JButton("Run");
         runOnAll = new JButton("Run On All Tapes");
         machineSpecific = new JButton("<html>Machine<br>Specific</html>");
-		
+		backtrack = new JButton("<html>Backtrack</html>");
 		longestRunTest.setToolTipText ("hi");
 
 		//PrintStream standardOut = System.out;
@@ -248,7 +249,7 @@ public class MyPanel extends JPanel {
 		run.setFont(defaultFont);
 		runOnAll.setFont(defaultFont);
 		machineSpecific.setFont(defaultFont);
-		
+		backtrack.setFont(defaultFont);
 		jcomp12.setFont(new Font("Courier New",Font.PLAIN,12));
 		
 		//set components properties
@@ -282,7 +283,7 @@ public class MyPanel extends JPanel {
 		add(run);
 		add(runOnAll);
 		add(machineSpecific);
-		
+		add(backtrack);
 		//think 1512 x 945
 		//or 1366*.9 x 768 *.9
 		int x1 = (int)(.010*screenWidth);//was .0462
@@ -330,7 +331,7 @@ public class MyPanel extends JPanel {
 		runOnAll.setBounds(x1+4*dx,fourthRow,smallw,mediumh);
 		int x6 = x1+5*dx+smallw-w;
 		machineSpecific.setBounds(x6,runY,x1 + scrollPaneWidth - x6,fourthRow+mediumh-runY);
-		
+		backtrack.setBounds(x6,y1,x1 + scrollPaneWidth - x6,secondRow+smallh-y1);
 		menuItems[0].addActionListener(new ActionListener() {@Override public void actionPerformed(ActionEvent e) {
 			int num = Integer.parseInt(machineNoField.getText());
 			int start = Integer.parseInt(startStepField.getText());
@@ -505,6 +506,15 @@ public class MyPanel extends JPanel {
 				int start = Integer.parseInt(startStepField.getText());
 				int stop = Integer.parseInt(endStepField.getText());
 				Analysis.analyze(_machineList, num, start, stop);
+			}
+		});
+		backtrack.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int num = Integer.parseInt(machineNoField.getText());
+				int start = Integer.parseInt(startStepField.getText());
+				int stop = Integer.parseInt(endStepField.getText());
+				Backtracking.printBacktracks(_machineList.get(num), start, stop);
 			}
 		});
 	}

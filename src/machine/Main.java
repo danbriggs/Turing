@@ -1,5 +1,6 @@
 package machine;
 
+import java.io.PrintStream;
 import java.util.List;
 //import complex.Complex;
 //import complex.FFT;
@@ -25,13 +26,15 @@ public class Main {
 		Tests tests = new Tests(machineList);
 		
 		AllMachines allMachines = new AllMachines();
+		PrintStream stdout = System.out;
 		try {
-			allMachines.makeMachines();
+			allMachines.makeMachines(); 
 		} catch (Exception e) {
+			System.setOut(stdout); 
 			System.out.println("AllMachines.makeMachines() exited with "+e.getMessage());
 			if (!e.getMessage().equals("Total number of machines exceeded.")) e.printStackTrace();
 		}
-		
+		System.setOut(stdout); 
 		MyPanel myPanel = new MyPanel(tests, machineList);
 		myPanel.show(args);
 		//System.out.println(Acceleration.longestRepeatedSubSeq("AABEBCDD")); ;
