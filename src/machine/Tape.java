@@ -88,6 +88,7 @@ public class Tape implements TapeLike{
 	public boolean onRight() {return nearRight(0);}
 	public boolean offLeft() {return onLeft() && getSymbol()==0;}
 	public boolean offRight() {return onRight() && getSymbol() == 0;}
+	public boolean isInBounds(int k) {return k >= 0 && k < _tape.length;}
 	/**Returns whether the tape head is within dist of the left  edge of the 1 bits.*/
 	public boolean nearLeft(int dist) {
 		for (int i=_index-1-dist; i>=0; i--) {
@@ -146,6 +147,7 @@ public class Tape implements TapeLike{
 		return 'E';
 	}
 	public int getSymbol() {return _tape[_index];}
+	public int getSymbol(int k) {return _tape[k];}
 	public void replace(int symbol) {_tape[_index]=symbol;}
 	public void go(int direction) throws Exception {
 		if (direction!=-1 && direction!=1) throw new Exception("Direction must be -1 or 1 but is "+direction);

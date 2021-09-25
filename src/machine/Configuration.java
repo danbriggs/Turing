@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Configuration extends Tape {
+	static final double VOLUME = .4; // set to .8 to get many more print statements
 	private int _state;
 	public Configuration(int[] tape) throws Exception {
 		this(tape,0);
@@ -69,7 +70,7 @@ public class Configuration extends Tape {
 	
 	/**Condenses it, splitting it from the provided index going in direction direction.*/
 	public CondensedConfiguration condenseAndSplitUsing(int direction, int[] pattern, int index) {
-		System.out.println("In Configuration.condenseAndSplitUsing("+Tools.asLR(direction)+","+Tools.toString(pattern)+","+index+"): "
+		Tools.printIfAtLeast(VOLUME, .7, "In Configuration.condenseAndSplitUsing("+Tools.asLR(direction)+","+Tools.toString(pattern)+","+index+"): "
 				+ "Configuration is of length "+length());
 		if (direction ==0) return null;
 		if (direction > 0) return condenseAndSplitUsing(pattern, index);
@@ -83,7 +84,7 @@ public class Configuration extends Tape {
 	}
 
 	public CondensedConfiguration condenseAndSplitUsing(int[] pattern, int index) {
-		System.out.println("In "+this+".condenseAndSplitUsing("+Tools.toString(pattern)+","+index+")");
+		Tools.printIfAtLeast(VOLUME, .7, "In "+this+".condenseAndSplitUsing("+Tools.toString(pattern)+","+index+")");
 		int which;
 		if (getIndex() < index) which = 0;
 		else which = 1;
@@ -116,7 +117,7 @@ public class Configuration extends Tape {
 		try {
 			return new Configuration(Tools.reverse(getTape()), length() - 1 - getIndex(), _state);
 		} catch (Exception e) {
-			System.out.println("Error in Configuration.reverse(): " + e.getMessage());
+			Tools.printIfAtLeast(VOLUME, .1, "Error in Configuration.reverse(): " + e.getMessage());
 			return null;
 		}
 	}
