@@ -12,6 +12,9 @@ public class Analysis {
 			thirdMachineRightEndRuns(machineList.get(num), 3);
 			thirdMachineRuns(machineList.get(num), start, stop);
 		}
+		else if (num==7) {
+			nthMachineLeftEndRun(machineList.get(num), start, stop);
+		}
 		else if (num==16) {
 			sixteenthMachineRightEndRun(machineList.get(num), start, stop);
 		}
@@ -134,6 +137,52 @@ public class Analysis {
 		System.out.println("states: ");
 		System.out.println(Tools.matrixToString(states));
 		return;
+	}
+	
+	public static void nthMachineLeftEndRun(Machine m, int start, int stop) {
+		List<int[]> patternList = new ArrayList<int[]>();
+		int[] pattern0 = new int[] {0};
+		int[] pattern1 = new int[] {1};
+		patternList.add(pattern0);
+		patternList.add(pattern1);
+		m.reset();
+		TapeLike t = null;
+		try {t = new StretchTape(new int[1], 0);}
+		catch (Exception e) {
+			System.out.println("Error 1 in Analysis.nthMachineLeftEndRun(): "+e.getMessage());
+			return;
+		}
+		int lastTimeWasOnLeft = 0;
+		int i;
+		for (i = 0; i < start; i++) {
+			try {
+				m.act(t);
+			} catch (Exception e) {
+				System.out.println("Error 2 in Analysis.nthMachineLeftEndRun(): "+e.getMessage());
+				return;
+			}
+		}
+		for (; i < stop; i++) {
+			try {m.act(t);}
+			catch (Exception e) {
+				System.out.println("Error 3 in Analysis.nthMachineLeftEndRun(): "+e.getMessage());
+				return;
+			}
+			if (t.onLeft()) {
+				if (i - lastTimeWasOnLeft >= 10) {
+					try {
+						Configuration c = new Configuration(t.getTape(), t.getIndex(), m.getState());
+						CondensedConfiguration cc = c.condenseUsing(patternList);
+						System.out.println(i + " " + cc);
+					}
+					catch (Exception e) {
+						System.out.println("Error 4 in Analysis.nthMachineLeftEndRun(): "+e.getMessage());
+						return;
+					}
+				}
+				lastTimeWasOnLeft = i;
+			}
+		}
 	}
 	
 	public static void thirdMachineRuns(Machine m, int start, int stop) {

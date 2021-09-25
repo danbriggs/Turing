@@ -82,14 +82,16 @@ public class Run {
 			stepForMinTapeHead = top1;
 			stepForMaxTapeHead = top1;
 			System.out.println("Debug code: analytic: "+analytic+"; allSteps: "+allSteps);
+			int numLinesPrinted = 0; //For use in capping output during analytic run
 			if (analytic) {
 				for (i=top1; i<top2; i++) {
 					int currState = m.getState();
-					boolean shouldPrint = allSteps || i==top1 || i==top2-1|| leftEdge&&t.onLeft() || rightEdge&&t.onRight() || currState<0;
+					boolean shouldPrint = (allSteps || i==top1 || i==top2-1|| leftEdge&&t.onLeft() || rightEdge&&t.onRight() || currState<0) && numLinesPrinted < 1000;
 					if (shouldPrint) {
 						if (stepNumbers)
 							System.out.print(i+" ");
 						System.out.print((char)(currState+65)+" ");
+						numLinesPrinted++;
 						t.printTrim();
 					}
 					if (currState<0) break;
