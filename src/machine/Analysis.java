@@ -15,6 +15,9 @@ public class Analysis {
 		else if (num==7) {
 			nthMachineLeftEndRun(machineList.get(num), start, stop);
 		}
+		else if (num==15) {
+			fifteenthMachineRun(machineList.get(num), start, stop);
+		}
 		else if (num==16) {
 			sixteenthMachineRightEndRun(machineList.get(num), start, stop);
 		}
@@ -229,5 +232,25 @@ public class Analysis {
 				lastTimeWasOnRight = i;
 			}
 		}
+	}
+	
+	public static void fifteenthMachineRun(Machine m, int start, int stop) {
+		//Here we explicitly build Lemmas about the fifteenth machine's runs.
+		//Below is a reminder of how to build Lemmas from Tests.java.
+		/*int[] base1 = {0,1,1};
+			int[] exp1 = {9,1};
+			int[] index1 = {0};
+			int[] base2 = {1,1,0};
+			int[] exp2 = {9,1};
+			int[] index2 = {27,3};
+			int[] numSteps = {27,3};
+			Termfiguration t1 = new Termfiguration(base1,exp1,index1,2);
+			Termfiguration t2 = new Termfiguration(base2,exp2,index2,2);
+			System.out.println(t1.toString());
+			System.out.println(t2.toString());
+			_lemma1 = new Lemma(_m,t1,t2,numSteps);
+			System.out.println(t1+" has successor "+t1.successor());
+			System.out.println(t2+" has successor "+t2.successor());
+			boolean p = _lemma1.isProved();*/
 	}
 }
