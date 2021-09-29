@@ -20,6 +20,8 @@
 \usepackage{xcolor}
 \usepackage{caption}
 %\usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage{xfrac}
 
 \newtheorem*{conjecture}{Conjecture}
 
@@ -28,7 +30,7 @@
 
 \begin{center}
  
-{\bf\large The 21\textemdash or only 16\textemdash Holdout Classes Among Skelet's\\ 43 Hardly Non-Regular Turing Machines} \\
+{\bf\large The 21\textemdash or only 15\textemdash Holdout Classes Among Skelet's\\ 43 Hardly Non-Regular Turing Machines} \\
  
        %\vspace{0.5cm}
  
@@ -56,9 +58,9 @@ Of these 36, \#s 16, 24, and 38 reach a phase (of at least 1 trillion steps) of 
 Of these, I (and others independently) have discovered that machines 2 (and so 5 and 6), 14, 18, and 25 are trivially proved never to halt. I also proved machines \#8, \#9, \#10, \#11, and \#12 (and so \#13) never to halt. Machines \#21 (and so \#28 and \#39), \#31 and \#32 were proved by univerz (Pavel Kropitz). univerz in fact showed the non-halting of twelve machines, but we need only reference these three for our reduction in number.
 
 Thus there are 21 studies that need to be performed; thus this document is organized into 21 sections.
-
-Machine \#4 was seen to be trivial and \#s 20 and 23 easy if arduous in the course of producing this document,
-and machine classes $16\sim24\sim38$ and $19\sim42$ require but a simple proof as well.
+Machines \#$4, 16\sim24\sim38, 19\sim42, 20, 23=29,$ and $30=41$ showed that they will be of various
+degrees of easy but arduous in the course of producing this document, and of the 15 remaining classes,
+\#BL\_2 stands out as likely very easy.
 
 \texttt{\href{https://github.com/danbriggs/Turing/blob/master/doc/record7-19-20.txt}
 {github.com/danbriggs/Turing/blob/master/doc/record7-19-20.txt}}
@@ -291,7 +293,7 @@ C&A&C&A&C&A&C&A&C&A&C&A&C&A&C\\
 \end{table}
 \end{small}
 
-\newpage
+\clearpage
 Repeating the analysis done in Tables \ref{tab:3nums}, \ref{tab:3swaths}, \ref{tab:3states}, \ref{tab:3lefts}, and \ref{tab:3rights}, but with the machine starting in state C instead of A gives much simpler data: there are always two swaths; the number of steps and lengths of the left and right swaths are linear functions of the lengths of the original swaths; the machine ends up in state D as long as the right swath has at least six 1s. The machine starting in state D is exactly analogous to starting in state A, but the tape head is one bit further to the right and the step number is advanced by three. C with tape head at a 0 bit always comes from D with tape head at a 1 bit but otherwise of the same form.
 
 Thus, it would suffice to understand the patterns shown in Tables \ref{tab:3nums}, \ref{tab:3swaths}, \ref{tab:3states}, \ref{tab:3lefts}, and \ref{tab:3rights} to predict the action of HNR\#3 from situations consisting of at most two swaths of 1s. However, situations with more than two swaths as shown in Table \ref{tab:3steps} may have to be understood separately, and could increase the difficulty of showing that HNR\#3 never halts or accelerating it until it does.
@@ -333,6 +335,7 @@ Machine 4 seems to be a trivial one, the proof just needs to be carried out. It 
 \end{table}
 \end{small}
 
+\clearpage
 \phantomsection
 \addcontentsline{toc}{section}{7}
 \section*{7}
@@ -433,6 +436,8 @@ Machine 4 seems to be a trivial one, the proof just needs to be carried out. It 
 \end{table}
 \end{small}
 
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{15}
 \section*{15}
 
@@ -553,14 +558,19 @@ a_{j+1}\ldots a_m,$ for $a=10,$ $\overline a=11,$ and vice versa.
 \end{conjecture}
 
 The conjecture has been verified to produce each subsequent line of either of the two tables above
-from any given current line using the Python script found at X. Assuming the conjecture is true,
+from any given current line running the Python script found at 
+\href{https://github.com/danbriggs/Turing/blob/master/paper/accelerate\_15\_old.py}
+{github.com/danbriggs/Turing/blob/master/paper/accelerate\_15\_old.py},
+which uses
+\href{https://github.com/danbriggs/Turing/blob/master/paper/stepfiguration.py}{stepfiguration.py}
+from the same directory. Assuming the conjecture is true,
 one obtains
-\begin{tiny}
 \begin{align*}
-&356526731314189519247709158424~\texttt{C}~i1^{372}0111011111111111111111111111010101010101111111110101110101010101110111110101110/\\
-&101011111011101011101010101011111011101111101111101110101010101010101010101010101010101010101010101010101010101111
+&356526731314189519247709158424~\texttt{C}\\
+&i1^{372}0111011111111111111111111111010101010101111111110101110101010101110/\\
+&11111010111010101111101110101110101010101111101110111110111110111010101/\\
+&0101010101010101010101010101010101010101010101010101111/\\
 \end{align*}
-\end{tiny}
 i.e., the machine runs for at least 356 octillion or $3.56\cdot10^{29}$ steps.
 
 Pushing beyond this 356 octillion boundary will require applying the specific lemmas that would
@@ -568,8 +578,8 @@ combine to provide the conjecture above in a manner very similar to that that wo
 Scratch notes can be found at
 \href{https://github.com/danbriggs/Turing/blob/master/paper/noteson15.txt}{noteson15.txt}.
 
-\newpage
-
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{16$\sim$24$\sim$38}
 \section*{16$\sim$24$\sim$38}
 
@@ -608,7 +618,8 @@ Scratch notes can be found at
 
 
 
-\newpage
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{17}
 \section*{17}
 
@@ -862,8 +873,8 @@ Scratch notes can be found at
 \caption{\label{tab:17}Machine 17 continued.}
 \end{table}
 
-\newpage
-
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{19$\sim$42}
 \section*{19$\sim$42}
 
@@ -879,7 +890,8 @@ Scratch notes can be found at
 \caption{HNR \#42 similarly. These two require but a routine proof.}
 \end{figure}
 
-
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{20}
 \section*{20}
 Let
@@ -907,12 +919,13 @@ So at intervals of $48166+26688k,$ the machine just adds seven $T$s, one $V$, an
 
 So the proof for HNR\#20 will be easy if possibly arduous.
 
-\newpage
-
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{22}
 \section*{22}
-\newpage
 
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{23=29}
 \section*{23=29}
 
@@ -937,8 +950,8 @@ and the fourth differences are all 360.
 
 So this machine will be fairly easy to prove never halts.
 
-\newpage
-
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{26}
 \section*{26}
 \begin{figure}[H]
@@ -958,8 +971,8 @@ for any sequence $s.$ Then it is observed that $\Delta a - \Delta^2 a$ is the se
 In other words, the intervals between steps fail to double by very little in most transitions,
 and where they fail greatly coordinates with the transition around the 15 mark in the picture.
 
-\newpage
-
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{BL\_2}
 \section*{BL\_2}
 
@@ -981,7 +994,7 @@ and where they fail greatly coordinates with the transition around the 15 mark i
 \end{tabular}}
 \end{table}
 Let $a_i$ and $b_i$ denote the exponents of the last and second to last swath of 110s during a given step
-when the tape head has reached the right edge of the tape anew, as written above.
+when the tape head has reached the left edge of the tape anew, as written above.
 
 Then it appears to be the case that
 \begin{align*}
@@ -990,23 +1003,128 @@ a_{i+1}&=\lfloor5a_i/2\rfloor
 \end{align*}
 where $t$ is 1 if $a_i$ is $5\pmod6$ and 0 otherwise.
 
-Although it is too early to tell, it seems likely that HNR\#BL_2 will not be very difficult.
-\newpage
+Seems the step number tends to multiplying by $25/4$ from each step to the next.
 
+The sequence of differences in step number seems to tend to multiplying by $25/4$ as well,
+with the error incurred by assuming this being about
+$11\%, 4.4\%, 1.8\%, .71\%,$ and $.23\%$ of the previous difference by the end.
+Also, the ratio between each of these errors and the next seems to be very close to $5/2$ half the time.
+
+Thus denote by $\{x_i\}_{i=0}^{10}$ the sequence of step numbers mentioned above, and let
+\begin{align*}
+y_i&=x_{i+1}-x_{i},\\
+z_i&=\frac{25}{4}y_i-y_{i+1},\textrm{ and}\\
+w_i&=\frac{5}{2}z_i-z_{i+1}.\\
+\end{align*}
+Let us align the values we get for $\{w_i\}_{i=0}^{7}$ against $a_i\pmod6$:
+\begin{table}[H]
+\begin{tabular}{llllllllll}
+63.375&-110.875&82.375&23.625&23.625&23.625&23.625&23463.375&{}&{}\\
+0&2&5&0&2&2&2&2&2&5
+\end{tabular}
+\caption*{So it seems that $w_i$ is $23\sfrac{5}{8}$ whenever all of $a_i,a_{i+1},$ and $a_{i+2}$ are not $5\pmod6.$}
+\end{table}
+Although it is too early to tell, it seems likely that HNR\#BL\_2 will not be very difficult.
+
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{30=41}
 \section*{30=41}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{30.png}
+\caption{HNR \#30, tape head at left end for 30000 steps.\\
+The second image shows it left-justified with the beginning repetitive portion deleted.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{30long.png}
+\caption{Tape head at left, repetitive portion deleted, right-justified, 1000000 steps.\\
+The second image shows the same left-justified from step 1000000 to 3939415.}
+\end{figure}
+
+The action of this machine appears to be of a fractal nature, but it is more difficult to describe
+than that of HNR\#16 or 19.
+
+On the next page, we will see that looking at moments when the tape head is on the right side
+helps us figure out much more easily what to do to prove that this machine never halts.
+
+\newpage
+
+Looking at moments when the tape head is on the right gives us a much clearer picture of what to do.
+If we list all steps from 31 to 300000000 when the tape head is on the right, it follows a 5/2/5/5/5
+pattern where the 5 is E-B-C-D-A and the 2 is C-D. Taking only those C moments from the 2,
+hence, rows $5\pmod{22}$ indexing from 0, we obtain the following steps:
+
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rrr}
+92&C&$(11110)^{2}11i$\\
+1842&C&$(11110)^{6}1^{14}(11110)^{2}11i$\\
+42652&C&$(11110)^{36}1^{14}(11110)^{6}1^{14}(11110)^{2}11i$\\
+1376222&C&$(11110)^{216}1^{14}(11110)^{36}1^{14}(11110)^{6}1^{14}(11110)^{2}11i$\\
+48568752&C&$(11110)^{1296}1^{14}(11110)^{216}1^{14}(11110)^{36}1^{14}(11110)^{6}1^{14}(11110)^{2}11i$\\
+\end{tabular}}
+\end{table}
+Studying the step numbers, it appears that their ratio is trending towards 36, which is not surprising
+given the lengths of strings involved. Thus let the sequence of five steps above be $\{x_i\}_{i=0}^4,$
+and define $y_i=36x_i-x_{i+1}.$ We obtain
+$$1470, 23660, 159250, 975240.$$
+The descending tens places suggest taking the difference, so let $z=\Delta y.$ We get
+$$22190, 135590, 815990.$$
+The ratios of subsequent terms are very close to 6, so let $w_i=z_{i+1}-6z_i.$
+
+We find that $w$ is the constant sequence $2450$ of length 2 so far.
+Substituting in terms of the original sequence, this is to say
+\begin{align}
+2450&=-x_{i+3}+43x_{i+2}-258x_{i+1}+216x_i,\textrm{ or}\\
+x_{i+3}&=43x_{i+2}-258x_{i+1}+216x_i-2450.\label{recx}
+\end{align}
+Since $43\cdot48568752-258\cdot1376222+216\cdot42652-2450=1742601442,$
+let us inspect step 1742601442 to confirm that our result was not just an artifact of having
+too many parameters available to adjust. The output of the Java program Turing,
+when written with exponents using blit30end.py, gives:
+$$1742601442~\texttt{C}~(11110)^{7776}1^{14}(11110)^{1296}1^{14}(11110)^{216}1^{14}(11110)^{36}1^{14}(11110)^{6}1^{14}(11110)^{2}11i$$
+Thus the following is overwhelmingly likely to be true:
+\begin{conjecture}
+At steps $\{x_i\}_{i=1}^{\infty}$ where $x_1=92,~x_2=1842,$ and $x_3=42652,$ and \eqref{recx},
+HNR\#30 is in state C with tape head at its rightmost 1 bit and tape
+$$\left(\prod_{j=1}^i (11110)^{6^{i+1-j}}1^{14}\right)(11110)^2 111.$$
+\end{conjecture}
+The proof will likely be not too difficult, but it might be very arduous.
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{33}
 \section*{33}
+
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{34}
 \section*{34}
+
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{35}
 \section*{35}
+
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{36}
 \section*{36}
+
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{37}
 \section*{37}
+
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{40}
 \section*{40}
+
+\clearpage
+\phantomsection
 \addcontentsline{toc}{section}{43}
 \section*{43}
 

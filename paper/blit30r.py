@@ -10,7 +10,7 @@ steps = [] #New
 states = [] #New
 bitstrings = []
 for i in range(len(lines)):
-    if i%6 != 0:
+    if i%22 != 5:
         continue
     line = lines[i]
     li = line.strip().split()

@@ -10,8 +10,8 @@ steps = [] #New
 states = [] #New
 bitstrings = []
 for i in range(len(lines)):
-    if i%6 != 0:
-        continue
+    #if i%22 != 5:
+    #   continue
     line = lines[i]
     li = line.strip().split()
     step = li[0]
@@ -121,10 +121,10 @@ def pad_and_show(blist, mode):
     for row_index in range(arr.shape[0]):
         arr[row_index,:,0]=from_bitstring(blist[row_index])
 
-    plt.imshow(arr, interpolation='nearest')
+    #plt.imshow(arr, interpolation='nearest')
     #locs, labels = plt.yticks()            # Get locations and labels
     #plt.yticks(locs, [steps[i] for i in [0,0,25,50,75,100,125,150,175,200]])
-    plt.show()
+    #plt.show()
 
 #print(len(bitstrings), "bitstrings at end:")
 #for b in bitstrings:
