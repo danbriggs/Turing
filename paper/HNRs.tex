@@ -24,13 +24,13 @@
 \usepackage{xfrac}
 
 \newtheorem*{conjecture}{Conjecture}
-
+\newtheorem*{lemmastar}{Lemma}
 
 \begin{document}
 
 \begin{center}
  
-{\bf\large The 21\textemdash or only 15\textemdash Holdout Classes Among Skelet's\\ 43 Hardly Non-Regular Turing Machines} \\
+{\bf\large The 21\textemdash or only 10\textemdash Holdout Classes Among Skelet's\\ 43 Hardly Non-Regular Turing Machines} \\
  
        %\vspace{0.5cm}
  
@@ -58,13 +58,14 @@ Of these 36, \#s 16, 24, and 38 reach a phase (of at least 1 trillion steps) of 
 Of these, I (and others independently) have discovered that machines 2 (and so 5 and 6), 14, 18, and 25 are trivially proved never to halt. I also proved machines \#8, \#9, \#10, \#11, and \#12 (and so \#13) never to halt. Machines \#21 (and so \#28 and \#39), \#31 and \#32 were proved by univerz (Pavel Kropitz). univerz in fact showed the non-halting of twelve machines, but we need only reference these three for our reduction in number.
 
 Thus there are 21 studies that need to be performed; thus this document is organized into 21 sections.
-Machines \#$4, 16\sim24\sim38, 19\sim42, 20, 23=29,$ and $30=41$ showed that they will be of various
-degrees of easy but arduous in the course of producing this document, and of the 15 remaining classes,
-\#BL\_2 stands out as likely very easy.
+Machines \#$4, 16\sim24\sim38, 19\sim42, 20, 23=29,$ $30=41,$ $36,$ $37,$ $40,$ and $43$
+showed that they will be of various degrees of easy but arduous in the course of producing this document,
+and \#s 34 and \#35 showed that they should be considered equivalent to each other with proof.
+Of the 10 remaining classes, \#BL\_2 stands out as likely very easy.
 
-\texttt{\href{https://github.com/danbriggs/Turing/blob/master/doc/record7-19-20.txt}
-{github.com/danbriggs/Turing/blob/master/doc/record7-19-20.txt}}
-is where the reader is encouraged to go to get the state diagrams for the machines.
+%\texttt{\href{https://github.com/danbriggs/Turing/blob/master/doc/record7-19-20.txt}
+%{github.com/danbriggs/Turing/blob/master/doc/record7-19-20.txt}}
+%is where the reader is encouraged to go to get the state diagrams for the machines.
 
 \newpage
 \tableofcontents
@@ -300,16 +301,16 @@ Thus, it would suffice to understand the patterns shown in Tables \ref{tab:3nums
 
 Out of the first billion steps, the maximum number of swaths of 1s when the tape head is on the right is 6, and this first occurs at step 6333029, when the machine is in state D, and the tape is \texttt{$1^4~0~1^{23}~0~1^{53}~0~1^{197}~0~1^{259}~0~1^{550}$}.
 
-An argument backtracking from a halt state may be capable of sidestepping all this detailed analysis; it is clear from the machine diagram
-\begin{table}[H]
-\texttt{\begin{tabular}{rccccc}
-&A&B&C&D&E\\
-0&C1L&H1L&D1R&A1R&C0L\\
-1&A0R&E1L&B0L&C1R&D1L
-\end{tabular}}
-\label{tab:HNR3}
-\end{table}
-\noindent that 01o A and 01o E are the only ways to achieve halting; these must come from 0o0 D, 010i B, respectively; the former is a dead-end, whereas the latter comes from 0101i C; unfortunately, this branches into three possibilities: 01011o A, 010o1 D, and 01011o E. These respectively come from 0101o0 D, 0100i E, and 010110i B; these, from 010i00 C, 01001i B, and 0101101i C;
+%An argument backtracking from a halt state may be capable of sidestepping all this detailed analysis; it is clear from the machine diagram
+%\begin{table}[H]
+%\texttt{\begin{tabular}{rccccc}
+%&A&B&C&D&E\\
+%0&C1L&H1L&D1R&A1R&C0L\\
+%1&A0R&E1L&B0L&C1R&D1L
+%\end{tabular}}
+%\label{tab:HNR3}
+%\end{table}
+%\noindent that 01o A and 01o E are the only ways to achieve halting; these must come from 0o0 D, 010i B, respectively; the former is a dead-end, whereas the latter comes from 0101i C; unfortunately, this branches into three possibilities: 01011o A, 010o1 D, and 01011o E. These respectively come from 0101o0 D, 0100i E, and 010110i B; these, from 010i00 C, 01001i B, and 0101101i C;
 
 
 
@@ -335,7 +336,7 @@ Machine 4 seems to be a trivial one, the proof just needs to be carried out. It 
 \end{table}
 \end{small}
 
-\clearpage
+%\clearpage adds a blank page here but nowhere else for some reason
 \phantomsection
 \addcontentsline{toc}{section}{7}
 \section*{7}
@@ -432,7 +433,7 @@ Machine 4 seems to be a trivial one, the proof just needs to be carried out. It 
 608971&D&$1^{261}0^{1}1^{200}$\\
 \end{tabular}}}
 \end{Parallel}
-\caption{\label{tab:7}Machine 7, tapehead at leftmost bit. Perhaps analysis of HNR\#3 will serve HNR\#7 as well.}
+\caption{\label{tab:7}HNR\#7, tapehead at leftmost bit. See similarities of HNR\#3.}
 \end{table}
 \end{small}
 
@@ -924,6 +925,19 @@ So the proof for HNR\#20 will be easy if possibly arduous.
 \addcontentsline{toc}{section}{22}
 \section*{22}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{22.png}
+\caption{HNR \#22, tape head at left end for 199576 steps.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{22r.png}
+\caption{HNR \#22, tape head at right end for 4606 steps.\\
+It does not return to the right by step 3000000.}
+\end{figure}
+
 \clearpage
 \phantomsection
 \addcontentsline{toc}{section}{23=29}
@@ -954,6 +968,7 @@ So this machine will be fairly easy to prove never halts.
 \phantomsection
 \addcontentsline{toc}{section}{26}
 \section*{26}
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{26.png}
@@ -1030,6 +1045,7 @@ Although it is too early to tell, it seems likely that HNR\#BL\_2 will not be ve
 \phantomsection
 \addcontentsline{toc}{section}{30=41}
 \section*{30=41}
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{30.png}
@@ -1093,39 +1109,289 @@ HNR\#30 is in state C with tape head at its rightmost 1 bit and tape
 $$\left(\prod_{j=1}^i (11110)^{6^{i+1-j}}1^{14}\right)(11110)^2 111.$$
 \end{conjecture}
 The proof will likely be not too difficult, but it might be very arduous.
+
 \clearpage
 \phantomsection
 \addcontentsline{toc}{section}{33}
 \section*{33}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{33.png}
+\caption{Tape head at right from step 10 to step 238493660.\\
+There is not another moment in the first 300 million steps.}
+\end{figure}
+It almost always hits the right in A and stays on the right for five steps in A-D-B-E-A,
+except for moments during the four clear transitional periods shown where it does E and then D-A eight steps later;
+these are at steps 74, 177, 1980 and 3612743.
+
+If we instead try to determine moments when it has reached the left, we get an extraordinary sparse set of steps:
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rcl}
+47&E&$1^6I$\\
+144&E&$1^{12}I$\\
+1785&E&$1^{18}IOIII$\\
+3612042&E&$1^{20}IIOOIOIIIIOIIIII$
+\end{tabular}}
+\caption*{Tape head at leftmost 1. $I=0001,O=0000.$}
+\end{table}
+The 47, 144, 1785 and 3612042 correspond to a mere 27, 33, 205 steps and 701 steps, respectively, behind the
+four clear transitional periods shown in the figure where it was on the left.
+So it is safe to assume that it never gets back to the left until it's done ``doing its computation''
+on the previous string, whatever that may mean to it.
+
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rcl}
+74&E&1111010111i\\
+177&E&1101010111010111i\\
+1980&E&1$(10)^{5}11(10)^{4}11101111101010111i$\\
+3612743&E&$1(10)^{16}11(10)^{6}111010111110111011111011111010101110111110111011101010111i$
+\end{tabular}}
+\caption*{Tape head at rightmost bit for transitional period.}
+\end{table}
+
+It does not reach the left again within the first 3 billion steps.
+
+Probably a significant acceleration would be required to find even the next moment when it reaches the left.
+It also might be a good idea to run experiments like $1^{6n}0001~E$ with the tape head on the left
+and take a look at what the tape looks like the first moment the head hits the right.
+
+Maybe it's doing something like Ackermann's function.
 
 \clearpage
 \phantomsection
 \addcontentsline{toc}{section}{34}
 \section*{34}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{34.png}
+\caption{Tape head at right until step 218136190.\\
+There is not another moment in the first 300 million steps.}
+\end{figure}
+
+This machine seems to be very similar to machine \#33;
+it even seems to have the same orientation and with Skelet's program's choice use the same states
+A-D-B-E-A for usual rightmost bit moments and E-D-A for transitional moments,
+only with two instead of eight steps from the E to the D.
+
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rcl}
+12&D&$i011$\\
+51&D&$i01^{3}0I$\\
+90&D&$i01^{4}I1$\\
+391&D&$i01^{9}0OII$\\
+32112&D&$i01^{24}IIIIIOIOOI$
+\end{tabular}}
+\caption*{Tape head at leftmost 1. $I=0001,O=0000.$\\
+There are no other steps under 3 billion (other than adjacent steps) where the tape head is on the left.}
+\end{table}
+
+
+
 \clearpage
 \phantomsection
 \addcontentsline{toc}{section}{35}
 \section*{35}
 
-\clearpage
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{35.png}
+\caption{Tape head at right until step 201356448.\\
+There is not another moment in the first 300 million steps.}
+\end{figure}
+
+This machine seems to be very similar to machine \#s 33 and 34;
+it even seems to have the same orientation and with Skelet's program's choice use the same states
+A-D-B-E-A for usual rightmost bit moments. It uses E-A, adjacent steps, for transitional moments.
+
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rcl}
+10&D&$i011$\\
+45&D&$i01^{3}0I$\\
+80&D&$i01^{4}I1$\\
+355&D&$i01^{9}0OII$\\
+29630&D&$i01^{24}IIIIIOIOOI$
+\end{tabular}}
+\caption*{Tape head at leftmost 1. $I=0001,O=0000.$\\
+There are no other steps under 3 billion (other than adjacent steps) where the tape head is on the left.}
+\end{table}
+Notice that these configurations are the exact same, even with the same orientation and state, as those of HNR\#34.
+The differences in step number between a leftmost configuration of HNR\#34 and the equivalent configuration of \#35
+are 2, 6, 10, 36, 2482.
+
+%\clearpage
 \phantomsection
 \addcontentsline{toc}{section}{36}
 \section*{36}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{36.png}
+\end{figure}
+
+The figure above shows the steps where the tape head is at left until step 144081.
+It never seems to make it to the right after step 40.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{36-2.png}
+\caption{Zooming in on a particular part of the image and stretching the aspect ratio
+reveals that it is definitely binary counting going on.}
+\end{figure}
+
+\newpage
+
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rcr}
+29&D&o00011111\\
+64&D&o011011101101\\
+100&D&o0000011001111101\\
+120&D&o000000011101111101\\
+146&D&o00000000011011111101\\
+174&D&o0000000000011111111101\\
+265&D&o0110111111111110110011011\\
+277&D&o000111111111111110110011011\\
+\end{tabular}}
+\caption*{Tape head at left from 29 to 265. Recall that at step 40 it is on the right.\\
+If there were an even number of intervening 0s, the machine would halt.}
+\end{table}
+
+Any journey ``there and back again'' from a configuration as above, in state D on the left at a 0
+with an odd number of intervening 0s before a string beginning with 1, consists of the following phases:
+
+\begin{enumerate}
+\item B-D alternation going to the right. By parity this necessarily culminates in a configuration like
+\texttt{186 D 111111111111i1111111101}.
+\item A-E alternation going to the right (after one left step). This will yield a step like
+\texttt{160 E 111111111101o11111101} or \texttt{197 A 111111111111010101010o1}.
+\item C-D-A-C going to the left in the latter case; the same beginning with D in the former case.
+How this ends could in theory depend on how many 1s there were $\pmod4$. This phase 
+in the first string of 1s after the first string of 0s at the starting step, such as 174, where there were 9.
+\item Once it has gotten left of the ``tie'' bit (as in step 186), the latter case goes into an A-E-A-C-D phase,
+moving 1 to the left every 5 steps, followed by one final A-C-D at extreme left.
+The former case goes into straight Cs, going left.
+\end{enumerate}
+This accounts for the vastly different results of ending at step 174 and 265 on the left.
+In fact, it seems to be the case that we get this ``transition-producing'' behavior
+only when the number of 1s in that swath is $1\pmod4.$
+In all cases, the whole string should probably be interpreted as a usual binary number,
+with least significant digit on the left, but with an extra pair of 1s between each pair of digits.
+One can see how the machine is thus counting up:
+
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rcr}
+5717&D&$o0^{099}111111111101111110011011$\\
+5941&D&$o0^{101}110011001111111110011011$\\
+6153&D&$o0^{103}111011001111111110011011$\\
+6371&D&$o0^{105}110111001111111110011011$\\
+6591&D&$o0^{107}111111001111111110011011$\\
+6823&D&$o0^{109}110011101111111110011011$\\
+7051&D&$o0^{111}111011101111111110011011$\\
+7285&D&$o0^{113}110111101111111110011011$\\
+7521&D&$o0^{115}111111101111111110011011$\\
+7771&D&$o0^{117}110011011111111110011011$\\
+8015&D&$o0^{119}111011011111111110011011$\\
+8265&D&$o0^{121}110111011111111110011011$\\
+8517&D&$o0^{123}111111011111111110011011$\\
+8781&D&$o0^{125}110011111111111110011011$\\
+9041&D&$o0^{127}111011111111111110011011$\\
+9307&D&$o0^{129}110111111111111110011011$\\
+9575&D     &$o0^{131}1111111111111111{\textcolor{red}{10}}011011$\\
+10414&D&$o0^{3}1^{134}01{\textcolor{red}{10}}0110011001101011011$\\
+10694&D&$o0^{5}(1100)^{33}1111100110011001101011011$\\
+\end{tabular}}
+\caption*{Since there are 17 1s in a row in the second-to-last row, the machine is no longer able to interpret
+everything it meets in the ``binary number in pairs with pairs of 1s ahead of each pair of bits'' format.}
+\end{table}
+So the machine has set up a whole new task for itself on step 10414, so to speak;
+or, it has set up the same old task for itself with a whole new number.
+It \emph{is} able to view this new format as a binary number through the 136th tape bit (68th number bit),
+but the 138th violates the format, and so after $2^{66}$ passes after step 10694
+it will increment this old new problem bit-pair and create a whole new number for itself,
+$2*2^{66}+5+1$ tape bits longer than the old number, reinterpreting this as a binary number of
+$2^{66}+3$ numerical bits to count all the way up. 
+It will continue turning the counting number (of 0s) it has created for itself linearly with each pass
+into a space into which to count up in binary, extending by pairs of 0s to the left all the while (see also Figure).
+The problem bits (shown in red) recede to the left at each of these transitions.
+
+If this analysis is correct\textemdash and it clearly needs to be made more precise\textemdash then HNR\#36 never halts.
+
+\newpage
+
+We make it more precise here.
+\begin{lemmastar}
+Let HNR\#36 be in state $D$ with tape $o0^{m}1^{n}0x,$ where $m$ is odd and $x$ is any string.
+Then if $n\equiv1\pmod4$, $\ldots$, whereas $\ldots$ otherwise.
+\end{lemmastar}
 
 \clearpage
 \phantomsection
 \addcontentsline{toc}{section}{37}
 \section*{37}
 
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rcr}
+12&A&$(10)^{3}$\\
+71&A&$(10)^{3}1(10)^{3}$\\
+400&A&$(10)^{9}1(10)^{3}1(10)^{3}$\\
+2835&A&$(10)^{27}1(10)^{9}1(10)^{3}1(10)^{3}$\\
+23252&A&$(10)^{81}1(10)^{27}1(10)^{9}1(10)^{3}1(10)^{3}$\\
+202591&A&$(10)^{243}1(10)^{81}1(10)^{27}1(10)^{9}1(10)^{3}1(10)^{3}$\\
+1803480&A&$(10)^{729}1(10)^{243}1(10)^{81}1(10)^{27}1(10)^{9}1(10)^{3}1(10)^{3}$\\
+16172075&A&$(10)^{2187}1(10)^{729}1(10)^{243}1(10)^{81}1(10)^{27}1(10)^{9}1(10)^{3}1(10)^{3}$\\
+145371292&A&$(10)^{6561}1(10)^{2187}1(10)^{729}1(10)^{243}1(10)^{81}1(10)^{27}1(10)^{9}1(10)^{3}1(10)^{3}$\\
+\end{tabular}}
+\caption*{Moments when the tape head is on the right.}
+\end{table}
+HNR\#37 will thus clearly be a simple one to prove never halts.
+
 \clearpage
 \phantomsection
 \addcontentsline{toc}{section}{40}
 \section*{40}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{40.png}
+\caption{Tape head on the right, right-justified and left-justified respectively.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{40l.png}
+\caption{Tape head on the left, right-justified and left-justified respectively.}
+\end{figure}
+HNR\#40 seems to just want to draw a fractal, so I'm lumping it in with the ``easy but arduous to prove.''
+
 \clearpage
 \phantomsection
 \addcontentsline{toc}{section}{43}
 \section*{43}
+
+\begin{table}[H]
+\texttt{
+\begin{tabular}{rcr}
+87&C&$o001101111111$\\
+219&C&$o001101(1110110)^{1}1111111$\\
+569&C&$o00110111111(1110110)^{2}1111111$\\
+1536&C&$o001101^{11}(1110110)^{4}1111111$\\
+4472&C&$o001101(1110110)^{1}1^{11}(1110110)^{8}1111111$\\
+14462&C&$o00110111111(1110110)^{2}1^{11}(1110110)^{16}1111111$\\
+50837&C&$o001101^{11}(1110110)^{4}1^{11}(1110110)^{32}1111111$\\
+189101&C&$o001101(1110110)^{1}1^{11}(1110110)^{8}1^{11}(1110110)^{64}1111111$\\
+727795&C&$o00110111111(1110110)^{2}1^{11}(1110110)^{16}1^{11}(1110110)^{128}1111111$\\
+2853770&C&$o001101^{11}(1110110)^{4}1^{11}(1110110)^{32}1^{11}(1110110)^{256}1111111$\\
+\end{tabular}}
+\caption*{Moments when the tape head is on the left.}
+\end{table}
+Non-halting of HNR\#43 will thus clearly be an easy but possibly arduous proof.
 
 \end{document}
