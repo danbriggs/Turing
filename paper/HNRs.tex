@@ -58,10 +58,11 @@ Of these 36, \#s 16, 24, and 38 reach a phase (of at least 1 trillion steps) of 
 Of these, I (and others independently) have discovered that machines 2 (and so 5 and 6), 14, 18, and 25 are trivially proved never to halt. I also proved machines \#8, \#9, \#10, \#11, and \#12 (and so \#13) never to halt. Machines \#21 (and so \#28 and \#39), \#31 and \#32 were proved by univerz (Pavel Kropitz). univerz in fact showed the non-halting of twelve machines, but we need only reference these three for our reduction in number.
 
 Thus there are 21 studies that need to be performed; thus this document is organized into 21 sections.
-Machines \#$4, 16\sim24\sim38, 19\sim42, 20, 23=29,$ $30=41,$ $36,$ $37,$ $40,$ and $43$
+Machines \#4, 16$\sim$24$\sim$38, 19$\sim$42, 20, 23=29, 30=41, 36, 37, 40, and 43
 showed that they will be of various degrees of easy but arduous in the course of producing this document,
-and \#s 34 and \#35 showed that they should be considered equivalent to each other with proof.
-Of the 10 remaining classes, \#BL\_2 stands out as likely very easy.
+and in fact a proof for \#36 is included herein.
+\#s 34 and \#35 showed that they should be considered equivalent to each other with proof.
+Of the 10 remaining classes, \#BL\_2 stands out as likely very easy, and \#15 may well be easy as well.
 
 %\texttt{\href{https://github.com/danbriggs/Turing/blob/master/doc/record7-19-20.txt}
 %{github.com/danbriggs/Turing/blob/master/doc/record7-19-20.txt}}
@@ -73,7 +74,67 @@ Of the 10 remaining classes, \#BL\_2 stands out as likely very easy.
 \phantomsection
 \addcontentsline{toc}{section}{1}
 \section*{1}
-\clearpage
+
+\begin{table}[H]
+\begin{tabular}{lll}
+86&D&$(110)^{3}(10)^{1}1i$\\
+418&D&$(110)^{3}(10)^{2}(110)^{6}(10)^{1}1i$\\
+1046&D&$(110)^{1}(10)^{1}(110)^{7}(10)^{2}(110)^{2}(10)^{1}(110)^{3}(10)^{1}1i$\\
+3536&D&$(110)^{11}(10)^{2}(110)^{4}(10)^{1}(110)^{3}(10)^{3}(110)^{2}(10)^{1}(110)^{12}(10)^{1}1i$\\
+15546&D&$(110)^{39}(10)^{2}(110)^{12}(10)^{2}(110)^{8}(10)^{1}(110)^{16}(10)^{1}(110)^{3}(10)^{1}1i$\\
+54098&D&$(110)^{91}(10)^{1}(110)^{1}(10)^{1}(110)^{11}(10)^{2}(110)^{8}(10)^{1}(110)^{3}(10)^{2}(110)^{6}(10)^{1}1i$\\
+79572&D&$(110)^{89}(10)^{1}(110)^{11}(10)^{1}(110)^{28}(10)^{1}(110)^{7}(10)^{2}(110)^{2}(10)^{1}(110)^{3}(10)^{1}1i$\\
+2422302&D&$(110)^{139}(10)^{2}(110)^{634}(10)^{2}(110)^{76}(10)^{2}(110)^{6}(10)^{1}(110)^{11}(10)^{1}(110)^{12}(10)^{1}1i$\\
+3027880&D&$(110)^{331}(10)^{2}(110)^{586}(10)^{2}(110)^{64}(10)^{3}(110)^{11}(10)^{1}(110)^{11}(10)^{1}(110)^{3}(10)^{1}1i$\\
+\end{tabular}
+\end{table}
+The above shows steps when HNR\#1 is on the right edge of the working tape.
+There are no other such steps among the first billion steps, other than nearly adjacent steps.
+HNR\#1 has been perhaps the most intensely studied of all of Skelet's 43 machines over the years.
+It turns out that it is certainly among the hardest nine to solve, and could well be the hardest of all.
+My notes regarding HNR\#1 are scattered among old computers, dead forums, and looseleaf paper,
+so it would not be appropriate to try to do the study of HNR\#1 justice here before first compiling these notes.
+
+Although steps when it is at the right are displayed above, it is more common to study HNR\#1 using
+steps when it is at the left (see figure on the following page).
+Suffice it to say that it at first appears to be counting up in quaternary in its own representations
+of 0, 1, 2, and 3, but it is constantly truncating the amount of working space it gives itself to count up,
+and when it runs out of space to increment a number, it can end up in a variety of different ``phases.''
+
+So new representations of what can appear on stretches of tape are defined, and replacement rules
+for strings of those symbols are striven for. E.g., it leaves the left side and comes back between
+the following steps:
+
+\begin{tabular}{lll}
+3284~A~$o10(110)^{10}1010(110)^{4}10(110)^{3}101010(110)^{3}1010(110)^{10}1111$\\
+3822~A~$o10(110)^{8}10110100(110)^{3}10(110)^{2}11110101101001(110)^{2}10(110)^{11}1011010011,$
+\end{tabular}
+So one begins by letting say $X=110$ and some other alphabet assignments
+and attempts to discover and prove the replacement rules among strings of them.
+
+(HNR\#1 uses a lot of $110$ and $10$ when it is at the left as well as the right,
+but for HNRs in general it is of course not the case that the same pieces will be found
+when the tape head is to either side. )
+
+This sound daunting, but it is always possible that a very general lemma that does not need to
+take into account the particulars of the string can be got; in other words, ``whenever HNR\#1
+has tape head at the left end of the tape and the tape is composed of such-and-such strings
+in any quantity in any order, it always reaches another such configuration in the future.''
+See the proof for HNR\#36 herein for comparison.
+
+On the other hand, if its halting depends on some fine detail,
+one could say that its proof is still likely quite a ways off.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{1.png}
+\caption{Steps through 3824 when HNR\#1 is on the left edge of the working tape.
+%This and most $y$-axes in this document should be read as e.g. ``175th step where this is the case'',
+%although in a few figures, the $y$-axis is labelled with the step numbers themselves.
+Red means 1 and black means 0, and all such figures in this document are right-justified or left-justified,
+so it should not be assumed that bits are in the exact same location from one such step to the next.}
+\end{figure}
+
 \phantomsection
 \addcontentsline{toc}{section}{3}
 \section*{3}
@@ -301,7 +362,15 @@ Thus, it would suffice to understand the patterns shown in Tables \ref{tab:3nums
 
 Out of the first billion steps, the maximum number of swaths of 1s when the tape head is on the right is 6, and this first occurs at step 6333029, when the machine is in state D, and the tape is \texttt{$1^4~0~1^{23}~0~1^{53}~0~1^{197}~0~1^{259}~0~1^{550}$}.
 
-%An argument backtracking from a halt state may be capable of sidestepping all this detailed analysis; it is clear from the machine diagram
+The table also shows quite a few pairs of steps where the first of two 1's exponents
+is halved and one subtracted; the criteria under which this does or does not occur
+are not clear. For this reason, HNR\#3 could easily prove to be as difficult as
+say the Collatz conjecture.
+
+An argument backtracking from a halt state may be capable of sidestepping all this detailed analysis,
+but this has so far proven not to be the case with any of the HNRs (although see HNR\#36 where halting
+would be achieved iff an even number of 0s appeared between the tape head and the first 1 in state D
+while it always has an odd number of 0s in that position.).
 %\begin{table}[H]
 %\texttt{\begin{tabular}{rccccc}
 %&A&B&C&D&E\\
@@ -319,12 +388,14 @@ Out of the first billion steps, the maximum number of swaths of 1s when the tape
 \addcontentsline{toc}{section}{4}
 \section*{4}
 
-Machine 4 seems to be a trivial one, the proof just needs to be carried out. It counts up in binary using 11 as 0 and 10 as 1, with less significant digits to the left, on the left side of the tape, with an additional o11 at the left end in C. Then after a number of steps increasing by a constant difference of 12 modified by four times the location in the number of the 0 to be turned into a 1 (increasing when that bit is \emph{closer}), it produces the next number, written in the same binary scheme, with an extra 0 as padding on the right before its bookend 011. For example,
+Machine 4 seems to be a trivial one, the proof just needs to be carried out. It counts up in binary using 11 as 0 and 10 as 1, with less significant digits to the left, on the left side of the tape, with an additional o11 at the left end in C.
+Then after a number of steps increasing by a constant difference of 12 modified by four times the location in the number of the 0 to be turned into a 1 (increasing when that bit is \emph{closer}), it produces the next number, written in the same binary scheme,
+with an extra number 0 (again, written 11) as padding on the right before the ending 011. For example,
 
 \begin{small}
 \begin{table}[H]
 \texttt{
-\begin{tabular}{rcrcl}
+\begin{tabular}{rclcl}
 882&  C&           o1110101110111111111111111011& 11.& Then after 145,\\
 1027& C&         o111111101011111111111111111011& 12.& Then after 165 (+20 3/1),\\
 1192& C&       o11101110101111111111111111111011& 13.& Then after 173 (+8 1/2),\\
@@ -336,7 +407,9 @@ Machine 4 seems to be a trivial one, the proof just needs to be carried out. It 
 \end{table}
 \end{small}
 
-%\clearpage adds a blank page here but nowhere else for some reason
+Thus, as it is creating more space for itself to count up in far faster than it is counting up, it will never halt.
+
+%\clearpage adds a blank page. Next table too large?
 \phantomsection
 \addcontentsline{toc}{section}{7}
 \section*{7}
@@ -1270,10 +1343,11 @@ with an odd number of intervening 0s before a string beginning with 1, consists 
 \texttt{186 D 111111111111i1111111101}.
 \item A-E alternation going to the right (after one left step). This will yield a step like
 \texttt{160 E 111111111101o11111101} or \texttt{197 A 111111111111010101010o1}.
-\item C-D-A-C going to the left in the latter case; the same beginning with D in the former case.
+\item C-D-A-C going to the left in the latter case; the same beginning with the D in the former case.
 How this ends could in theory depend on how many 1s there were $\pmod4$. This phase 
 in the first string of 1s after the first string of 0s at the starting step, such as 174, where there were 9.
-\item Once it has gotten left of the ``tie'' bit (as in step 186), the latter case goes into an A-E-A-C-D phase,
+\item Once it has gotten left of the ``tie'' bit (as in step 186),
+the latter case goes into an A-E-A-C-D phase,
 moving 1 to the left every 5 steps, followed by one final A-C-D at extreme left.
 The former case goes into straight Cs, going left.
 \end{enumerate}
@@ -1327,9 +1401,53 @@ If this analysis is correct\textemdash and it clearly needs to be made more prec
 
 We make it more precise here.
 \begin{lemmastar}
-Let HNR\#36 be in state $D$ with tape $o0^{m}1^{n}0x,$ where $m$ is odd and $x$ is any string.
-Then if $n\equiv1\pmod4$, $\ldots$, whereas $\ldots$ otherwise.
+Let HNR\#36 be in state $D$ with tape $o0^{m}1^{n}0x,$
+where $m$ is odd, $n$ is positive, and $x$ is any string.
+Then it will return to another configuration with the same property later.
 \end{lemmastar}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{HNR36.png}
+\end{figure}
+\begin{proof}
+Refer to the phases mentioned above.
+\begin{table}[H]
+\begin{tabular}{rllll}
+        &0    &D&$o0^{m}1^{n}0$\\
+$\vdash$&m+1  &D&$1^{m+1}i1^{n-1}0$\\
+$\vdash$&m+3  &E&$1^{m+1}i1^{n-1}0$\\
+$\vdash$&m+n+3&E&$1^{m+1}(01)^{n/2}o$,     &$n$ even, or\\
+        &m+n+3&A&$1^{m+1}(01)^{(n-1)/2}0o$,&$n$ odd.
+\end{tabular}
+\end{table}
+
+If $n$ is even, one obtains
+\begin{table}[H]
+\begin{tabular}{rllll}
+        &m+2n+4 &D&$1^{m}i(0011)^{n/4}1$\\
+$\vdash$&6m+2n+5&A&$o1^{m+2}011(0011)^{\frac{n}{4}-1}1$\\
+$\vdash$&6m+2n+7&D&$o01^{m+3}011(0011)^{\frac{n}{4}-1}1$, &$n\equiv0\pmod4$, or\\
+        &m+2n+4 &C&$1^{m}i11(0011)^{(n-2)/4}1$\\
+$\vdash$&2m+2n+5&C&$o0^{m+1}11(0011)^{(n-2)/4}1$\\
+$\vdash$&2m+2n+6&D&$o0^{m+2}11(0011)^{(n-2)/4}1$,&$n\equiv2\pmod4$.
+\end{tabular}
+\end{table}
+The $n\equiv0\pmod4$ case is from the A-E-A-C-D phase mentioned above.
+So in the first case, we end up with one 0 after the $D,$
+whereas in the second case, we end up with $m+2$ 0s after the $D.$
+
+If $n$ is odd, one obtains
+\begin{table}[H]
+\begin{tabular}{rllll}
+        &m+n+5 &D&$1^{m+1}(01)^{(n-1)/2}<01$\\
+$\vdash$&m+2n+6&D&$1^{m}i(0011)^{(n-1)/4}01$,&$n\equiv1\pmod4,$ or\\
+        &m+2n+6&C&$1^{m}i11(0011)^{(n-3)/4}01$,&$n\equiv3\pmod4.$
+\end{tabular}
+\end{table}
+by A-C-C-D. Thus the $1\pmod4$ case finishes out like the $0\pmod4$ case,
+and the $3\pmod4$ case finishes out like the $2\pmod4$ case.
+\end{proof}
+Thus HNR\#36 never halts.
 
 \clearpage
 \phantomsection

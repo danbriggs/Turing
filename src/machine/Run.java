@@ -86,7 +86,8 @@ public class Run {
 			if (analytic) {
 				for (i=top1; i<top2; i++) {
 					int currState = m.getState();
-					boolean shouldPrint = (allSteps || i==top1 || i==top2-1|| leftEdge&&t.onLeft() || rightEdge&&t.onRight() || currState<0) && numLinesPrinted < 1000;
+					boolean shouldPrint = (allSteps || leftEdge&&t.onLeft() || rightEdge&&t.onRight() || currState<0) && numLinesPrinted < 1000;
+					//Got rid of || i==top1 || i==top2-1 to prevent excessively long strings, 10/1/21
 					if (shouldPrint) {
 						if (stepNumbers)
 							System.out.print(i+" ");
@@ -107,10 +108,11 @@ public class Run {
 					}
 					m.act(t);
 				}
-				if (stepNumbers)
-					System.out.print(i+" ");
-				System.out.print((char)(m.getState()+65)+" ");
-				t.printTrim();
+				//if (stepNumbers)
+				//	System.out.print(i+" ");
+				//System.out.print((char)(m.getState()+65)+" ");
+				//t.printTrim();
+				//Commented out these lines to prevent excessive output, 10/1/21
 			}
 			else if (allSteps){
 				//Normal Tape, show everything
