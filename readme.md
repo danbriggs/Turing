@@ -1,6 +1,12 @@
 The goal of this project is to write accelerations for hardly non-regular five-state Turing machines,  
 with the aim of proving they don't halt or running them until they do.
 
+## Update 10/29/21: Draft written; Interactive proof system sought
+
+Good news: an analysis of the final 21 holdout classes has been written, and it is entirely possible that only 5 essentially distinct difficult proofs will be needed. We have machines 1; 3 and 7; 17; 22; and 26, 33, 34, and 35. Read all about it at [paper/HNRs.pdf].
+
+I will likely begin to rework this project in a formal proof language at some time, such as Isabelle, Coq, or Lean. If you have an idea of what language would work best, please do not hesitate to contact me.
+
 # Early History of the Busy Beaver Problem
 
 Tibor Radó published [On Non-Computable Functions](https://archive.org/details/bstj41-3-877/mode/2up), in which he defined the Busy Beaver game, in 1962.  
